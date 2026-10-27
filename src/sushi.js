@@ -24,8 +24,9 @@ function viewSushi(v) {
 
 function startSushi(mode) {
   const level = /^L\d+$/.test(mode) ? +mode.slice(1) : null;
+  const dateMode = mode === "daily" ? todayKey() : /^D\d{4}-/.test(mode) ? mode.slice(1) : null; PLAY_DATE = dateMode;
   openPlay(mode === "endless" ? "Sushi Belt" : level ? `Sushi Lv ${level}` : "Chef's Special", (st, hud) => {
-    const rng = mode === "endless" ? RND : level ? makeRng("level:sushi:" + level) : makeRng(todayKey() + ":sushi");
+    const rng = mode === "endless" ? RND : level ? makeRng("level:sushi:" + level) : makeRng((dateMode || todayKey()) + ":sushi");
     const timed = mode !== "endless"; const LIMIT = 90000;
     st.innerHTML = `<div class="sushi-wrap"><div class="belt moving" id="belt"></div><div class="counter" id="counter">${BUDS.map((b, i) => `<div class="seat" data-drop="${i}" id="seat${i}"></div>`).join("")}</div><p class="sushitip">Drag a plate to the bud who wants it, or tap the plate, then tap the bud.</p></div>`;
     const belt = $("#belt", st);
@@ -92,14 +93,14 @@ function startSushi(mode) {
     }
     function end() {
       over = true; cancelAnimationFrame(raf); belt.classList.remove("moving");
-      if (mode === "daily") setDaily("sushi", { score: yen, line: `🍣 Chef's Special ¥${yen.toLocaleString()} · ${served} plates` });
+      if (dateMode) setDaily("sushi", { score: yen, line: `🍣 Chef's Special ¥${yen.toLocaleString()} · ${served} plates` });
       if (yen > (S.best.sushi || 0)) S.best.sushi = yen; save();
       SFX.win(); if (served >= 10) confetti();
       const miss = [...missed.values()].slice(0, 8);
       if (level) { const tg = 900 + 250 * (level - 1); levelResult(st, "sushi", level, yen >= tg * 2 ? 3 : yen >= tg * 1.5 ? 2 : yen >= tg ? 1 : 0, "¥" + yen.toLocaleString()); } else resultScreen(st, { icon: served >= 15 ? "crown" : "sushi", title: served >= 15 ? "Five-star counter!" : "Counter closed", score: `¥${yen.toLocaleString()}`,
         lines: [`${served} plates served · best combo ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
-        share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
-        again: () => startSushi(mode === "daily" ? "practice" : mode) });
+        share: timed ? `${APP_NAME} 🍣 Chef's Special ${playDate()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
+        again: () => startSushi(dateMode ? "practice" : mode) });
       setTimeout(() => newStamps.forEach(stampNow), 600);
     }
     function frame(t) {

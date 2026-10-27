@@ -392,3 +392,8 @@ label.lab{font-weight:800;font-size:.85rem}
 .rallyrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 4px;justify-items:center}
 .stampslot .empty.small{width:54px;height:54px;font-size:1rem;font-family:var(--f-display)}
 .trophy.goldt.got .medal{background:radial-gradient(circle at 35% 30%,#FFFBE6,#FFD84D 55%,#E0A100);box-shadow:0 3px 0 #B9821A,0 0 12px 2px rgba(255,200,40,.55)}
+.archive{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:6px}
+.aday{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:0;min-width:0}
+.aday b{font-family:var(--f-display);font-weight:400;font-size:.9rem;font-variant-numeric:tabular-nums}
+.aday .adots{font-size:.68rem;font-weight:800;color:var(--ink-soft);min-height:18px;display:grid;place-items:center}
+.aday.full{background:var(--sakura-soft);border-color:var(--sakura)}

@@ -398,6 +398,11 @@ label.lab{font-weight:800;font-size:.85rem}
 .rallyrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 4px;justify-items:center}
 .stampslot .empty.small{width:54px;height:54px;font-size:1rem;font-family:var(--f-display)}
 .trophy.goldt.got .medal{background:radial-gradient(circle at 35% 30%,#FFFBE6,#FFD84D 55%,#E0A100);box-shadow:0 3px 0 #B9821A,0 0 12px 2px rgba(255,200,40,.55)}
+.archive{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:6px}
+.aday{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:0;min-width:0}
+.aday b{font-family:var(--f-display);font-weight:400;font-size:.9rem;font-variant-numeric:tabular-nums}
+.aday .adots{font-size:.68rem;font-weight:800;color:var(--ink-soft);min-height:18px;display:grid;place-items:center}
+.aday.full{background:var(--sakura-soft);border-color:var(--sakura)}
 
 </style>
 <div id="app" class="app"></div>
@@ -695,7 +700,7 @@ function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } cat
 const now = () => Date.now();
 const DAY = 864e5;
 function kanaStage(k) { const s = S.kana[k]; if (!s) return -1; return s.pts >= 7 ? 2 : s.pts >= 3 ? 1 : 0; }
-function isWilting(k) { const s = S.kana[k]; return s && now() - (s.last || 0) > 2 * DAY; }
+function isWilting(k) { return false; } // no punishment for time away: plants never wilt
 function waterKana(k, ok = true) { const s = S.kana[k]; if (!s) return; if (ok) { s.pts = Math.min(20, s.pts + 1); addStat("drops"); } s.last = now(); }
 const stat = k => (S.stats || (S.stats = {}))[k] || 0;
 function addStat(k, n = 1) { (S.stats || (S.stats = {}))[k] = stat(k) + n; }
@@ -776,8 +781,8 @@ const TROPHIES = [
   { id: "half", group: "Puzzles", name: "Kanji Intuition", icon: "puzzle", desc: "A flawless Missing Half.", test: () => stat("halfFlawless") >= 1 },
   { id: "reads", group: "Puzzles", name: "Like WaniKani", icon: "paper", desc: "Type 50 kanji readings.", test: () => stat("reads") >= 50 },
   { id: "line", group: "Puzzles", name: "Abacus Ace", icon: "abacus", desc: "A flawless Number Line.", test: () => stat("lineFlawless") >= 1 },
-  { id: "bouquet", group: "Puzzles", name: "Full Bouquet", icon: "basket", desc: "All six dailies in one day.", test: () => Object.values(S.daily).some(d => Object.keys(d).length >= 6) },
-  { id: "sunday", group: "Puzzles", name: "Brave Sunday", icon: "trophy", desc: "Beat a brutal Sunday daily.", test: () => stat("sunday") >= 1 },
+  { id: "bouquet", group: "Puzzles", name: "Full Bouquet", icon: "basket", desc: "Finish all six puzzles for any one date.", test: () => Object.values(S.daily).some(d => Object.keys(d).length >= 6) },
+  { id: "sunday", group: "Puzzles", name: "Brave Sunday", icon: "trophy", desc: "Beat a brutal Sunday daily (archive days count).", test: () => stat("sunday") >= 1 },
   { id: "dailies30", group: "Puzzles", name: "Puzzle Lover", icon: "gift", desc: "Finish 30 daily puzzles.", test: () => stat("dailies") >= 30 },
   // rally cards
   ...RALLY_GAMES.flatMap(g => [
@@ -801,12 +806,15 @@ const trophyCount = () => TROPHIES.filter(t => S.trophies && S.trophies[t.id]).l
 function bud(id) { return S.buds[id] || (S.buds[id] = { lvl: 1, xp: 0 }); }
 const plantedKana = () => ALL_KANA.filter(x => S.kana[x.k]);
 function rowUnlocked(i) { if (i === 0) return true; const prev = ROWS[i - 1]; return prev.kana.every(([k]) => kanaStage(k) >= 1); }
-function dailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
+let PLAY_DATE = null; const playDate = () => PLAY_DATE || todayKey();
+const dateFromKey = k => new Date(k + "T12:00:00");
+function dailyRec(game, date = todayKey()) { const d = S.daily[date]; return d && d[game]; }
+function _unusedDailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
 function setDaily(game, rec) {
-  const t = todayKey(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
-  addStat("dailies"); if (new Date().getDay() === 0) addStat("sunday");
+  const t = playDate(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
+  addStat("dailies"); if (dateFromKey(t).getDay() === 0) addStat("sunday");
   // keep only last 40 days of dailies
-  const keys = Object.keys(S.daily).sort(); while (keys.length > 40) delete S.daily[keys.shift()];
+  /* keep every day: the archive is a collection */
   save();
 }
 
@@ -936,7 +944,7 @@ function render() {
 function plantSprite(k) { if (isWilting(k)) return "wilted"; return ["seedling", "herb", "blossom"][kanaStage(k)]; }
 function viewGarden(v) {
   const planted = plantedKana().length, found = UNIQUE_WORDS.filter(w => wordState(w)?.found).length;
-  const thirsty = plantedKana().filter(x => isWilting(x.k)).length;
+  const thirsty = 0;
   const greet = S.name ? `おかえり、${esc(S.name)}！` : "ようこそ！";
   v.innerHTML = `
   <section class="hello">${IMG(thirsty ? "wilted" : "sunflower")}<div class="stack" style="gap:4px;flex:1;min-width:0">
@@ -1114,8 +1122,9 @@ function viewSushi(v) {
 
 function startSushi(mode) {
   const level = /^L\d+$/.test(mode) ? +mode.slice(1) : null;
+  const dateMode = mode === "daily" ? todayKey() : /^D\d{4}-/.test(mode) ? mode.slice(1) : null; PLAY_DATE = dateMode;
   openPlay(mode === "endless" ? "Sushi Belt" : level ? `Sushi Lv ${level}` : "Chef's Special", (st, hud) => {
-    const rng = mode === "endless" ? RND : level ? makeRng("level:sushi:" + level) : makeRng(todayKey() + ":sushi");
+    const rng = mode === "endless" ? RND : level ? makeRng("level:sushi:" + level) : makeRng((dateMode || todayKey()) + ":sushi");
     const timed = mode !== "endless"; const LIMIT = 90000;
     st.innerHTML = `<div class="sushi-wrap"><div class="belt moving" id="belt"></div><div class="counter" id="counter">${BUDS.map((b, i) => `<div class="seat" data-drop="${i}" id="seat${i}"></div>`).join("")}</div><p class="sushitip">Drag a plate to the bud who wants it, or tap the plate, then tap the bud.</p></div>`;
     const belt = $("#belt", st);
@@ -1182,14 +1191,14 @@ function startSushi(mode) {
     }
     function end() {
       over = true; cancelAnimationFrame(raf); belt.classList.remove("moving");
-      if (mode === "daily") setDaily("sushi", { score: yen, line: `🍣 Chef's Special ¥${yen.toLocaleString()} · ${served} plates` });
+      if (dateMode) setDaily("sushi", { score: yen, line: `🍣 Chef's Special ¥${yen.toLocaleString()} · ${served} plates` });
       if (yen > (S.best.sushi || 0)) S.best.sushi = yen; save();
       SFX.win(); if (served >= 10) confetti();
       const miss = [...missed.values()].slice(0, 8);
       if (level) { const tg = 900 + 250 * (level - 1); levelResult(st, "sushi", level, yen >= tg * 2 ? 3 : yen >= tg * 1.5 ? 2 : yen >= tg ? 1 : 0, "¥" + yen.toLocaleString()); } else resultScreen(st, { icon: served >= 15 ? "crown" : "sushi", title: served >= 15 ? "Five-star counter!" : "Counter closed", score: `¥${yen.toLocaleString()}`,
         lines: [`${served} plates served · best combo ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
-        share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
-        again: () => startSushi(mode === "daily" ? "practice" : mode) });
+        share: timed ? `${APP_NAME} 🍣 Chef's Special ${playDate()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
+        again: () => startSushi(dateMode ? "practice" : mode) });
       setTimeout(() => newStamps.forEach(stampNow), 600);
     }
     function frame(t) {
@@ -1221,9 +1230,10 @@ function startSushi(mode) {
 // ===== Daily puzzles =====
 const ENDLESS_D = {};
 function pzSetup(id, mode) {
-  const daily = mode === "daily"; const level = /^L\d+$/.test(mode || "") ? +mode.slice(1) : null;
-  const rng = daily ? makeRng(todayKey() + ":" + id) : level ? makeRng("level:" + id + ":" + level) : RND;
-  const d = daily ? dayDifficulty() : level ? (level - 1) / (LEVELS_N - 1) : (ENDLESS_D[id] ?? (ENDLESS_D[id] = .3));
+  const date = mode === "daily" ? todayKey() : /^D\d{4}-/.test(mode || "") ? mode.slice(1) : null; const daily = !!date;
+  const level = /^L\d+$/.test(mode || "") ? +mode.slice(1) : null; PLAY_DATE = date;
+  const rng = daily ? makeRng(date + ":" + id) : level ? makeRng("level:" + id + ":" + level) : RND;
+  const d = daily ? dayDifficulty(dateFromKey(date)) : level ? (level - 1) / (LEVELS_N - 1) : (ENDLESS_D[id] ?? (ENDLESS_D[id] = .3));
   return { daily, level, rng, d, bump: () => { if (!daily && !level) ENDLESS_D[id] = Math.min(1, (ENDLESS_D[id] || .3) + .1); } };
 }
 function startTimer(hud, extra = () => "") { const t0 = now(); const draw = () => { hud.innerHTML = `${extra()}<span class="chip">${IMG("hourglass")}${fmtTime(now() - t0)}</span>`; }; draw(); const iv = setInterval(draw, 1000); return { stop: () => clearInterval(iv), ms: () => now() - t0, redraw: draw }; }
@@ -1234,7 +1244,7 @@ const PUZZLES = [
   { id: "logic", name: "Garden Logic", jp: "にわ", icon: "rabbit", desc: "Read the Japanese clues and place everyone in the garden.", play: m => gardenLogic(m) },
   { id: "half", name: "Missing Half", jp: "はんぶん", icon: "puzzle", desc: "Drag in the missing piece to build the kanji. Trust your gut!", play: m => missingHalf(m) },
   { id: "line", name: "Number Line", jp: "かず", icon: "abacus", desc: "Line up kanji numbers and konbini prices, smallest to biggest.", play: m => numberLine(m) },
-  { id: "sushi", name: "Chef's Special", jp: "すし", icon: "sushi", desc: "Today's 90-second sushi rush. Compare yen with your partner.", play: m => startSushi(m === "daily" ? "daily" : /^L\d+$/.test(m) ? m : "practice") },
+  { id: "sushi", name: "Chef's Special", jp: "すし", icon: "sushi", desc: "Today's 90-second sushi rush. Compare yen with your partner.", play: m => startSushi(m === "daily" || /^[LD]\d/.test(m) ? m : "practice") },
 ];
 
 function viewPuzzles(v) {
@@ -1248,10 +1258,13 @@ function viewPuzzles(v) {
     <div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : `<span class="pill">today</span>`}</div>
     <h3>${p.name}</h3><p>${p.desc}</p>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : ""}
     <div class="row"><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button><button class="btn pink small" data-levels="${p.id}">${IMGW("star", 16)}${lvTotal(p.id)}/${LEVELS_N * 3}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
+  <section class="card stack"><header class="row">${IMGW("calendar", 40)}<div style="flex:1;min-width:0"><h2>Puzzle archive</h2><p class="muted" style="font-size:.82rem">Every past day's puzzles stay playable forever. No catching up required: fill them in whenever you like.</p></div><span class="pill pink">${archiveDone()}/${archiveDates().length * 6}</span></header>
+    <div class="archive">${archiveDates().map(k => { const n = Object.keys(S.daily[k] || {}).length; const dt = dateFromKey(k); return `<button class="aday ${n >= 6 ? "full" : ""}" data-day="${k}"><span class="ro">${DAYNAME[dt.getDay()].slice(0, 3)}</span><b>${dt.getMonth() + 1}/${dt.getDate()}</b><span class="adots">${n >= 6 ? IMGW("basket", 18) : `${n}/6`}</span></button>`; }).join("")}</div></section>
   <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles and every level are the same for both of you, so you can compare stars. Endless mode gets harder each time you clear one.</p>`;
   $$("[data-pz]", v).forEach(b => b.onclick = () => PUZZLES.find(p => p.id === b.dataset.pz).play(b.dataset.mode));
   $$("[data-levels]", v).forEach(b => b.onclick = () => openLevels(b.dataset.levels));
-  const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${todayKey()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n"));
+  $$("[data-day]", v).forEach(b => b.onclick = () => openArchiveDay(b.dataset.day));
+  const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${playDate()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n"));
 }
 
 // ---------- 1. PETAL GUESS ----------
@@ -1307,7 +1320,7 @@ function petalGuess(mode) {
       if (daily) setDaily("petal", { score: scoreTxt, line: `🌷 Petal Guess ${scoreTxt}${hint && S.role !== "kanji" ? " (hint)" : ""}` });
       if (win) { SFX.win(); confetti(); bump(); statMin("petalBest", guesses.length); save(); } else SFX.bad();
       setTimeout(() => {
-        if (level) levelResult(st, "petal", level, win ? (guesses.length <= 3 && !(S.role === "kanji" ? hint === 2 : hint) ? 3 : guesses.length <= 4 ? 2 : 1) : 0, win ? `${guesses.length}/6` : "X/6"); else resultScreen(st, { icon: win ? "tulip" : "wilted", title: win ? ["Genius!", "Amazing!", "Lovely!", "Nice!", "Phew!", "Just made it!"][guesses.length - 1] : "The petals fell…", score: scoreTxt, lines: [wordReveal(ans)], share: daily ? `${APP_NAME} 🌷 Petal Guess ${todayKey()} ${scoreTxt}\n${grid}` : "", again: () => petalGuess("endless"), againLabel: "Endless round" });
+        if (level) levelResult(st, "petal", level, win ? (guesses.length <= 3 && !(S.role === "kanji" ? hint === 2 : hint) ? 3 : guesses.length <= 4 ? 2 : 1) : 0, win ? `${guesses.length}/6` : "X/6"); else resultScreen(st, { icon: win ? "tulip" : "wilted", title: win ? ["Genius!", "Amazing!", "Lovely!", "Nice!", "Phew!", "Just made it!"][guesses.length - 1] : "The petals fell…", score: scoreTxt, lines: [wordReveal(ans)], share: daily ? `${APP_NAME} 🌷 Petal Guess ${playDate()} ${scoreTxt}\n${grid}` : "", again: () => petalGuess("endless"), againLabel: "Endless round" });
         if (isNew) setTimeout(() => stampNow(ans), 500);
         say(ans.r);
       }, 900);
@@ -1359,7 +1372,7 @@ function gardenPlot(mode) {
       over = true; timer.stop(); const t = fmtTime(timer.ms()); SFX.win(); confetti(); bump();
       SYM.forEach(x => [...x.s].forEach(c => waterKana(c))); addStat("plots"); statMin("plotBest", timer.ms()); save();
       if (daily) setDaily("plot", { score: t, line: `🥕 Garden Plot ${t}` });
-      setTimeout(() => level ? levelResult(st, "plot", level, timer.ms() < 180000 ? 3 : timer.ms() < 360000 ? 2 : 1, t) : resultScreen(st, { icon: "carrot", title: "Every bed is planted!", score: t, lines: [`<span class="glyph" style="font-size:1.3rem">${SYM.map(x => esc(x.s)).join(" ")}</span>`], share: daily ? `${APP_NAME} 🥕 Garden Plot ${todayKey()}\n${t} ${"🥕".repeat(3)}` : "", again: () => gardenPlot("endless"), againLabel: "Endless puzzle" }), 600);
+      setTimeout(() => level ? levelResult(st, "plot", level, timer.ms() < 180000 ? 3 : timer.ms() < 360000 ? 2 : 1, t) : resultScreen(st, { icon: "carrot", title: "Every bed is planted!", score: t, lines: [`<span class="glyph" style="font-size:1.3rem">${SYM.map(x => esc(x.s)).join(" ")}</span>`], share: daily ? `${APP_NAME} 🥕 Garden Plot ${playDate()}\n${t} ${"🥕".repeat(3)}` : "", again: () => gardenPlot("endless"), againLabel: "Endless puzzle" }), 600);
     }
     draw();
     return () => timer.stop();
@@ -1442,7 +1455,7 @@ function gardenLogic(mode) {
       const t = fmtTime(timer.ms()); const sc = `${t}${mistakes ? ` · ${mistakes} slip${mistakes > 1 ? "s" : ""}` : ""}`;
       if (daily) setDaily("logic", { score: t, line: `🐰 Garden Logic ${sc}${peeks ? ` · ${peeks} peek${peeks > 1 ? "s" : ""}` : ""}` });
       $$(".lg-cell", st).forEach(c => c.classList.add("right"));
-      setTimeout(() => level ? levelResult(st, "logic", level, !mistakes && !peeks ? 3 : mistakes <= 1 ? 2 : 1, sc) : resultScreen(st, { icon: "rabbit", title: "Everyone's home!", score: sc, lines: [`${clues.length} clues · ${peeks} peeks`, `<span class="muted" style="font-size:.85rem">Grammar note: います (imasu) is for living things, あります (arimasu) for objects.</span>`], share: daily ? `${APP_NAME} 🐰 Garden Logic ${todayKey()}\n${sc}${peeks ? ` · ${peeks} peeks` : " · no peeks!"}` : "", again: () => gardenLogic("endless"), againLabel: "Endless garden" }), 700);
+      setTimeout(() => level ? levelResult(st, "logic", level, !mistakes && !peeks ? 3 : mistakes <= 1 ? 2 : 1, sc) : resultScreen(st, { icon: "rabbit", title: "Everyone's home!", score: sc, lines: [`${clues.length} clues · ${peeks} peeks`, `<span class="muted" style="font-size:.85rem">Grammar note: います (imasu) is for living things, あります (arimasu) for objects.</span>`], share: daily ? `${APP_NAME} 🐰 Garden Logic ${playDate()}\n${sc}${peeks ? ` · ${peeks} peeks` : " · no peeks!"}` : "", again: () => gardenLogic("endless"), againLabel: "Endless garden" }), 700);
     }
     draw();
     return () => timer.stop();
@@ -1490,7 +1503,7 @@ function missingHalf(mode) {
       const t = fmtTime(now() - t0); SFX.win(); confetti(); bump(); addStat("reads", reads); if (!slips) addStat("halfFlawless"); save();
       const sc = `${N - Math.min(N, slips)}/${N}`; const line = `🧩 Missing Half ${slips ? slips + " slip" + (slips > 1 ? "s" : "") : "flawless"} · ${reads} reading${reads === 1 ? "" : "s"} typed`;
       if (daily) setDaily("half", { score: sc, line });
-      if (level) levelResult(st, "half", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, `${slips} slip${slips === 1 ? "" : "s"}`); else resultScreen(st, { icon: "puzzle", title: slips ? "Kanji built!" : "Flawless intuition!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [`<span class="glyph" style="font-size:1.6rem">${rounds.map(x => x.p.k).join(" ")}</span>`, `${reads}/${N} readings typed · ${t}`], share: daily ? `${APP_NAME} 🧩 Missing Half ${todayKey()}\n${rounds.map(() => "🧩").join("")}\n${line.slice(3)}` : "", again: () => missingHalf("endless"), againLabel: "Endless set" });
+      if (level) levelResult(st, "half", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, `${slips} slip${slips === 1 ? "" : "s"}`); else resultScreen(st, { icon: "puzzle", title: slips ? "Kanji built!" : "Flawless intuition!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [`<span class="glyph" style="font-size:1.6rem">${rounds.map(x => x.p.k).join(" ")}</span>`, `${reads}/${N} readings typed · ${t}`], share: daily ? `${APP_NAME} 🧩 Missing Half ${playDate()}\n${rounds.map(() => "🧩").join("")}\n${line.slice(3)}` : "", again: () => missingHalf("endless"), againLabel: "Endless set" });
       setTimeout(() => newStamps.forEach(stampNow), 600);
     }
     round();
@@ -1551,7 +1564,7 @@ function numberLine(mode) {
       const t = fmtTime(now() - t0); SFX.win(); confetti(); bump(); if (!slips) addStat("lineFlawless"); save();
       const line = `🧮 Number Line ${slips ? slips + " slip" + (slips > 1 ? "s" : "") : "flawless"} · ${t}`;
       if (daily) setDaily("line", { score: slips, line });
-      if (level) levelResult(st, "line", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, `${slips} slip${slips === 1 ? "" : "s"}`); else resultScreen(st, { icon: "abacus", title: slips ? "All lined up!" : "Perfect counting!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [t, `<span class="muted" style="font-size:.85rem">Watch the sound changes: 300 is さんびゃく (sanbyaku) and 3,000 is さんぜん (sanzen).</span>`], share: daily ? `${APP_NAME} 🧮 Number Line ${todayKey()}\n${line.slice(3)}` : "", again: () => numberLine("endless"), againLabel: "Endless set" });
+      if (level) levelResult(st, "line", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, `${slips} slip${slips === 1 ? "" : "s"}`); else resultScreen(st, { icon: "abacus", title: slips ? "All lined up!" : "Perfect counting!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [t, `<span class="muted" style="font-size:.85rem">Watch the sound changes: 300 is さんびゃく (sanbyaku) and 3,000 is さんぜん (sanzen).</span>`], share: daily ? `${APP_NAME} 🧮 Number Line ${playDate()}\n${line.slice(3)}` : "", again: () => numberLine("endless"), againLabel: "Endless set" });
     }
     round();
   });
@@ -1612,6 +1625,21 @@ function levelResult(st, id, n, stars, label) {
 function starHint(id, n) {
   return ({ petal: "★★★: solve in 3 guesses or fewer without a hint. ★★: 4 or fewer.", plot: "★★★: under 3 minutes. ★★: under 6 minutes.", logic: "★★★: no slips and no peeks. ★★: at most one slip.",
     half: "★★★: no slips. ★★: two slips or fewer.", line: "★★★: no slips. ★★: two slips or fewer.", sushi: `Target ¥${(900 + 250 * (n - 1)).toLocaleString()}: ★★ at 1.5×, ★★★ at 2×.` })[id];
+}
+
+// ---------- ARCHIVE ----------
+const ARCHIVE_START = "2026-09-26"; // the archive only ever grows from here
+function archiveDates() { const out = []; for (let i = 1; ; i++) { const k = todayKey(new Date(now() - i * DAY)); if (k < ARCHIVE_START) break; out.push(k); } return out; }
+function archiveDone() { return archiveDates().reduce((a, k) => a + Object.keys(S.daily[k] || {}).length, 0); }
+function openArchiveDay(k) {
+  const dt = dateFromKey(k); const d = dayDifficulty(dt); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
+  openPlay(`${DAYNAME[dt.getDay()]} ${dt.getMonth() + 1}/${dt.getDate()}`, (st, hud) => {
+    const recs = S.daily[k] || {};
+    hud.innerHTML = `<span class="chip">${IMG("basket")}${Object.keys(recs).length}/6</span>`;
+    st.innerHTML = `<p class="muted" style="text-align:center;font-size:.85rem">The exact puzzles from ${k}. ${DAYNAME[dt.getDay()]}s are <b>${diffName}</b>.</p>
+      <div class="bouquet">${PUZZLES.map(p => { const r = recs[p.id]; return `<div class="pz ${r ? "done" : ""}"><div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : ""}</div><h3>${p.name}</h3>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : `<p></p>`}<div class="row"><button class="btn small ${r ? "ghost" : ""}" data-arc="${p.id}">${r ? "Replay" : "Play"}</button></div></div>`; }).join("")}</div>`;
+    $$("[data-arc]", st).forEach(b => b.onclick = () => { const pz = PUZZLES.find(p => p.id === b.dataset.arc); pz.play(recs[pz.id] ? "practice" : "D" + k); });
+  });
 }
 
 render();

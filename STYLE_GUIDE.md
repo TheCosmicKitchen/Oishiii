@@ -5,6 +5,9 @@
 - Every activity has two layers: the kana role sees kana + romaji; the kanji role sees bare kanji, with readings revealed after answering.
 - Always show romaji alongside kana for the kana role. Typing works like WaniKani: romaji converts to kana live (WanaKana 5.3.1 from jsDelivr, with a built-in fallback).
 
+## Design rule: completion, never engagement
+She hates engagement mechanics. No streaks, no wilting or decay, no "come back tomorrow" pressure, no expiring content. Everything is permanent and collectable: stamps, trophies, rally-card stars, and a puzzle archive that keeps every past day playable forever. Grind should always be available (endless modes, levels, archive).
+
 ## Look and feel (keep consistent)
 - **Theme:** a pocket kitchen garden. Soil-brown beds, wooden stakes with kana, sakura-pink accents, leaf greens, sky blue. Very cute: bouncy pops, sakura confetti, buds that talk (おいしい！, うまい！, ちがう…, もう…).
 - **Art:** Microsoft Fluent Emoji **3D** only, embedded as 112px WebP data URIs.

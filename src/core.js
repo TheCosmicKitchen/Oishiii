@@ -67,7 +67,7 @@ function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } cat
 const now = () => Date.now();
 const DAY = 864e5;
 function kanaStage(k) { const s = S.kana[k]; if (!s) return -1; return s.pts >= 7 ? 2 : s.pts >= 3 ? 1 : 0; }
-function isWilting(k) { const s = S.kana[k]; return s && now() - (s.last || 0) > 2 * DAY; }
+function isWilting(k) { return false; } // no punishment for time away: plants never wilt
 function waterKana(k, ok = true) { const s = S.kana[k]; if (!s) return; if (ok) { s.pts = Math.min(20, s.pts + 1); addStat("drops"); } s.last = now(); }
 const stat = k => (S.stats || (S.stats = {}))[k] || 0;
 function addStat(k, n = 1) { (S.stats || (S.stats = {}))[k] = stat(k) + n; }
@@ -148,8 +148,8 @@ const TROPHIES = [
   { id: "half", group: "Puzzles", name: "Kanji Intuition", icon: "puzzle", desc: "A flawless Missing Half.", test: () => stat("halfFlawless") >= 1 },
   { id: "reads", group: "Puzzles", name: "Like WaniKani", icon: "paper", desc: "Type 50 kanji readings.", test: () => stat("reads") >= 50 },
   { id: "line", group: "Puzzles", name: "Abacus Ace", icon: "abacus", desc: "A flawless Number Line.", test: () => stat("lineFlawless") >= 1 },
-  { id: "bouquet", group: "Puzzles", name: "Full Bouquet", icon: "basket", desc: "All six dailies in one day.", test: () => Object.values(S.daily).some(d => Object.keys(d).length >= 6) },
-  { id: "sunday", group: "Puzzles", name: "Brave Sunday", icon: "trophy", desc: "Beat a brutal Sunday daily.", test: () => stat("sunday") >= 1 },
+  { id: "bouquet", group: "Puzzles", name: "Full Bouquet", icon: "basket", desc: "Finish all six puzzles for any one date.", test: () => Object.values(S.daily).some(d => Object.keys(d).length >= 6) },
+  { id: "sunday", group: "Puzzles", name: "Brave Sunday", icon: "trophy", desc: "Beat a brutal Sunday daily (archive days count).", test: () => stat("sunday") >= 1 },
   { id: "dailies30", group: "Puzzles", name: "Puzzle Lover", icon: "gift", desc: "Finish 30 daily puzzles.", test: () => stat("dailies") >= 30 },
   // rally cards
   ...RALLY_GAMES.flatMap(g => [
@@ -173,12 +173,15 @@ const trophyCount = () => TROPHIES.filter(t => S.trophies && S.trophies[t.id]).l
 function bud(id) { return S.buds[id] || (S.buds[id] = { lvl: 1, xp: 0 }); }
 const plantedKana = () => ALL_KANA.filter(x => S.kana[x.k]);
 function rowUnlocked(i) { if (i === 0) return true; const prev = ROWS[i - 1]; return prev.kana.every(([k]) => kanaStage(k) >= 1); }
-function dailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
+let PLAY_DATE = null; const playDate = () => PLAY_DATE || todayKey();
+const dateFromKey = k => new Date(k + "T12:00:00");
+function dailyRec(game, date = todayKey()) { const d = S.daily[date]; return d && d[game]; }
+function _unusedDailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
 function setDaily(game, rec) {
-  const t = todayKey(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
-  addStat("dailies"); if (new Date().getDay() === 0) addStat("sunday");
+  const t = playDate(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
+  addStat("dailies"); if (dateFromKey(t).getDay() === 0) addStat("sunday");
   // keep only last 40 days of dailies
-  const keys = Object.keys(S.daily).sort(); while (keys.length > 40) delete S.daily[keys.shift()];
+  /* keep every day: the archive is a collection */
   save();
 }
 

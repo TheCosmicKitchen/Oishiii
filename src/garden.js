@@ -23,7 +23,7 @@ function render() {
 function plantSprite(k) { if (isWilting(k)) return "wilted"; return ["seedling", "herb", "blossom"][kanaStage(k)]; }
 function viewGarden(v) {
   const planted = plantedKana().length, found = UNIQUE_WORDS.filter(w => wordState(w)?.found).length;
-  const thirsty = plantedKana().filter(x => isWilting(x.k)).length;
+  const thirsty = 0;
   const greet = S.name ? `おかえり、${esc(S.name)}！` : "ようこそ！";
   v.innerHTML = `
   <section class="hello">${IMG(thirsty ? "wilted" : "sunflower")}<div class="stack" style="gap:4px;flex:1;min-width:0">

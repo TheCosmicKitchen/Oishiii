@@ -198,3 +198,12 @@ const BUDS = [
   {id:"piyo", name:"Piyo", jp:"ぴよ", theme:"animals", likes:"animals", sprites:["hatching","babychick","bird"]},
   {id:"kinoko", name:"Kinoko", jp:"きのこ", theme:"food", likes:"food & things", sprites:["mushroom","mushroom","mushroom"]},
 ];
+
+// Stamp book pages (each completed page earns a trophy)
+const STAMP_PAGES = [
+  { id: "nature", name: "Nature & colors", jp: "自然", themes: ["nature", "colors"], trophy: "Nature Walker", icon: "maple" },
+  { id: "animals", name: "Animals", jp: "動物", themes: ["animals"], trophy: "Zookeeper", icon: "monkey" },
+  { id: "people", name: "People & body", jp: "人", themes: ["people"], trophy: "People Person", icon: "smile" },
+  { id: "food", name: "Food", jp: "食べ物", themes: ["food"], trophy: "Foodie", icon: "dango" },
+  { id: "things", name: "Places & things", jp: "町", themes: ["things"], trophy: "Town Explorer", icon: "houses" },
+];

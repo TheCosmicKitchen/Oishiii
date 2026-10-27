@@ -71,7 +71,7 @@ function startSushi(mode) {
       const p = plates.find(x => x.id === pid); const s = seats[seatIdx]; if (!p || !s || !s.order || over) return;
       const want = s.order.w; const b = BUDS[seatIdx];
       if (p.face === faceOf(want)) {
-        combo++; bestCombo = Math.max(bestCombo, combo); served++; S.served = (S.served || 0) + 1;
+        combo++; bestCombo = Math.max(bestCombo, combo); statMax("maxCombo", combo); if (p.tier.gold) addStat("golds"); served++; S.served = (S.served || 0) + 1;
         const mult = 1 + Math.min(4, Math.floor(combo / 4)) * .25; const gain = Math.round(p.tier.yen * mult); yen += gain;
         p.el.remove(); plates.splice(plates.indexOf(p), 1);
         if (touchWord(want, true, true)) { newStamps.push(want); toast(`New stamp: ${want.k}!`); }

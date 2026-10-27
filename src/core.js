@@ -60,15 +60,19 @@ function dayDifficulty(d = new Date()) { return [1, .15, .3, .45, .6, .75, .9][d
 const DAYNAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 // ---- state
-const DEFAULT = () => ({ v: 1, name: "", role: "kana", romaji: true, sound: true, kana: {}, words: {}, buds: {}, daily: {}, best: {}, served: 0 });
+const DEFAULT = () => ({ v: 1, name: "", role: "kana", romaji: true, sound: true, kana: {}, words: {}, buds: {}, daily: {}, best: {}, served: 0, stats: {}, trophies: {} });
 let S = DEFAULT();
 try { const raw = localStorage.getItem(SAVE_KEY); if (raw) S = Object.assign(DEFAULT(), JSON.parse(raw)); } catch (e) { }
-function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { } }
+function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { } if (typeof checkTrophies === "function") checkTrophies(); }
 const now = () => Date.now();
 const DAY = 864e5;
 function kanaStage(k) { const s = S.kana[k]; if (!s) return -1; return s.pts >= 7 ? 2 : s.pts >= 3 ? 1 : 0; }
 function isWilting(k) { const s = S.kana[k]; return s && now() - (s.last || 0) > 2 * DAY; }
-function waterKana(k, ok = true) { const s = S.kana[k]; if (!s) return; if (ok) s.pts = Math.min(20, s.pts + 1); s.last = now(); }
+function waterKana(k, ok = true) { const s = S.kana[k]; if (!s) return; if (ok) { s.pts = Math.min(20, s.pts + 1); addStat("drops"); } s.last = now(); }
+const stat = k => (S.stats || (S.stats = {}))[k] || 0;
+function addStat(k, n = 1) { (S.stats || (S.stats = {}))[k] = stat(k) + n; }
+function statMax(k, v) { if (v > stat(k)) S.stats[k] = v; }
+function statMin(k, v) { const c = (S.stats || (S.stats = {}))[k]; if (c == null || v < c) S.stats[k] = v; }
 function wordState(w) { return S.words[wkey(w)] || null; }
 function touchWord(w, ok = true, found = true) {
   const key = wkey(w); const s = S.words[key] || (S.words[key] = { pts: 0, last: 0, found: false, miss: 0 });
@@ -87,22 +91,84 @@ function stampHTML(w, size = 96, extra = "") {
   <text font-size="7" font-weight="800" fill="var(--ink)" letter-spacing="1"><textPath href="#arcb${w.id}" startOffset="50%" text-anchor="middle">${esc(w.en.toUpperCase().slice(0, 18))}</textPath></text></svg>
   <span class="stamp-k">${esc(w.k)}</span><img class="em stamp-e" src="${EMO[w.e] || ""}" alt=""></div>`;
 }
-const STAMP_Q = []; let stampBusy = false;
-function stampNow(w) { STAMP_Q.push(w); if (!stampBusy) nextStamp(); }
-function nextStamp() {
-  const w = STAMP_Q.shift(); if (!w) { stampBusy = false; return; } stampBusy = true;
+// ---- celebrations: stamps and trophies queue up; games hold them until the result screen
+const CELEB_Q = []; let celebBusy = false; let CELEB_HOLD = false;
+function stampNow(w) { CELEB_Q.push({ kind: "stamp", w }); nextCeleb(); }
+function holdCelebrations(on) { CELEB_HOLD = on; if (!on) nextCeleb(); }
+function nextCeleb() {
+  if (celebBusy || CELEB_HOLD) return; const it = CELEB_Q.shift(); if (!it) return; celebBusy = true;
   const o = document.createElement("div"); o.className = "stampover"; o.setAttribute("role", "status");
-  o.innerHTML = `<div class="stampcard"><span class="eyebrow">New stamp!</span>${stampHTML(w, 170, "thunk")}<div class="glyph" style="font-size:1.2rem">${esc(w.r)} <span class="ro">${esc(w.ro)}</span></div><b>${esc(w.en)}</b><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
-  document.body.appendChild(o); tone([196, 147], .09, "square", .06); setTimeout(() => SFX.pop(), 250);
-  let gone = false; const close = () => { if (gone) return; gone = true; o.remove(); setTimeout(nextStamp, 120); };
-  o.onclick = close; setTimeout(close, 2600);
+  if (it.kind === "stamp") {
+    const w = it.w;
+    o.innerHTML = `<div class="stampcard"><span class="eyebrow">New stamp!</span>${stampHTML(w, 170, "thunk")}<div class="glyph" style="font-size:1.2rem">${esc(w.r)} <span class="ro">${esc(w.ro)}</span></div><b>${esc(w.en)}</b><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
+    tone([196, 147], .09, "square", .06); setTimeout(() => SFX.pop(), 250);
+  } else {
+    const t = it.t;
+    o.innerHTML = `<div class="stampcard trophycard"><span class="eyebrow">Trophy unlocked!</span><div class="medal big thunk">${IMG(t.icon)}</div><h2>${esc(t.name)}</h2><span style="font-size:.9rem">${esc(t.desc)}</span><span class="muted" style="font-size:.75rem">Tap to continue</span></div>`;
+    SFX.win(); confetti(36);
+  }
+  document.body.appendChild(o);
+  let gone = false; const close = () => { if (gone) return; gone = true; o.remove(); celebBusy = false; if (!CELEB_Q.length && !PLAY && typeof render === "function") render(); setTimeout(nextCeleb, 150); };
+  o.onclick = close; setTimeout(close, it.kind === "stamp" ? 2600 : 3400);
 }
+
+// ---- trophies
+const foundCount = () => UNIQUE_WORDS.filter(w => wordState(w)?.found).length;
+const pageWords = pg => UNIQUE_WORDS.filter(w => pg.themes.includes(w.t));
+const pageDone = pg => pageWords(pg).every(w => wordState(w)?.found);
+const TROPHIES = [
+  // garden
+  { id: "sprout", group: "Garden", name: "First Sprout", icon: "seedling", desc: "Plant your first kana seed.", test: () => plantedKana().length >= 1 },
+  { id: "bed", group: "Garden", name: "Full Bed", icon: "herb", desc: "Grow a whole bed to buds.", test: () => ROWS.some(r => r.kana.every(([k]) => kanaStage(k) >= 1)) },
+  { id: "gardener", group: "Garden", name: "Hiragana Gardener", icon: "sunflower", desc: "Plant all 46 hiragana.", test: () => plantedKana().length >= 46 },
+  { id: "bloom", group: "Garden", name: "Full Bloom", icon: "blossom", desc: "Every single kana in bloom.", test: () => ALL_KANA.every(x => kanaStage(x.k) >= 2) },
+  { id: "drops", group: "Garden", name: "Rain Dance", icon: "droplet", desc: "Water 100 drops.", test: () => stat("drops") >= 100 },
+  { id: "homophone", group: "Garden", name: "Same Sound!", icon: "speaking", desc: "Pop two kanji from one reading.", test: () => stat("homophone") >= 1 },
+  // stamps
+  { id: "stamp1", group: "Stamps", name: "First Stamp", icon: "lantern", desc: "Collect your first kanji stamp.", test: () => foundCount() >= 1 },
+  { id: "stamp10", group: "Stamps", name: "Stamp Rally", icon: "station", desc: "Collect 10 stamps.", test: () => foundCount() >= 10 },
+  { id: "stamp25", group: "Stamps", name: "Seasoned Traveler", icon: "japan", desc: "Collect 25 stamps.", test: () => foundCount() >= 25 },
+  { id: "stamp50", group: "Stamps", name: "Kanji Collector", icon: "honey", desc: "Collect 50 stamps.", test: () => foundCount() >= 50 },
+  ...STAMP_PAGES.map(pg => ({ id: "page_" + pg.id, group: "Stamps", name: pg.trophy, icon: pg.icon, desc: `Complete the ${pg.name} page.`, test: () => pageDone(pg) })),
+  { id: "stampall", group: "Stamps", name: "Complete Book", icon: "crown", desc: "Every stamp in the book.", test: () => foundCount() >= UNIQUE_WORDS.length },
+  // sushi
+  { id: "plate1", group: "Sushi", name: "Irasshaimase!", icon: "sushi", desc: "Serve your first plate.", test: () => (S.served || 0) >= 1 },
+  { id: "plates100", group: "Sushi", name: "Regular Customer", icon: "chopsticks", desc: "Serve 100 plates.", test: () => (S.served || 0) >= 100 },
+  { id: "plates500", group: "Sushi", name: "Sushi Master", icon: "fishcake", desc: "Serve 500 plates.", test: () => (S.served || 0) >= 500 },
+  { id: "gold", group: "Sushi", name: "Golden Plate", icon: "coin", desc: "Serve a shiny gold plate.", test: () => stat("golds") >= 1 },
+  { id: "combo10", group: "Sushi", name: "On a Roll", icon: "fireflame", desc: "Get a 10-plate combo.", test: () => stat("maxCombo") >= 10 },
+  { id: "yen3000", group: "Sushi", name: "Big Night Out", icon: "yen", desc: "Earn ¥3,000 in one run.", test: () => (S.best.sushi || 0) >= 3000 },
+  { id: "budlv5", group: "Sushi", name: "Growing Up", icon: "babychick", desc: "Raise a bud to level 5.", test: () => BUDS.some(b => bud(b.id).lvl >= 5) },
+  { id: "family", group: "Sushi", name: "Happy Family", icon: "heartribbon", desc: "All three buds at level 3.", test: () => BUDS.every(b => bud(b.id).lvl >= 3) },
+  // puzzles
+  { id: "petal2", group: "Puzzles", name: "Petal Genius", icon: "tulip", desc: "Solve Petal Guess in 2 tries.", test: () => S.stats.petalBest != null && S.stats.petalBest <= 2 },
+  { id: "plot", group: "Puzzles", name: "Green Fingers", icon: "carrot", desc: "Finish a Garden Plot.", test: () => stat("plots") >= 1 },
+  { id: "plotfast", group: "Puzzles", name: "Speedy Sower", icon: "butterfly", desc: "Finish a Garden Plot in under 3 minutes.", test: () => S.stats.plotBest != null && S.stats.plotBest < 180000 },
+  { id: "logic", group: "Puzzles", name: "Sharp Eyes", icon: "rabbit", desc: "Garden Logic with no peeks and no slips.", test: () => stat("logicClean") >= 1 },
+  { id: "half", group: "Puzzles", name: "Kanji Intuition", icon: "puzzle", desc: "A flawless Missing Half.", test: () => stat("halfFlawless") >= 1 },
+  { id: "reads", group: "Puzzles", name: "Like WaniKani", icon: "paper", desc: "Type 50 kanji readings.", test: () => stat("reads") >= 50 },
+  { id: "line", group: "Puzzles", name: "Abacus Ace", icon: "abacus", desc: "A flawless Number Line.", test: () => stat("lineFlawless") >= 1 },
+  { id: "bouquet", group: "Puzzles", name: "Full Bouquet", icon: "basket", desc: "All six dailies in one day.", test: () => Object.values(S.daily).some(d => Object.keys(d).length >= 6) },
+  { id: "sunday", group: "Puzzles", name: "Brave Sunday", icon: "trophy", desc: "Beat a brutal Sunday daily.", test: () => stat("sunday") >= 1 },
+  { id: "dailies30", group: "Puzzles", name: "Puzzle Lover", icon: "gift", desc: "Finish 30 daily puzzles.", test: () => stat("dailies") >= 30 },
+];
+let trophyChecking = false;
+function checkTrophies() {
+  if (trophyChecking) return; trophyChecking = true;
+  try {
+    S.trophies = S.trophies || {}; let changed = false;
+    for (const t of TROPHIES) { if (S.trophies[t.id]) continue; let ok = false; try { ok = t.test(); } catch (e) { } if (ok) { S.trophies[t.id] = todayKey(); CELEB_Q.push({ kind: "trophy", t }); changed = true; } }
+    if (changed) { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { } nextCeleb(); }
+  } finally { trophyChecking = false; }
+}
+const trophyCount = () => TROPHIES.filter(t => S.trophies && S.trophies[t.id]).length;
 function bud(id) { return S.buds[id] || (S.buds[id] = { lvl: 1, xp: 0 }); }
 const plantedKana = () => ALL_KANA.filter(x => S.kana[x.k]);
 function rowUnlocked(i) { if (i === 0) return true; const prev = ROWS[i - 1]; return prev.kana.every(([k]) => kanaStage(k) >= 1); }
 function dailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
 function setDaily(game, rec) {
   const t = todayKey(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
+  addStat("dailies"); if (new Date().getDay() === 0) addStat("sunday");
   // keep only last 40 days of dailies
   const keys = Object.keys(S.daily).sort(); while (keys.length > 40) delete S.daily[keys.shift()];
   save();
@@ -180,18 +246,19 @@ function openPlay(title, mount, opts = {}) {
   document.body.appendChild(wrap); document.body.style.overflow = "hidden";
   wrap.querySelector("[data-close]").onclick = () => closePlay();
   dndReset(wrap);
-  PLAY = { wrap, destroy: null, onClose: opts.onClose };
+  PLAY = { wrap, destroy: null, onClose: opts.onClose }; holdCelebrations(true);
   PLAY.destroy = mount($("#stage", wrap), $("#hud", wrap)) || null;
 }
 function closePlay(silent) {
   if (!PLAY) return; try { PLAY.destroy && PLAY.destroy(); } catch (e) { }
-  PLAY.wrap.remove(); const oc = PLAY.onClose; PLAY = null; document.body.style.overflow = ""; dndReset(document); if (!silent) { oc && oc(); render(); }
+  PLAY.wrap.remove(); const oc = PLAY.onClose; PLAY = null; holdCelebrations(false); document.body.style.overflow = ""; dndReset(document); if (!silent) { oc && oc(); render(); }
 }
 function resultScreen(stage, { icon = "trophy", title, score, lines = [], share = "", again, againLabel = "Play again" }) {
   stage.innerHTML = `<div class="card result pop">${IMG(icon).replace('class="em"', 'class="em big"')}<h2>${esc(title)}</h2>${score ? `<div class="score">${esc(score)}</div>` : ""}${lines.map(l => `<p>${l}</p>`).join("")}
   ${share ? `<div class="sharebox" id="sharebox">${esc(share)}</div><button class="btn pink" id="sharebtn">Copy result</button>` : ""}
   <div class="row" style="justify-content:center">${again ? `<button class="btn ghost" id="again">${esc(againLabel)}</button>` : ""}<button class="btn" id="done">Back</button></div></div>`;
   share && ($("#sharebtn", stage).onclick = () => copyText(share));
+  setTimeout(() => holdCelebrations(false), 400);
   again && ($("#again", stage).onclick = again);
   $("#done", stage).onclick = () => closePlay();
 }

@@ -10,6 +10,7 @@ const TABS = [
 function render() {
   const app = $("#app");
   app.innerHTML = `<header class="top"><div class="logo">${IMGW("blossom", 34)}<div><h1>${APP_NAME}</h1><small>おいしい</small></div></div>
+    <span class="chip" title="Stamps collected">${IMG("lantern")}${foundCount()}</span><span class="chip" title="Trophies">${IMG("trophy")}${trophyCount()}</span>
     <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "漢字" : "かな"}</span></header>
     <main id="view" class="stack"></main>`;
   const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span></button>`).join("")}</nav>`;
@@ -119,27 +120,30 @@ function renderPot(el) {
     const out = () => $("#potout", el);
     if (!hits.length) { SFX.bad(); renderPot(el); out().innerHTML = `<p class="muted shake" style="text-align:center">${esc(s)} (${romaji(s)})… nothing sprouted. Try another mix!</p>`; return; }
     const newOnes = hits.filter(w => !wordState(w)?.found);
-    hits.forEach(w => touchWord(w, true, true)); save(); setTimeout(() => newOnes.forEach(stampNow), 700);
+    if (hits.length > 1) S.stats.homophone = 1; hits.forEach(w => touchWord(w, true, true)); save(); setTimeout(() => newOnes.forEach(stampNow), 700);
     SFX.pop(); if (newOnes.length) confetti(); say(s);
     renderPot(el);
     out().innerHTML = `<div class="stack" style="gap:4px">${hits.length > 1 ? `<p style="text-align:center;font-weight:800">${s} grows ${hits.length} kanji! Same sound, different meanings.</p>` : ""}<div class="row" style="justify-content:center;gap:18px">${hits.map(w => wordReveal(w, newOnes.includes(w) ? `<span class="pill pink">New kanji!</span>` : `<span class="pill">+1 drop</span>`)).join("")}</div></div>`;
   };
 }
 
-// ---------- BOOK (stamp book + settings) ----------
-const STAMP_PAGES = [
-  { name: "Nature & colors", jp: "自然", themes: ["nature", "colors"] },
-  { name: "Animals", jp: "動物", themes: ["animals"] },
-  { name: "People & body", jp: "人", themes: ["people"] },
-  { name: "Food", jp: "食べ物", themes: ["food"] },
-  { name: "Places & things", jp: "町", themes: ["things"] },
-];
+// ---------- BOOK (collection, trophies, stamp book, settings) ----------
+function completionPct() {
+  const parts = [foundCount() / UNIQUE_WORDS.length, ALL_KANA.filter(x => kanaStage(x.k) >= 2).length / 46, trophyCount() / TROPHIES.length];
+  return Math.floor(parts.reduce((a, b) => a + b, 0) / parts.length * 100);
+}
 function viewBook(v) {
   const found = UNIQUE_WORDS.filter(w => wordState(w)?.found);
   v.innerHTML = `
+  <section class="card stack"><header class="row">${IMGW("crown", 40)}<div style="flex:1;min-width:0"><h2>Collection</h2><p class="muted" style="font-size:.82rem">Everything you've grown, stamped and won.</p></div><span class="pill pink" style="font-size:.9rem">${completionPct()}%</span></header>
+    <div class="bar" style="height:12px"><i style="width:${completionPct()}%"></i></div>
+    <div class="stats"><div class="stat"><b>${found.length}/${UNIQUE_WORDS.length}</b><span>stamps</span></div><div class="stat"><b>${ALL_KANA.filter(x => kanaStage(x.k) >= 2).length}/46</b><span>kana in bloom</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div></section>
+  <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
+    ${["Garden", "Stamps", "Sushi", "Puzzles"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+  </section>
   <section class="stampbook"><header class="row"><h2>Stamp book</h2><span class="spacer"></span><span class="pill pink">${found.length}/${UNIQUE_WORDS.length} stamps</span></header>
     <p class="muted" style="font-size:.85rem">Like the 駅スタンプ (eki sutanpu, station stamps) at Japanese train stations: every new kanji you discover gets stamped here.</p>
-    ${STAMP_PAGES.map(pg => { const ws = UNIQUE_WORDS.filter(w => pg.themes.includes(w.t)); const got = ws.filter(w => wordState(w)?.found).length; return `<div class="stamppage-h"><span class="glyph">${pg.jp}</span><h3>${pg.name}</h3><span class="spacer"></span><small>${got}/${ws.length}</small></div>
+    ${STAMP_PAGES.map(pg => { const ws = UNIQUE_WORDS.filter(w => pg.themes.includes(w.t)); const got = ws.filter(w => wordState(w)?.found).length; return `<div class="stamppage-h"><span class="glyph">${pg.jp}</span><h3>${pg.name}</h3><span class="spacer"></span>${got === ws.length ? `<span class="kanseal" title="Page complete">完</span>` : `<small>${got}/${ws.length}</small>`}</div>
     <div class="stampgrid">${ws.map(w => { const f = wordState(w)?.found; return f ? `<button class="stampslot" data-word="${w.id}" aria-label="${esc(w.en)}">${stampHTML(w, 84)}<small>${esc(w.en)}</small></button>` : `<div class="stampslot"><div class="empty">?</div><small>${"●".repeat([...w.r].length)}</small></div>`; }).join("")}</div>`; }).join("")}
   </section>
   <section class="card stack"><h2>Kana chart</h2><div class="chart">${ROWS.flatMap(r => { const cells = r.kana.map(([k, ro]) => { const st = kanaStage(k); return `<div class="${st < 0 ? "none" : "s" + (st + 1)}"><div class="glyph">${k}</div><span class="ro">${ro}</span></div>`; }); while (cells.length < 5) cells.push(`<div class="none" aria-hidden="true"></div>`); return cells; }).join("")}</div>
@@ -155,6 +159,7 @@ function viewBook(v) {
     <div class="row"><button class="btn ghost small" id="reset">Start a new garden</button><span id="resetconfirm"></span></div>
     <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT).</p>
   </section>`;
+  $$("[data-trophy]").forEach(b => b.onclick = () => { const t = TROPHIES.find(x => x.id === b.dataset.trophy); const got = S.trophies && S.trophies[t.id]; toast(got ? `${t.name}: ${t.desc} (won ${got})` : `Locked: ${t.desc}`); });
   $("#nm").onchange = e => { S.name = e.target.value.trim().slice(0, 20); save(); render(); };
   $$("[data-role]").forEach(b => b.onclick = () => { S.role = b.dataset.role; save(); render(); });
   $$("[data-ro]").forEach(b => b.onclick = () => { S.romaji = b.dataset.ro === "1"; save(); render(); });

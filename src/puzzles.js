@@ -84,7 +84,7 @@ function petalGuess(mode) {
       const grid = guesses.map(g => g.res.map(r => ({ hit: "🟩", near: "🟨", kin: "🟦", miss: "⬜" }[r])).join("")).join("\n");
       const scoreTxt = win ? `${guesses.length}/${MAXG}` : `X/${MAXG}`;
       if (daily) setDaily("petal", { score: scoreTxt, line: `🌷 Petal Guess ${scoreTxt}${hint && S.role !== "kanji" ? " (hint)" : ""}` });
-      if (win) { SFX.win(); confetti(); bump(); } else SFX.bad();
+      if (win) { SFX.win(); confetti(); bump(); statMin("petalBest", guesses.length); save(); } else SFX.bad();
       setTimeout(() => {
         resultScreen(st, { icon: win ? "tulip" : "wilted", title: win ? ["Genius!", "Amazing!", "Lovely!", "Nice!", "Phew!", "Just made it!"][guesses.length - 1] : "The petals fell…", score: scoreTxt, lines: [wordReveal(ans)], share: daily ? `${APP_NAME} 🌷 Petal Guess ${todayKey()} ${scoreTxt}\n${grid}` : "", again: () => petalGuess("endless"), againLabel: "Endless round" });
         if (isNew) setTimeout(() => stampNow(ans), 500);
@@ -136,7 +136,7 @@ function gardenPlot(mode) {
     function check() {
       if (cur.some(v => v < 0) || cur.some((v, i) => v !== sol[i])) return;
       over = true; timer.stop(); const t = fmtTime(timer.ms()); SFX.win(); confetti(); bump();
-      SYM.forEach(x => [...x.s].forEach(c => waterKana(c))); save();
+      SYM.forEach(x => [...x.s].forEach(c => waterKana(c))); addStat("plots"); statMin("plotBest", timer.ms()); save();
       if (daily) setDaily("plot", { score: t, line: `🥕 Garden Plot ${t}` });
       setTimeout(() => resultScreen(st, { icon: "carrot", title: "Every bed is planted!", score: t, lines: [`<span class="glyph" style="font-size:1.3rem">${SYM.map(x => esc(x.s)).join(" ")}</span>`], share: daily ? `${APP_NAME} 🥕 Garden Plot ${todayKey()}\n${t} ${"🥕".repeat(3)}` : "", again: () => gardenPlot("endless"), againLabel: "Endless puzzle" }), 600);
     }
@@ -217,7 +217,7 @@ function gardenLogic(mode) {
       const wrong = at.filter((it, c) => pos[it] !== c).length;
       if (wrong) { mistakes++; SFX.bad(); timer.redraw(); toast(`${wrong} ${wrong === 1 ? "friend is" : "friends are"} in the wrong spot`); $(".lg-grid", st).classList.add("shake"); setTimeout(() => $(".lg-grid", st)?.classList.remove("shake"), 400); return; }
       over = true; timer.stop(); SFX.win(); confetti(); bump();
-      items.forEach(it => { const w = UNIQUE_WORDS.find(x => x.k === it.k); w && touchWord(w, true, false); }); save();
+      items.forEach(it => { const w = UNIQUE_WORDS.find(x => x.k === it.k); w && touchWord(w, true, false); }); if (!mistakes && !peeks) addStat("logicClean"); save();
       const t = fmtTime(timer.ms()); const sc = `${t}${mistakes ? ` · ${mistakes} slip${mistakes > 1 ? "s" : ""}` : ""}`;
       if (daily) setDaily("logic", { score: t, line: `🐰 Garden Logic ${sc}${peeks ? ` · ${peeks} peek${peeks > 1 ? "s" : ""}` : ""}` });
       $$(".lg-cell", st).forEach(c => c.classList.add("right"));
@@ -266,7 +266,7 @@ function missingHalf(mode) {
       draw();
     }
     function finish() {
-      const t = fmtTime(now() - t0); SFX.win(); confetti(); bump();
+      const t = fmtTime(now() - t0); SFX.win(); confetti(); bump(); addStat("reads", reads); if (!slips) addStat("halfFlawless"); save();
       const sc = `${N - Math.min(N, slips)}/${N}`; const line = `🧩 Missing Half ${slips ? slips + " slip" + (slips > 1 ? "s" : "") : "flawless"} · ${reads} reading${reads === 1 ? "" : "s"} typed`;
       if (daily) setDaily("half", { score: sc, line });
       resultScreen(st, { icon: "puzzle", title: slips ? "Kanji built!" : "Flawless intuition!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [`<span class="glyph" style="font-size:1.6rem">${rounds.map(x => x.p.k).join(" ")}</span>`, `${reads}/${N} readings typed · ${t}`], share: daily ? `${APP_NAME} 🧩 Missing Half ${todayKey()}\n${rounds.map(() => "🧩").join("")}\n${line.slice(3)}` : "", again: () => missingHalf("endless"), againLabel: "Endless set" });
@@ -327,7 +327,7 @@ function numberLine(mode) {
       draw();
     }
     function finish() {
-      const t = fmtTime(now() - t0); SFX.win(); confetti(); bump();
+      const t = fmtTime(now() - t0); SFX.win(); confetti(); bump(); if (!slips) addStat("lineFlawless"); save();
       const line = `🧮 Number Line ${slips ? slips + " slip" + (slips > 1 ? "s" : "") : "flawless"} · ${t}`;
       if (daily) setDaily("line", { score: slips, line });
       resultScreen(st, { icon: "abacus", title: slips ? "All lined up!" : "Perfect counting!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [t, `<span class="muted" style="font-size:.85rem">Watch the sound changes: 300 is さんびゃく (sanbyaku) and 3,000 is さんぜん (sanzen).</span>`], share: daily ? `${APP_NAME} 🧮 Number Line ${todayKey()}\n${line.slice(3)}` : "", again: () => numberLine("endless"), againLabel: "Endless set" });

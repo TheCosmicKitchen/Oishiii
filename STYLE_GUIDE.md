@@ -12,6 +12,7 @@
 - **Color tokens (light):** bg `#F1F6EA`, surface `#FFFFFF`, surface-2 `#E5EFDC`, ink `#22362A`, leaf `#4E9F69`, sakura `#EE7299`, soil `#9C6B4A`, stake `#E9CFA3`, sun `#F5C24F`, sky `#D3ECF6`. Puzzle colors: good `#3E9A5E`, near `#E6AE2E`, kin (same row or vowel) `#4F9FD0`, bad `#D9534F`. Dark mode is a night garden (`#12201A`).
 - **Station stamps:** circular ink stamps on cream paper (`#FBF6EA`), ink color by theme (nature red, animals green, people indigo, food orange, things purple), slightly rotated, reading arched on top and meaning arched on the bottom. A "thunk" animation plays for every new kanji.
 - **Sushi plates:** porcelain `#FBF7EE`, rim color sets the price (blue ¥100, pink ¥150, green ¥200, gold ¥500).
+- **Trophies:** gold medallions with a Fluent Emoji inside; locked ones are grey silhouettes with a hint. A completed stamp page gets a red 完 (kan, complete) seal. Progress is about collecting and completion — no streaks.
 - Rounded pill buttons with a 3px bottom shadow; bottom tab bar: Garden / Sushi / Puzzles / Stamps.
 
 ## Roadmap

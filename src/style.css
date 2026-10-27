@@ -363,3 +363,16 @@ label.lab{font-weight:800;font-size:.85rem}
 .stamppage-h{display:flex;align-items:center;gap:8px;margin:14px 0 8px;padding-bottom:4px;border-bottom:2px solid #3A2E22}
 .stamppage-h .glyph{font-size:1.3rem}
 .mh-part .ro{font-size:.8rem;font-family:var(--f-body);font-weight:700}
+/* trophies */
+.medal{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FFF4CC,#F2C455 60%,#D49A22);box-shadow:0 3px 0 #B9821A,inset 0 -3px 6px rgba(150,90,0,.25);position:relative}
+.medal .em{width:62%;height:62%}
+.medal.big{width:120px;height:120px}
+.medal.thunk{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+.cabinet{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:10px 6px}
+.trophy{background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.trophy small{font-size:.66rem;font-weight:800;text-align:center;line-height:1.15;overflow-wrap:anywhere}
+.trophy:not(.got) .medal{background:var(--surface-2);box-shadow:inset 0 0 0 2px var(--line)}
+.trophy:not(.got) .medal .em{filter:grayscale(1) brightness(.3);opacity:.35}
+.trophy:not(.got) small{color:var(--ink-soft)}
+.trophycard h2{color:#3A2E22}
+.kanseal{font-family:var(--f-glyph);font-weight:600;color:#FBF6EA;background:#C8402E;border-radius:6px;width:28px;height:28px;display:grid;place-items:center;transform:rotate(-8deg);font-size:1.1rem;box-shadow:0 0 0 2px #FBF6EA,0 0 0 3.5px #C8402E}

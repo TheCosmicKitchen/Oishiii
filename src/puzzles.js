@@ -18,6 +18,7 @@ const PUZZLES = [
   { id: "sushi", name: "Chef's Special", jp: "すし", icon: "sushi", desc: "Today's 90-second sushi rush. Compare yen with your partner.", play: m => startSushi(m === "daily" || /^[LD]\d/.test(m) ? m : "practice") },
 ];
 
+function playPz(id, mode) { if (!gateOpen(id)) { toast(GATES[id].need + " to unlock " + GATES[id].name); return; } if (id === "sushi") return startSushi(mode === "daily" || /^[LD]\d/.test(mode) ? mode : "practice"); PUZZLES.find(p => p.id === id).play(mode); }
 function viewPuzzles(v) {
   const today = S.daily[todayKey()] || {}; const doneN = PUZZLES.filter(p => today[p.id]).length;
   const d = dayDifficulty(); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
@@ -28,11 +29,12 @@ function viewPuzzles(v) {
   <div class="bouquet">${PUZZLES.map(p => { const r = today[p.id]; return `<div class="pz ${r ? "done" : ""}">
     <div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : `<span class="pill">today</span>`}</div>
     <h3>${p.name}</h3><p>${p.desc}</p>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : ""}
-    <div class="row"><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button><button class="btn pink small" data-levels="${p.id}">${IMGW("star", 16)}${lvTotal(p.id)}/${LEVELS_N * 3}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
+    ${gateOpen(p.id) ? "" : lockCard(p.id)}
+    <div class="row" ${gateOpen(p.id) ? "" : 'style="opacity:.45;pointer-events:none"'}><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button><button class="btn pink small" data-levels="${p.id}">${IMGW("star", 16)}${lvTotal(p.id)}/${LEVELS_N * 3}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
   <section class="card stack"><header class="row">${IMGW("calendar", 40)}<div style="flex:1;min-width:0"><h2>Puzzle archive</h2><p class="muted" style="font-size:.82rem">Every past day's puzzles stay playable forever. No catching up required: fill them in whenever you like.</p></div><span class="pill pink">${archiveDone()}/${archiveDates().length * 6}</span></header>
     <div class="archive">${archiveDates().map(k => { const n = Object.keys(S.daily[k] || {}).length; const dt = dateFromKey(k); return `<button class="aday ${n >= 6 ? "full" : ""}" data-day="${k}"><span class="ro">${DAYNAME[dt.getDay()].slice(0, 3)}</span><b>${dt.getMonth() + 1}/${dt.getDate()}</b><span class="adots">${n >= 6 ? IMGW("basket", 18) : `${n}/6`}</span></button>`; }).join("")}</div></section>
   <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles and every level are the same for both of you, so you can compare stars. Endless mode gets harder each time you clear one.</p>`;
-  $$("[data-pz]", v).forEach(b => b.onclick = () => PUZZLES.find(p => p.id === b.dataset.pz).play(b.dataset.mode));
+  $$("[data-pz]", v).forEach(b => b.onclick = () => playPz(b.dataset.pz, b.dataset.mode));
   $$("[data-levels]", v).forEach(b => b.onclick = () => openLevels(b.dataset.levels));
   $$("[data-day]", v).forEach(b => b.onclick = () => openArchiveDay(b.dataset.day));
   const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${playDate()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n"));
@@ -41,7 +43,7 @@ function viewPuzzles(v) {
 // ---------- 1. PETAL GUESS ----------
 function petalGuess(mode) {
   const { daily, rng, bump, level } = pzSetup("petal", mode);
-  const pool = UNIQUE_WORDS.filter(w => isBasic(w.r) && [...w.r].length >= 2 && [...w.r].length <= 4);
+  const pool = petalPool().sort((a, b) => a.id - b.id); if (!pool.length) { toast(GATES.petal.need); return; }
   const ans = rng.pick(pool); const A = [...ans.r]; const L = A.length; const MAXG = 6;
   openPlay("Petal Guess", (st, hud) => {
     const guesses = []; let hint = S.role === "kanji", over = false; const keyState = {};
@@ -120,10 +122,10 @@ function makeSudoku(rng, d) {
 function gardenPlot(mode) {
   const { daily, rng, d, bump, level } = pzSetup("plot", mode);
   const { sol, g } = makeSudoku(rng, d);
-  const kanjiMode = S.role === "kanji";
+  const kanjiMode = S.role === "kanji" && [1, 2, 3, 4, 5, 6].every(n => stampedK(toKanji(n)));
   let SYM;
   if (kanjiMode) SYM = [1, 2, 3, 4, 5, 6].map(n => ({ s: toKanji(n), alt: toYomi(n), ro: romaji(toYomi(n)) }));
-  else { const src = plantedKana().filter(x => x.k !== "を"); const base = src.length >= 6 ? src : ALL_KANA.filter(x => x.k !== "を"); const row = rng.pick(ROWS.filter(r => r.kana.length === 5)); const pick = (daily ? row.kana.map(([k, ro]) => ({ k, ro })).concat([{ k: "ん", ro: "n" }]) : rng.shuffle(base).slice(0, 6)); SYM = pick.map(x => ({ s: x.k, alt: x.ro, ro: x.ro })); }
+  else { const src = plantedKana().filter(x => x.k !== "を").sort((a, b) => ALL_KANA.indexOf(a) - ALL_KANA.indexOf(b)); SYM = rng.shuffle(src).slice(0, 6).map(x => ({ s: x.k, alt: x.ro, ro: x.ro })); }
   const asAlt = g.map(v => v >= 0 && rng.f() < .35);
   openPlay("Garden Plot", (st, hud) => {
     const cur = g.slice(); let sel = cur.findIndex(v => v < 0); let over = false;
@@ -176,8 +178,9 @@ function logicClues(items, pos) {
   return C;
 }
 function makeLogic(rng, d) {
-  const anim = rng.shuffle(LOGIC_ITEMS.filter(x => ANIMATE.has(x.k))), inan = rng.shuffle(LOGIC_ITEMS.filter(x => !ANIMATE.has(x.k)));
-  const items = rng.shuffle([...anim.slice(0, 3), ...inan.slice(0, 3)]);
+  const lp = logicPool(); const anim = rng.shuffle(lp.filter(x => ANIMATE.has(x.k))), inan = rng.shuffle(lp.filter(x => !ANIMATE.has(x.k)));
+  let items = [...anim.slice(0, 3), ...inan.slice(0, 3)]; if (items.length < 6) items = [...items, ...rng.shuffle(lp.filter(x => !items.includes(x)))].slice(0, 6);
+  items = rng.shuffle(items);
   const pos = rng.shuffle([0, 1, 2, 3, 4, 5]);
   const pool = logicClues(items, pos);
   const pref = { col: 1 - d, row: 1 - d, above: .6, below: .6, left: .5 + d / 2, right: .5 + d / 2, next: .3 + d, notnext: d * 1.2 };
@@ -288,12 +291,18 @@ function numberLine(mode) {
   const face = (n, yen) => kanjiMode ? toKanji(n) + (yen ? "円" : "") : toYomi(n) + (yen ? "えん" : "");
   const roOf = (n, yen) => romaji(toYomi(n) + (yen ? "えん" : ""));
   const range = d < .3 ? [1, 10] : d < .6 ? [1, 99] : d < .85 ? [10, 999] : [100, 9999];
-  const pickNums = (k) => { const s = new Set(); const [lo, hi] = range; while (s.size < k) { let n = lo + rng.int(hi - lo + 1); if (s.size && rng.f() < .4 && hi > 50) { const base = rng.pick([...s]); n = Math.max(lo, Math.min(hi, base + rng.pick([-11, -10, -1, 1, 9, 10, 100, -100]))); } s.add(n); } return [...s]; };
-  const types = ["order", "gap", "price", "order", "price", "gap"];
+  const okN = n => [...toKanji(n)].every(ch => stampedK(ch));
+  const cap = stampedK("千") ? 9999 : stampedK("百") ? 999 : stampedK("十") ? 99 : 9;
+  const span = (lo, hi) => { const o = []; for (let n = Math.max(1, lo); n <= Math.min(hi, cap); n++) if (okN(n)) o.push(n); return o; };
+  let allowed = span(range[0], range[1]); if (allowed.length < 6) allowed = span(1, cap);
+  const pickNums = k => rng.shuffle(allowed).slice(0, Math.min(k, allowed.length));
+  const priceOK = stampedK("円") && stampedK("十") && stampedK("百");
+  const prices = span(10, 9999).filter(n => n % 10 === 0 && n >= 50);
+  const types = ["order", "gap", "price", "order", "price", "gap"].map(t => t === "price" && (!priceOK || prices.length < 4) ? "order" : t === "gap" && allowed.length < 5 ? "order" : t);
   const rounds = types.map(t => {
     if (t === "order") { const nums = pickNums(d > .5 ? 5 : 4); return { t, items: nums.map(n => ({ n, f: face(n), ro: roOf(n) })) }; }
-    if (t === "gap") { const [lo, hi] = range; let a = lo + rng.int(Math.max(1, hi - lo - 4)); let b = a + 2 + rng.int(Math.max(2, Math.min(40, Math.floor((hi - a) / 2)))); b = Math.min(b, hi + 50); const mid = a + 1 + rng.int(b - a - 1); const out1 = Math.max(0, a - 1 - rng.int(5)), out2 = b + 1 + rng.int(9); const cand = rng.shuffle([mid, out1 || b + 11, out2]); return { t, a, b, mid, items: cand.map(n => ({ n, f: face(n), ro: roOf(n) })) }; }
-    const goods = rng.shuffle(KONBINI).slice(0, 4); const prices = new Set(); while (prices.size < 4) prices.add((d < .4 ? 1 + rng.int(20) : 5 + rng.int(240)) * 10); const ps = [...prices];
+    if (t === "gap") { const L = [...allowed].sort((a, b) => a - b); const j = 1 + rng.int(L.length - 2); let i = rng.int(j), k = j + 1 + rng.int(L.length - j - 1); let outs = L.filter(x => x < L[i] || x > L[k]); if (outs.length < 2) { i = j - 1; k = j + 1; outs = L.filter(x => x < L[i] || x > L[k]); } const cand = rng.shuffle([L[j], ...rng.shuffle(outs).slice(0, 2)]); return { t, a: L[i], b: L[k], mid: L[j], items: cand.map(n => ({ n, f: face(n), ro: roOf(n) })) }; }
+    const goods = rng.shuffle(KONBINI).slice(0, 4); const ps = rng.shuffle(prices).slice(0, 4);
     return { t, items: goods.map((g, i) => ({ n: ps[i], f: face(ps[i], true), ro: roOf(ps[i], true), g })) };
   });
   openPlay("Number Line", (st, hud) => {
@@ -360,6 +369,7 @@ function rallyStampHTML(id, n, stars, size = 76, extra = "") {
   <img class="em rally-e" src="${EMO[g.icon] || ""}" alt=""><span class="rally-n">Lv ${n}</span></div>`;
 }
 function openLevels(id) {
+  if (!gateOpen(id)) { toast(GATES[id].need + " to unlock " + GATES[id].name); return; }
   const g = rallyGame(id); const P = PUZZLES.find(p => p.id === id);
   openPlay(`${g.name} levels`, (st, hud) => {
     hud.innerHTML = `<span class="chip">${IMG("star")}${lvTotal(id)}/${LEVELS_N * 3}</span>`;
@@ -368,7 +378,7 @@ function openLevels(id) {
       <div class="ladder">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(id, n), open = lvUnlocked(id, n), rec = lvRec(id)[n];
         return `<button class="lvnode ${s ? "cleared" : open ? "open" : "locked"}" ${open ? `data-lv="${n}"` : "disabled"} aria-label="Level ${n}${open ? "" : " locked"}">${s ? rallyStampHTML(id, n, s, 70) : `<span class="lvnum">${open ? n : IMGW("lock", 26)}</span>`}<span class="lvstars">${open ? starRow(s, 14) : ""}</span>${rec && rec.best ? `<small>${esc(rec.best)}</small>` : ""}</button>`; }).join("")}</div>
       <p class="muted" style="font-size:.78rem;text-align:center">${id === "sushi" ? "Earn the target yen in 90 seconds: ★ at the target, ★★ at 1.5×, ★★★ at 2×. The target and belt speed rise each level." : "Levels get harder as you go. Replay any level to raise your stars."}</p>`;
-    $$("[data-lv]", st).forEach(b => b.onclick = () => (id === "sushi" ? startSushi("L" + b.dataset.lv) : P.play("L" + b.dataset.lv)));
+    $$("[data-lv]", st).forEach(b => b.onclick = () => playPz(id, "L" + b.dataset.lv));
   });
 }
 function levelResult(st, id, n, stars, label) {
@@ -385,7 +395,7 @@ function levelResult(st, id, n, stars, label) {
     ${stars < 3 ? `<p class="muted" style="font-size:.8rem">${starHint(id, n)}</p>` : `<p class="muted" style="font-size:.8rem">Perfect! Dare your partner to match it.</p>`}
     <div class="sharebox">${esc(share)}</div><button class="btn pink" id="sharebtn">Copy result</button>
     <div class="row" style="justify-content:center"><button class="btn ghost" id="retry">Retry</button>${next ? `<button class="btn" id="nextlv">Level ${n + 1}</button>` : ""}<button class="btn ghost" id="map">Level map</button></div></div>`;
-  const play = m => id === "sushi" ? startSushi(m) : PUZZLES.find(p => p.id === id).play(m);
+  const play = m => playPz(id, m);
   $("#sharebtn", st).onclick = () => copyText(share);
   $("#retry", st).onclick = () => play("L" + n);
   if (next) $("#nextlv", st).onclick = () => play("L" + (n + 1));
@@ -408,7 +418,7 @@ function openArchiveDay(k) {
     const recs = S.daily[k] || {};
     hud.innerHTML = `<span class="chip">${IMG("basket")}${Object.keys(recs).length}/6</span>`;
     st.innerHTML = `<p class="muted" style="text-align:center;font-size:.85rem">The exact puzzles from ${k}. ${DAYNAME[dt.getDay()]}s are <b>${diffName}</b>.</p>
-      <div class="bouquet">${PUZZLES.map(p => { const r = recs[p.id]; return `<div class="pz ${r ? "done" : ""}"><div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : ""}</div><h3>${p.name}</h3>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : `<p></p>`}<div class="row"><button class="btn small ${r ? "ghost" : ""}" data-arc="${p.id}">${r ? "Replay" : "Play"}</button></div></div>`; }).join("")}</div>`;
-    $$("[data-arc]", st).forEach(b => b.onclick = () => { const pz = PUZZLES.find(p => p.id === b.dataset.arc); pz.play(recs[pz.id] ? "practice" : "D" + k); });
+      <div class="bouquet">${PUZZLES.map(p => { const r = recs[p.id]; return `<div class="pz ${r ? "done" : ""}"><div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : ""}</div><h3>${p.name}</h3>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : `<p></p>`}${gateOpen(p.id) ? "" : lockCard(p.id)}<div class="row" ${gateOpen(p.id) ? "" : 'style="opacity:.45;pointer-events:none"'}><button class="btn small ${r ? "ghost" : ""}" data-arc="${p.id}">${r ? "Replay" : "Play"}</button></div></div>`; }).join("")}</div>`;
+    $$("[data-arc]", st).forEach(b => b.onclick = () => { const id = b.dataset.arc; playPz(id, recs[id] ? "practice" : "D" + k); });
   });
 }

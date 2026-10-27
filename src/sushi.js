@@ -8,12 +8,13 @@ function viewSushi(v) {
   const rec = dailyRec("sushi");
   v.innerHTML = `
   <section class="card stack" style="background:linear-gradient(180deg,var(--sakura-soft),var(--surface))">
-    <div class="row">${IMGW("sushi", 64)}<div style="flex:1;min-width:0"><h2>Sushi Belt</h2><p class="muted" style="font-size:.85rem">いらっしゃいませ！ (irasshaimase, "welcome!") Your buds are hungry. Feed each one the plate it's thinking of before it gets grumpy.</p></div></div>
+    <div class="row">${IMGW("sushi", 64)}<div style="flex:1;min-width:0"><h2>Sushi Belt</h2><p class="muted" style="font-size:.85rem">いらっしゃいませ！ (irasshaimase, "welcome!") Your buds are hungry. Feed each one the plate it's thinking of before it gets grumpy. They only order kanji you've stamped.</p></div></div>
     <div class="counter" style="pointer-events:none">${BUDS.map(b => `<div class="seat"><span class="lv">Lv ${bud(b.id).lvl}</span>${IMG(budSprite(b)).replace('class="em"', 'class="em budimg"')}<span class="name">${b.name}</span><span class="ro">loves ${b.likes}</span></div>`).join("")}</div>
-    <div class="row"><button class="btn pink" id="endless">${IMG("chopsticks")}Open the counter</button><button class="btn ghost" id="sushilv">${IMG("star")}Levels ${lvTotal("sushi")}/${LEVELS_N * 3}</button><span class="muted" style="font-size:.8rem">Best: ¥${(S.best.sushi || 0).toLocaleString()}</span></div>
+    ${gateOpen("sushi") ? "" : lockCard("sushi")}
+    <div class="row"><button class="btn pink" id="endless" ${gateOpen("sushi") ? "" : "disabled"}>${IMG("chopsticks")}Open the counter</button><button class="btn ghost" id="sushilv" ${gateOpen("sushi") ? "" : "disabled"}>${IMG("star")}Levels ${lvTotal("sushi")}/${LEVELS_N * 3}</button><span class="muted" style="font-size:.8rem">Best: ¥${(S.best.sushi || 0).toLocaleString()}</span></div>
   </section>
   <section class="card stack"><div class="row">${IMGW("calendar", 40)}<div style="flex:1;min-width:0"><h3>Chef's Special</h3><p class="muted" style="font-size:.82rem">Today's 90-second run. Same plates for both of you, so compare your yen.</p></div>${rec ? `<span class="pill done">¥${rec.score.toLocaleString()}</span>` : ""}</div>
-    <div class="row"><button class="btn" id="daily">${rec ? "Play again (practice)" : "Play today's special"}</button></div></section>
+    <div class="row"><button class="btn" id="daily" ${gateOpen("sushi") ? "" : "disabled"}>${rec ? "Play again (practice)" : "Play today's special"}</button></div></section>
   <section class="card stack"><h3>How it works</h3>
     <p style="font-size:.88rem">${S.role === "kanji" ? "You're the <b>Kanji reader</b>: buds think in pictures and English, plates show bare kanji. Look-alike decoys will try to trick you (牛 vs 午!)." : "You're the <b>Kana speller</b>: buds think in pictures and romaji, plates show kana. Watch for look-alikes like ぬ and め."} Switch roles in the Book tab.</p>
     <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Serving several right in a row builds a combo that multiplies your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
@@ -23,6 +24,7 @@ function viewSushi(v) {
 }
 
 function startSushi(mode) {
+  if (!gateOpen("sushi")) { toast("Stamp 4 kanji in the Kanji Pot to open the counter"); return; }
   const level = /^L\d+$/.test(mode) ? +mode.slice(1) : null;
   const dateMode = mode === "daily" ? todayKey() : /^D\d{4}-/.test(mode) ? mode.slice(1) : null; PLAY_DATE = dateMode;
   openPlay(mode === "endless" ? "Sushi Belt" : level ? `Sushi Lv ${level}` : "Chef's Special", (st, hud) => {
@@ -32,10 +34,12 @@ function startSushi(mode) {
     const belt = $("#belt", st);
     let yen = 0, combo = 0, bestCombo = 0, hearts = 3, served = 0, elapsed = 0, last = 0, raf = 0, over = false, plateId = 0, paused = false;
     const missed = new Map(); const newStamps = []; const plates = []; const seats = BUDS.map(() => ({ order: null, wait: 0, msg: "", msgT: 0 }));
-    const poolFor = b => UNIQUE_WORDS.filter(w => BUD_THEMES[b.id].includes(w.t) && ([...w.k].length === 1 || bud(b.id).lvl >= 3) && (S.role === "kanji" || w.r.length <= 5));
+    const stamped = stampedWords();
+    const poolFor = b => { const p = stamped.filter(w => BUD_THEMES[b.id].includes(w.t) && ([...w.k].length === 1 || bud(b.id).lvl >= 3)); return p.length >= 2 ? p : stamped; };
+    const _oldPoolFor = b => UNIQUE_WORDS.filter(w => BUD_THEMES[b.id].includes(w.t) && ([...w.k].length === 1 || bud(b.id).lvl >= 3) && (S.role === "kanji" || w.r.length <= 5));
     function newOrder(i) {
       const b = BUDS[i]; const active = new Set(seats.map(s => s.order && faceOf(s.order.w)));
-      const pool = poolFor(b).filter(w => !active.has(faceOf(w)));
+      let pool = poolFor(b).filter(w => !active.has(faceOf(w))); if (!pool.length) pool = stamped.filter(w => !active.has(faceOf(w))); if (!pool.length) pool = stamped;
       const wt = w => { const s = wordState(w); return 1 + Math.max(0, 6 - (s ? s.pts : 0)) + (s ? s.miss * 2 : 0); };
       let tot = pool.reduce((a, w) => a + wt(w), 0), r = rng.f() * tot, pick = pool[0];
       for (const w of pool) { r -= wt(w); if (r <= 0) { pick = w; break; } }
@@ -58,9 +62,9 @@ function startSushi(mode) {
       if (open.length && rng.f() < .6) { const sorted = [...open].sort((a, b) => onBelt(faceOf(a)) - onBelt(faceOf(b))); w = sorted[0]; face = faceOf(w); }
       else if (open.length && rng.f() < .65) { // decoy based on an open order
         const base = rng.pick(open);
-        if (S.role === "kanji") { const la = LOOKALIKE_KANJI[base.k]; face = la ? rng.pick(la) : rng.pick(UNIQUE_WORDS).k; }
-        else { const ch = [...base.r]; const idx = ch.map((c, j) => LOOKALIKE_KANA[c] ? j : -1).filter(j => j >= 0); if (idx.length) { const j = rng.pick(idx); ch[j] = LOOKALIKE_KANA[ch[j]]; face = ch.join(""); } else face = rng.pick(UNIQUE_WORDS).r; }
-      } else { w = rng.pick(UNIQUE_WORDS.filter(x => [...x.k].length === 1)); face = faceOf(w); }
+        if (S.role === "kanji") { const la = LOOKALIKE_KANJI[base.k]; face = la ? rng.pick(la) : rng.pick(stamped).k; }
+        else { const ch = [...base.r]; const idx = ch.map((c, j) => LOOKALIKE_KANA[c] ? j : -1).filter(j => j >= 0); if (idx.length) { const j = rng.pick(idx); ch[j] = LOOKALIKE_KANA[ch[j]]; face = ch.join(""); } else face = rng.pick(stamped).r; }
+      } else { w = rng.pick(stamped); face = faceOf(w); }
       let r = rng.f(), tier = TIERS[0]; for (const t of TIERS) { r -= t.p; if (r <= 0) { tier = t; break; } }
       const el = document.createElement("button"); const id = "p" + (plateId++);
       const len = [...face].length;

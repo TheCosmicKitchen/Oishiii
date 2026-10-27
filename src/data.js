@@ -88,11 +88,16 @@ const WORDS = [
   ["色","いろ","iro","color","palette","colors"],
   ["上","うえ","ue","up, above","up","colors"], ["下","した","shita","down, below","down","colors"],
   ["中","なか","naka","inside, middle","target","colors"], ["外","そと","soto","outside","door","colors"],
+  ["左","ひだり","hidari","left","left","colors"], ["右","みぎ","migi","right","right","colors"],
+  // numbers
+  ["一","いち","ichi","one","k1","numbers"], ["二","に","ni","two","k2","numbers"], ["三","さん","san","three","k3","numbers"],
+  ["四","よん","yon","four","k4","numbers"], ["五","ご","go","five","k5","numbers"], ["六","ろく","roku","six","k6","numbers"],
+  ["七","なな","nana","seven","k7","numbers"], ["八","はち","hachi","eight","k8","numbers"], ["九","きゅう","kyuu","nine","k9","numbers"],
+  ["十","じゅう","juu","ten","k10","numbers"], ["百","ひゃく","hyaku","hundred","hundred","numbers"], ["千","せん","sen","thousand","moneybag","numbers"],
+  ["万","まん","man","ten thousand","moneywings","numbers"],
 ].map(([k,r,ro,en,e,t],i)=>({id:i,k,r,ro,en,e,t}));
 
-// dedupe by kanji+reading (魚 appears in two themes; keep first for collection)
-const WORD_KEYS = new Set();
-const UNIQUE_WORDS = WORDS.filter(w=>{const key=w.k+w.r; if(WORD_KEYS.has(key)) return false; WORD_KEYS.add(key); return true;});
+
 
 // Look-alike kanji decoys for the Sushi Belt and Sign puzzles
 const LOOKALIKE_KANJI = {
@@ -206,6 +211,8 @@ const STAMP_PAGES = [
   { id: "people", name: "People & body", jp: "人", themes: ["people"], trophy: "People Person", icon: "smile" },
   { id: "food", name: "Food", jp: "食べ物", themes: ["food"], trophy: "Foodie", icon: "dango" },
   { id: "things", name: "Places & things", jp: "町", themes: ["things"], trophy: "Town Explorer", icon: "houses" },
+  { id: "numbers", name: "Numbers", jp: "数", themes: ["numbers"], trophy: "Counting Sheep", icon: "abacus" },
+  { id: "built", name: "Built kanji", jp: "組", themes: ["built"], trophy: "Master Builder", icon: "bricks" },
 ];
 
 // Games with 10-level ladders and rally stamp cards
@@ -218,3 +225,20 @@ const RALLY_GAMES = [
   { id: "sushi", name: "Sushi Belt", icon: "sushi" },
 ];
 const LEVELS_N = 10;
+
+// Kanji built in Missing Half join the stamp book on their own page
+for (const p of PARTS) if (!WORDS.some(w => w.k === p.k)) WORDS.push({ id: WORDS.length, k: p.k, r: p.r, ro: p.ro, en: p.en, e: p.e, t: "built" });
+// dedupe by kanji+reading (魚 appears in two themes; keep first for collection)
+const WORD_KEYS = new Set();
+const UNIQUE_WORDS = WORDS.filter(w => { const key = w.k + w.r; if (WORD_KEYS.has(key)) return false; WORD_KEYS.add(key); return true; });
+
+// Extras bed: marks and small kana that unlock words with sounds like が, ぎゅ, っ
+const EXTRAS = [
+  { k: "゛", name: "dakuten", ro: "゛", tip: "Two little marks make a sound buzzy: か ka → が ga, さ sa → ざ za, た ta → だ da, は ha → ば ba.", ex: ["が", "ga"], e: "sparkles" },
+  { k: "ゃ", name: "small ya", ro: "ya", tip: "A small ゃ squeezes into the kana before it: き ki + ゃ = きゃ kya.", ex: ["きゃ", "kya"], e: "teacup" },
+  { k: "ゅ", name: "small yu", ro: "yu", tip: "A small ゅ squeezes in too: き ki + ゅ = きゅ kyu, as in ぎゅうにく gyuuniku.", ex: ["きゅ", "kyu"], e: "meat" },
+  { k: "ょ", name: "small yo", ro: "yo", tip: "And small ょ: し shi + ょ = しょ sho.", ex: ["しょ", "sho"], e: "books" },
+  { k: "っ", name: "small tsu", ro: "(pause)", tip: "A small っ is a tiny pause that doubles the next sound: きって kitte (a postage stamp!).", ex: ["きって", "kitte"], e: "envelope" },
+];
+const DAKU = { "か": "が", "き": "ぎ", "く": "ぐ", "け": "げ", "こ": "ご", "さ": "ざ", "し": "じ", "す": "ず", "せ": "ぜ", "そ": "ぞ", "た": "だ", "ち": "ぢ", "つ": "づ", "て": "で", "と": "ど", "は": "ば", "ひ": "び", "ふ": "ぶ", "へ": "べ", "ほ": "ぼ" };
+const UNDAKU = Object.fromEntries(Object.entries(DAKU).map(([a, b]) => [b, a]));

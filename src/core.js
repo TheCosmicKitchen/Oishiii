@@ -122,13 +122,14 @@ const TROPHIES = [
   { id: "bed", group: "Garden", name: "Full Bed", icon: "herb", desc: "Grow a whole bed to buds.", test: () => ROWS.some(r => r.kana.every(([k]) => kanaStage(k) >= 1)) },
   { id: "gardener", group: "Garden", name: "Hiragana Gardener", icon: "sunflower", desc: "Plant all 46 hiragana.", test: () => plantedKana().length >= 46 },
   { id: "bloom", group: "Garden", name: "Full Bloom", icon: "blossom", desc: "Every single kana in bloom.", test: () => ALL_KANA.every(x => kanaStage(x.k) >= 2) },
+  { id: "extras", group: "Garden", name: "Buzzy Sounds", icon: "sparkles", desc: "Plant every mark in the extras bed.", test: () => EXTRAS.every(x => S.kana[x.k]) },
   { id: "drops", group: "Garden", name: "Rain Dance", icon: "droplet", desc: "Water 100 drops.", test: () => stat("drops") >= 100 },
   { id: "homophone", group: "Garden", name: "Same Sound!", icon: "speaking", desc: "Pop two kanji from one reading.", test: () => stat("homophone") >= 1 },
   // stamps
   { id: "stamp1", group: "Stamps", name: "First Stamp", icon: "lantern", desc: "Collect your first kanji stamp.", test: () => foundCount() >= 1 },
   { id: "stamp10", group: "Stamps", name: "Stamp Rally", icon: "station", desc: "Collect 10 stamps.", test: () => foundCount() >= 10 },
   { id: "stamp25", group: "Stamps", name: "Seasoned Traveler", icon: "japan", desc: "Collect 25 stamps.", test: () => foundCount() >= 25 },
-  { id: "stamp50", group: "Stamps", name: "Kanji Collector", icon: "honey", desc: "Collect 50 stamps.", test: () => foundCount() >= 50 },
+  { id: "stamp50", group: "Stamps", name: "Kanji Collector", icon: "palette", desc: "Collect 50 stamps.", test: () => foundCount() >= 50 },
   ...STAMP_PAGES.map(pg => ({ id: "page_" + pg.id, group: "Stamps", name: pg.trophy, icon: pg.icon, desc: `Complete the ${pg.name} page.`, test: () => pageDone(pg) })),
   { id: "stampall", group: "Stamps", name: "Complete Book", icon: "crown", desc: "Every stamp in the book.", test: () => foundCount() >= UNIQUE_WORDS.length },
   // sushi
@@ -285,3 +286,27 @@ function toHira(s) {
 }
 function bindKana(input) { input.setAttribute("autocapitalize", "none"); input.setAttribute("autocomplete", "off"); input.setAttribute("autocorrect", "off"); input.setAttribute("spellcheck", "false"); input.setAttribute("lang", "ja"); try { if (window.wanakana) wanakana.bind(input, { IMEMode: "toHiragana" }); } catch (e) { } }
 const readInput = input => toHira(input.value.trim());
+
+// ---- spelling with tiles (base kana + ゛ + small kana)
+const tilesOf = r => [...r].flatMap(ch => UNDAKU[ch] ? [UNDAKU[ch], "゛"] : [ch]);
+function composeTiles(tiles) { let s = ""; for (const t of tiles) { if (t === "゛") { const last = s.slice(-1); if (DAKU[last]) s = s.slice(0, -1) + DAKU[last]; else s += "゛"; } else s += t; } return s; }
+const haveTiles = () => new Set(Object.keys(S.kana));
+const spellable = (r, have = haveTiles()) => tilesOf(r).every(t => have.has(t));
+const plantedExtras = () => EXTRAS.filter(x => S.kana[x.k]);
+
+// ---- what you've stamped decides what the games quiz you on
+const isStamped = w => !!(wordState(w) && wordState(w).found);
+const stampedWords = () => UNIQUE_WORDS.filter(isStamped);
+const stampedK = k => UNIQUE_WORDS.some(w => w.k === k && isStamped(w));
+const petalPool = () => stampedWords().filter(w => isBasic(w.r) && [...w.r].length >= 2 && [...w.r].length <= 4);
+const logicPool = () => LOGIC_ITEMS.filter(it => stampedK(it.k));
+const GATES = {
+  sushi: { name: "Sushi Belt", icon: "sushi", need: "Stamp 4 kanji in the Kanji Pot", prog: () => [Math.min(4, foundCount()), 4] },
+  petal: { name: "Petal Guess", icon: "tulip", need: "Stamp 3 words that are 2 to 4 kana long", prog: () => [Math.min(3, petalPool().length), 3] },
+  plot: { name: "Garden Plot", icon: "carrot", need: "Plant 6 kana", prog: () => [Math.min(6, plantedKana().length), 6] },
+  line: { name: "Number Line", icon: "abacus", need: "Stamp the numbers 一 二 三 四 五 (with the extras bed for some readings)", prog: () => [[1, 2, 3, 4, 5].filter(n => stampedK(toKanji(n))).length, 5] },
+  half: { name: "Missing Half", icon: "puzzle", need: "Stamp 10 kanji", prog: () => [Math.min(10, foundCount()), 10] },
+  logic: { name: "Garden Logic", icon: "rabbit", need: "Stamp 6 garden friends (like 花 木 石 犬 猫 鳥) and 上 下 左 右", prog: () => [Math.min(6, logicPool().length) + ["上", "下", "左", "右"].filter(stampedK).length, 10] },
+};
+const gateOpen = id => { const g = GATES[id]; if (!g) return true; const [a, b] = g.prog(); return a >= b; };
+function lockCard(id) { const g = GATES[id]; const [a, b] = g.prog(); return `<div class="lockcard">${IMGW("lock", 22)}<div style="flex:1;min-width:0"><div style="font-size:.8rem;font-weight:800">${esc(g.need)}</div><div class="bar" style="margin-top:4px"><i style="width:${a / b * 100}%"></i></div></div><span class="pill">${a}/${b}</span></div>`; }

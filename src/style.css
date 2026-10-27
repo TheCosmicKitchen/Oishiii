@@ -397,3 +397,9 @@ label.lab{font-weight:800;font-size:.85rem}
 .aday b{font-family:var(--f-display);font-weight:400;font-size:.9rem;font-variant-numeric:tabular-nums}
 .aday .adots{font-size:.68rem;font-weight:800;color:var(--ink-soft);min-height:18px;display:grid;place-items:center}
 .aday.full{background:var(--sakura-soft);border-color:var(--sakura)}
+.lockcard{display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:var(--r-md);padding:7px 10px;margin-top:4px}
+.lockcard .em{flex:none}
+.potstage{flex-wrap:wrap}
+.potstage > .em{width:64px;height:64px}
+.slot{width:40px;height:50px;font-size:1.35rem}
+.tile.extra{background:var(--sakura-soft)}

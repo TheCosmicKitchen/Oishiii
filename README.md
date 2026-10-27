@@ -11,7 +11,8 @@ Progress is saved per device in the browser (localStorage).
 ## What's in it
 
 - **Garden:** plant hiragana row by row, water them with quick quizzes, watch them grow from sprout to bud to bloom.
-- **Kanji Pot:** spell a word's reading with your grown kana and the kanji pops out.
+- **Kanji Pot:** a flower pot where you spell a word's reading with your grown kana (plus ゛ and small kana from the extras bed) and the kanji grows out and gets stamped.
+- **Quiz what you've learned:** every game only uses kana you've planted and kanji you've stamped, and unlocks once you have enough of them.
 - **Sushi Belt:** buds order by picture; drag them the right plate before they get grumpy. Look-alike decoys, combos, plate prices, levelling buds.
 - **Daily puzzles** (same puzzles for both players each day): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Endless mode for each.
 - **Levels & rally cards:** each game has 10 levels worth up to ★★★; clearing one stamps that game's rally card in bronze, silver or gold.

@@ -30,6 +30,8 @@ function viewGarden(v) {
     <h2>${greet}</h2><p class="muted" style="font-size:.85rem">${thirsty ? `${thirsty} plant${thirsty > 1 ? "s are" : " is"} thirsty. Water the garden to perk them up!` : planted ? "Plant new seeds, water your kana, and pop kanji out of the pot." : "Tap an empty plot to plant your first kana seed."}</p>
     <div class="stats"><div class="stat"><b>${planted}</b><span>kana / 46</span></div><div class="stat"><b>${found}</b><span>kanji grown</span></div><div class="stat"><b>${S.served || 0}</b><span>plates served</span></div></div></div></section>
   <div class="row"><button class="btn" id="water" ${planted ? "" : "disabled"}>${IMG("droplet")}Water the garden</button>${thirsty ? `<span class="pill pink">${IMGW("wilted", 16)} ${thirsty} thirsty</span>` : ""}</div>
+  ${Object.keys(GATES).some(id => !gateOpen(id)) ? `<section class="card stack" style="gap:8px"><header class="row">${IMGW("station", 34)}<div style="flex:1;min-width:0"><h3>Next unlocks</h3><p class="muted" style="font-size:.8rem">Games only quiz you on kana you've planted and kanji you've stamped.</p></div></header>
+    ${Object.keys(GATES).filter(id => !gateOpen(id)).slice(0, 3).map(id => `<div class="row" style="gap:8px;flex-wrap:nowrap">${IMGW(GATES[id].icon, 30)}<div style="flex:1;min-width:0"><b style="font-size:.88rem">${GATES[id].name}</b>${lockCard(id)}</div></div>`).join("")}</section>` : ""}
   <section class="card pot stack" id="pot"></section>
   <div class="stack" id="beds"></div>`;
   $("#water").onclick = startWater;
@@ -46,6 +48,12 @@ function viewGarden(v) {
       ${open ? "" : `<p class="lockmsg" style="margin-top:8px">${IMG("lock")}Grow every ${ROWS[i - 1].name} plant to a bud ${IMGW("herb", 18)} to open this bed.</p>`}`;
     beds.appendChild(sec);
   });
+  { const open = rowUnlocked(ROWS.length); const sec = document.createElement("section"); sec.className = "bed" + (open ? "" : " locked");
+    sec.innerHTML = `<header><span class="glyph">゛</span><h3>Extras bed</h3><span class="spacer"></span><span class="pill ${plantedExtras().length === EXTRAS.length ? "done" : ""}">${plantedExtras().length}/${EXTRAS.length} planted</span></header>
+      <div class="soil">${EXTRAS.map(x => S.kana[x.k] ? `<button class="plot" data-extra="${x.k}" aria-label="${x.name}">${IMG("blossom")}<span class="stake">${x.k}<small>${x.name}</small></span></button>` : open ? `<button class="plot empty" data-extra="${x.k}" aria-label="Plant ${x.name}">${IMG("beans")}<span>plant</span></button>` : `<div class="plot empty" aria-hidden="true"></div>`).join("")}</div>
+      ${open ? `<p class="muted" style="font-size:.8rem;margin-top:8px">These marks unlock words with sounds like が (ga), じゅう (juu) and っ in the Kanji Pot.</p>` : `<p class="lockmsg" style="margin-top:8px">${IMG("lock")}Grow every わ plant to a bud ${IMGW("herb", 18)} to open this bed.</p>`}`;
+    beds.appendChild(sec); }
+  $$("[data-extra]", beds).forEach(b => b.onclick = () => openExtraLesson(b.dataset.extra));
   $$("[data-plant]", beds).forEach(b => b.onclick = () => openLesson(b.dataset.plant));
   $$("[data-info]", beds).forEach(b => b.onclick = () => openLesson(b.dataset.info, true));
   renderPot($("#pot"));
@@ -68,6 +76,17 @@ function openLesson(k, review) {
   });
 }
 
+function openExtraLesson(k) {
+  const x = EXTRAS.find(e => e.k === k); const have = !!S.kana[k];
+  openPlay(have ? x.name : "Plant a mark", (st) => {
+    st.innerHTML = `<div class="card lesson"><span class="eyebrow">Extras bed</span><div class="glyph big pop">${k}</div><div class="romaji">${x.name}</div>
+      <div class="hintword">${IMG(x.e)}<div><div class="glyph">${x.ex[0]}</div><div class="ro" style="font-size:.9rem">${x.ex[1]}</div></div><button class="iconbtn" data-say="${x.ex[0]}" aria-label="Hear it">${IMGW("speaker", 22)}</button></div>
+      <p style="font-size:.9rem">${esc(x.tip)}</p>
+      ${have ? `<button class="btn" id="go">Back to the garden</button>` : `<button class="btn pink" id="go">${IMG("seedling")}Plant ${k}</button>`}</div>`;
+    $("#go", st).onclick = () => { if (!have) { S.kana[k] = { pts: 7, last: now() }; save(); SFX.pop(); toast(`${x.name} planted! Use it in the Kanji Pot.`); } closePlay(); };
+  });
+}
+
 // watering quiz
 function startWater() {
   const pool = plantedKana(); if (!pool.length) return;
@@ -75,11 +94,27 @@ function startWater() {
   const weight = x => (isWilting(x.k) ? 6 : 1) + Math.max(0, 8 - (S.kana[x.k].pts));
   const qs = [];
   for (let i = 0; i < n; i++) { let tot = pool.reduce((a, x) => a + weight(x), 0), r = RND.f() * tot; let pick = pool[0]; for (const x of pool) { r -= weight(x); if (r <= 0) { pick = x; break; } } if (qs.length && qs[qs.length - 1].k === pick.k && pool.length > 1) { i--; continue; } qs.push({ k: pick.k, ro: pick.ro, type: RND.f() < .5 ? "k2r" : "r2k" }); }
+  const sw = stampedWords();
+  if (sw.length >= 4) qs.forEach((q, j) => { if (RND.f() < .35) { const ws = sw.map(w => ({ w, wt: 1 + Math.max(0, 8 - wordState(w).pts) })); let r = RND.f() * ws.reduce((a, x) => a + x.wt, 0), pick = ws[0].w; for (const x of ws) { r -= x.wt; if (r <= 0) { pick = x.w; break; } } qs[j] = { type: "word", w: pick }; } });
   openPlay("Watering time", (st, hud) => {
     let i = 0, right = 0; const res = [];
     const next = () => {
       if (i >= qs.length) { save(); SFX.win(); if (right === qs.length) confetti(); return resultScreen(st, { icon: right >= qs.length * .8 ? "sunflower" : "droplet", title: right === qs.length ? "Perfect watering!" : "The garden says thanks!", score: `${right} / ${qs.length}`, lines: ["Every right answer adds a drop. Plants bud at 3 drops and bloom at 7."], again: startWater, againLabel: "Water again" }); }
       const q = qs[i];
+      if (q.type === "word") {
+        const w = q.w; const opts = RND.shuffle([w.r, ...RND.shuffle(sw.filter(x => x.r !== w.r)).map(x => x.r).filter((v, j, a) => a.indexOf(v) === j).slice(0, 3)]);
+        st.innerHTML = `<div class="progress">${qs.map((_, j) => `<i class="${j < i ? (res[j] ? "ok" : "no") : j === i ? "now" : ""}"></i>`).join("")}</div>
+          <div class="card quizq">${S.role === "kanji" ? `<span class="eyebrow">Read this stamp</span><div class="glyph big pop">${esc(w.k)}</div>` : `<span class="eyebrow">Which word is this?</span><div class="pop">${IMGW(w.e, 76)}</div><div><b>${esc(w.en)}</b></div>`}</div>
+          <div class="choices">${opts.map(o => `<button class="choice" data-o="${o}"><span class="glyph" style="font-size:1.4rem">${o}</span>${showRo() && S.role === "kana" ? `<div class="ro">${romaji(o)}</div>` : ""}</button>`).join("")}</div>`;
+        $$(".choice", st).forEach(b => b.onclick = () => {
+          if (st.dataset.lock) return; st.dataset.lock = 1; const ok = b.dataset.o === w.r; res[i] = ok;
+          b.classList.add(ok ? "right" : "wrong"); if (!ok) $(`.choice[data-o="${w.r}"]`, st).classList.add("right");
+          touchWord(w, ok, false); if (ok) { right++; SFX.good(); } else SFX.bad(); say(w.r);
+          if (!ok || S.role === "kanji") toast(`${w.k} = ${w.r} (${w.ro}) · ${w.en}`);
+          setTimeout(() => { delete st.dataset.lock; i++; next(); }, ok ? 800 : 1700);
+        });
+        return;
+      }
       const distract = () => { const opts = new Set([q.k]); const la = LOOKALIKE_KANA[q.k]; if (la && RND.f() < .7) opts.add(la); const others = RND.shuffle(ALL_KANA.filter(x => x.k !== q.k && x.k !== "を")); const pl = RND.shuffle(pool.filter(x => x.k !== q.k)); for (const x of [...pl, ...others]) { if (opts.size >= 4) break; opts.add(x.k); } return RND.shuffle([...opts]); };
       const opts = distract();
       st.innerHTML = `<div class="progress">${qs.map((_, j) => `<i class="${j < i ? (res[j] ? "ok" : "no") : j === i ? "now" : ""}"></i>`).join("")}</div>
@@ -100,23 +135,23 @@ function startWater() {
 
 // ---------- KANJI POT ----------
 let POT = [];
-function potRecipes() { const have = new Set(plantedKana().map(x => x.k)); return UNIQUE_WORDS.filter(w => isBasic(w.r) && [...w.r].every(c => have.has(c))); }
+function potRecipes() { const have = haveTiles(); return UNIQUE_WORDS.filter(w => spellable(w.r, have)); }
 function renderPot(el) {
   const pk = plantedKana();
   const recipes = potRecipes(); const fresh = recipes.filter(w => !wordState(w)?.found);
   el.innerHTML = `<header class="row"><h2>The Kanji Pot</h2><span class="spacer"></span><span class="pill pink">${recipes.length - fresh.length}/${recipes.length} grown</span></header>
-    <p class="muted" style="font-size:.85rem">Drop kana in to spell a word's reading. If it's a real word, a kanji pops out!</p>
-    <div class="potstage">${IMG("honey")}<div class="slots">${[0, 1, 2, 3].map(i => `<div class="slot ${POT[i] ? "filled" : ""}" data-drop="slot">${POT[i] || ""}</div>`).join("")}</div></div>
-    <div class="tiles" id="pottiles">${pk.length ? pk.map(x => `<button class="tile" data-pick="${x.k}">${kanaHTML(x.k)}</button>`).join("") : `<p class="muted">Plant kana below to fill your pot.</p>`}</div>
+    <p class="muted" style="font-size:.85rem">Drop kana in to spell a word's reading. If it's a real word, a kanji grows out and gets stamped in your book!</p>
+    <div class="potstage">${IMG("watering")}<div class="slots">${[0, 1, 2, 3, 4, 5].map(i => `<div class="slot ${POT[i] ? "filled" : ""}" data-drop="slot">${POT[i] || ""}</div>`).join("")}</div></div>
+    <div class="tiles" id="pottiles">${pk.length ? pk.map(x => `<button class="tile" data-pick="${x.k}">${kanaHTML(x.k)}</button>`).join("") + plantedExtras().map(x => `<button class="tile extra" data-pick="${x.k}"><span class="glyph">${x.k}</span>${showRo() ? `<span class="ro">${esc(x.name)}</span>` : ""}</button>`).join("") : `<p class="muted">Plant kana below to fill your pot.</p>`}</div>
     <div class="row" style="justify-content:center"><button class="btn ghost small" id="potclear" ${POT.length ? "" : "disabled"}>Empty</button><button class="btn pink" id="potgo" ${POT.length ? "" : "disabled"}>${IMG("sparkles")}Pop!</button></div>
-    ${fresh.length ? `<div class="stack" style="gap:6px"><span class="eyebrow">Things you could grow right now</span><div class="hints">${fresh.slice(0, 8).map(w => `<button class="hint" data-hint="${w.id}">${IMG(w.e)}<span>${esc(w.en)}</span><span class="dots">${"●".repeat([...w.r].length)}</span></button>`).join("")}</div></div>` : pk.length ? `<p class="muted" style="font-size:.85rem">You've grown everything these kana can make. Plant more to discover new kanji!</p>` : ""}
+    ${fresh.length ? `<div class="stack" style="gap:6px"><span class="eyebrow">Things you could grow right now</span><div class="hints">${fresh.slice(0, 8).map(w => `<button class="hint" data-hint="${w.id}">${IMG(w.e)}<span>${esc(w.en)}</span><span class="dots">${"●".repeat(tilesOf(w.r).length)}</span></button>`).join("")}</div></div>` : pk.length ? `<p class="muted" style="font-size:.85rem">You've grown everything these kana can make. Plant more to discover new kanji!</p>` : ""}
     <div id="potout"></div>`;
-  DND.onDrop = (id, zone) => { if (zone === "slot" && POT.length < 4) { POT.push(id); SFX.tap(); renderPot(el); } };
-  DND.onTap = (id) => { if (POT.length < 4) { POT.push(id); SFX.tap(); renderPot(el); } return false; };
+  DND.onDrop = (id, zone) => { if (zone === "slot" && POT.length < 6) { POT.push(id); SFX.tap(); renderPot(el); } };
+  DND.onTap = (id) => { if (POT.length < 6) { POT.push(id); SFX.tap(); renderPot(el); } return false; };
   $("#potclear", el).onclick = () => { POT = []; renderPot(el); };
   $$("[data-hint]", el).forEach(b => b.onclick = () => { const w = WORDS[+b.dataset.hint]; toast(`Hint: it starts with ${w.r[0]} (${KANA_RO[w.r[0]]}) · ${[...w.r].length} kana`); });
   $("#potgo", el).onclick = () => {
-    const s = POT.join(""); const hits = UNIQUE_WORDS.filter(w => w.r === s && isBasic(w.r)); POT = [];
+    const s = composeTiles(POT); const hits = UNIQUE_WORDS.filter(w => w.r === s); POT = [];
     const out = () => $("#potout", el);
     if (!hits.length) { SFX.bad(); renderPot(el); out().innerHTML = `<p class="muted shake" style="text-align:center">${esc(s)} (${romaji(s)})… nothing sprouted. Try another mix!</p>`; return; }
     const newOnes = hits.filter(w => !wordState(w)?.found);
@@ -171,6 +206,6 @@ function viewBook(v) {
   $$("[data-ro]").forEach(b => b.onclick = () => { S.romaji = b.dataset.ro === "1"; save(); render(); });
   $$("[data-snd]").forEach(b => b.onclick = () => { S.sound = b.dataset.snd === "1"; save(); render(); });
   $$("[data-word]").forEach(b => b.onclick = () => { const w = WORDS[+b.dataset.word]; openPlay(w.k, st => { st.innerHTML = `<div class="stampbook" style="display:flex;justify-content:center;padding:24px">${stampHTML(w, 180, "thunk")}</div><div class="card">${wordReveal(w, `<span class="pill">${wordState(w).pts} drops · stamped ${wordState(w).stamped || ""}</span>`)}</div>`; say(w.r); }); });
-  $("#knowall").onclick = () => { ALL_KANA.forEach(x => { if (!S.kana[x.k]) S.kana[x.k] = { pts: 3, last: now() }; else S.kana[x.k].pts = Math.max(3, S.kana[x.k].pts); }); save(); toast("Every bed is planted and budding!"); render(); };
+  $("#knowall").onclick = () => { ALL_KANA.forEach(x => { if (!S.kana[x.k]) S.kana[x.k] = { pts: 3, last: now() }; else S.kana[x.k].pts = Math.max(3, S.kana[x.k].pts); }); EXTRAS.forEach(x => { S.kana[x.k] = S.kana[x.k] || { pts: 7, last: now() }; }); save(); toast("Every bed is planted and budding!"); render(); };
   $("#reset").onclick = () => { $("#resetconfirm").innerHTML = `<button class="btn small" style="background:var(--bad);box-shadow:none" id="reset2">Yes, erase my garden</button>`; $("#reset2").onclick = () => { S = DEFAULT(); save(); TAB = "garden"; render(); toast("A fresh garden!"); }; };
 }

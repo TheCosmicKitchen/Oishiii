@@ -8,8 +8,12 @@
 ## Design rule: completion, never engagement
 She hates engagement mechanics. No streaks, no wilting or decay, no "come back tomorrow" pressure, no expiring content. Everything is permanent and collectable: stamps, trophies, rally-card stars, and a puzzle archive that keeps every past day playable forever. Grind should always be available (endless modes, levels, archive).
 
+## Progression rule: start from kana, quiz only what you've stamped
+Everyone starts in the garden with kana (the Kanji Reader can plant all hiragana at once). Kanji are discovered in the Kanji Pot (spell the reading with planted kana; the extras bed adds ゛ ゃ ゅ ょ っ) or built in Missing Half, and every discovery is stamped. Quizzes and games only use planted kana and stamped kanji; each game unlocks once you have enough to play it (shown as "Next unlocks" in the garden).
+
 ## Look and feel (keep consistent)
 - **Theme:** a pocket kitchen garden. Soil-brown beds, wooden stakes with kana, sakura-pink accents, leaf greens, sky blue. Very cute: bouncy pops, sakura confetti, buds that talk (おいしい！, うまい！, ちがう…, もう…).
+- **The Kanji Pot is a flower pot** (Fluent 'Potted plant'), never a honey pot.
 - **Art:** Microsoft Fluent Emoji **3D** only, embedded as 112px WebP data URIs.
 - **Fonts:** Mochiy Pop One (headings), M PLUS Rounded 1c (body), Klee One (every kana/kanji glyph you learn from, for textbook handwriting shapes).
 - **Color tokens (light):** bg `#F1F6EA`, surface `#FFFFFF`, surface-2 `#E5EFDC`, ink `#22362A`, leaf `#4E9F69`, sakura `#EE7299`, soil `#9C6B4A`, stake `#E9CFA3`, sun `#F5C24F`, sky `#D3ECF6`. Puzzle colors: good `#3E9A5E`, near `#E6AE2E`, kin (same row or vowel) `#4F9FD0`, bad `#D9534F`. Dark mode is a night garden (`#12201A`).

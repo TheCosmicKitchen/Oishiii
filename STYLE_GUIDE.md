@@ -13,6 +13,7 @@
 - **Station stamps:** circular ink stamps on cream paper (`#FBF6EA`), ink color by theme (nature red, animals green, people indigo, food orange, things purple), slightly rotated, reading arched on top and meaning arched on the bottom. A "thunk" animation plays for every new kanji.
 - **Sushi plates:** porcelain `#FBF7EE`, rim color sets the price (blue ¥100, pink ¥150, green ¥200, gold ¥500).
 - **Trophies:** gold medallions with a Fluent Emoji inside; locked ones are grey silhouettes with a hint. A completed stamp page gets a red 完 (kan, complete) seal. Progress is about collecting and completion — no streaks.
+- **Rally cards & levels:** every game has a 10-level ladder (same seed for both players, so stars are comparable). Clearing a level stamps that game's rally card; ink is bronze (★), silver (★★) or gold (★★★). Full card = 完 seal and trophy; all gold = 金 seal and a golden trophy.
 - Rounded pill buttons with a 3px bottom shadow; bottom tab bar: Garden / Sushi / Puzzles / Stamps.
 
 ## Roadmap

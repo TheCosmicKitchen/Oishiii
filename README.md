@@ -14,7 +14,8 @@ Progress is saved per device in the browser (localStorage).
 - **Kanji Pot:** spell a word's reading with your grown kana and the kanji pops out.
 - **Sushi Belt:** buds order by picture; drag them the right plate before they get grumpy. Look-alike decoys, combos, plate prices, levelling buds.
 - **Daily puzzles** (same puzzles for both players each day): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Endless mode for each.
-- **Collection:** a stamp for every kanji, 34 trophies, page-complete seals, and an overall completion meter.
+- **Levels & rally cards:** each game has 10 levels worth up to ★★★; clearing one stamps that game's rally card in bronze, silver or gold.
+- **Collection:** a stamp for every kanji, 49 trophies, page-complete seals, and an overall completion meter.
 - **Two roles:** Kana speller (kana + romaji) and Kanji reader (bare kanji, WaniKani style). Typing converts romaji to kana like WaniKani.
 
 ## Develop

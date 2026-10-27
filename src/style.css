@@ -376,3 +376,19 @@ label.lab{font-weight:800;font-size:.85rem}
 .trophy:not(.got) small{color:var(--ink-soft)}
 .trophycard h2{color:#3A2E22}
 .kanseal{font-family:var(--f-glyph);font-weight:600;color:#FBF6EA;background:#C8402E;border-radius:6px;width:28px;height:28px;display:grid;place-items:center;transform:rotate(-8deg);font-size:1.1rem;box-shadow:0 0 0 2px #FBF6EA,0 0 0 3.5px #C8402E}
+/* level ladders + rally cards */
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:12px 6px}
+.lvnode{background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.lvnode .lvnum{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-size:1.3rem;background:var(--surface);border:3px dashed var(--sakura);color:var(--ink);max-width:100%}
+.lvnode.locked .lvnum{border:3px solid var(--line);background:var(--surface-2)}
+.lvnode.open .lvnum{animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.lvnode small{font-size:.62rem;font-weight:800;color:var(--ink-soft)}
+.lvstars{display:flex;gap:1px;min-height:14px}
+.staroff{filter:grayscale(1);opacity:.25}
+.bigstars{display:flex;gap:6px;justify-content:center}
+.stamp.rally .rally-e{position:absolute;width:34%!important;height:34%!important;top:30%;left:50%;transform:translateX(-50%)}
+.stamp.rally .rally-n{position:absolute;bottom:25%;left:0;right:0;text-align:center;font-family:var(--f-display);color:var(--ink);font-size:calc(var(--sz) * .13)}
+.rallyrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 4px;justify-items:center}
+.stampslot .empty.small{width:54px;height:54px;font-size:1rem;font-family:var(--f-display)}
+.trophy.goldt.got .medal{background:radial-gradient(circle at 35% 30%,#FFFBE6,#FFD84D 55%,#E0A100);box-shadow:0 3px 0 #B9821A,0 0 12px 2px rgba(255,200,40,.55)}

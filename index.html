@@ -396,6 +396,22 @@ label.lab{font-weight:800;font-size:.85rem}
 .trophy:not(.got) small{color:var(--ink-soft)}
 .trophycard h2{color:#3A2E22}
 .kanseal{font-family:var(--f-glyph);font-weight:600;color:#FBF6EA;background:#C8402E;border-radius:6px;width:28px;height:28px;display:grid;place-items:center;transform:rotate(-8deg);font-size:1.1rem;box-shadow:0 0 0 2px #FBF6EA,0 0 0 3.5px #C8402E}
+/* level ladders + rally cards */
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:12px 6px}
+.lvnode{background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.lvnode .lvnum{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-size:1.3rem;background:var(--surface);border:3px dashed var(--sakura);color:var(--ink);max-width:100%}
+.lvnode.locked .lvnum{border:3px solid var(--line);background:var(--surface-2)}
+.lvnode.open .lvnum{animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.lvnode small{font-size:.62rem;font-weight:800;color:var(--ink-soft)}
+.lvstars{display:flex;gap:1px;min-height:14px}
+.staroff{filter:grayscale(1);opacity:.25}
+.bigstars{display:flex;gap:6px;justify-content:center}
+.stamp.rally .rally-e{position:absolute;width:34%!important;height:34%!important;top:30%;left:50%;transform:translateX(-50%)}
+.stamp.rally .rally-n{position:absolute;bottom:25%;left:0;right:0;text-align:center;font-family:var(--f-display);color:var(--ink);font-size:calc(var(--sz) * .13)}
+.rallyrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 4px;justify-items:center}
+.stampslot .empty.small{width:54px;height:54px;font-size:1rem;font-family:var(--f-display)}
+.trophy.goldt.got .medal{background:radial-gradient(circle at 35% 30%,#FFFBE6,#FFD84D 55%,#E0A100);box-shadow:0 3px 0 #B9821A,0 0 12px 2px rgba(255,200,40,.55)}
 
 </style>
 <div id="app" class="app"></div>
@@ -613,6 +629,17 @@ const STAMP_PAGES = [
   { id: "things", name: "Places & things", jp: "町", themes: ["things"], trophy: "Town Explorer", icon: "houses" },
 ];
 
+// Games with 10-level ladders and rally stamp cards
+const RALLY_GAMES = [
+  { id: "petal", name: "Petal Guess", icon: "tulip" },
+  { id: "plot", name: "Garden Plot", icon: "carrot" },
+  { id: "logic", name: "Garden Logic", icon: "rabbit" },
+  { id: "half", name: "Missing Half", icon: "puzzle" },
+  { id: "line", name: "Number Line", icon: "abacus" },
+  { id: "sushi", name: "Sushi Belt", icon: "sushi" },
+];
+const LEVELS_N = 10;
+
 // ===== core: state, helpers, drag & drop, sound, shell =====
 const APP_NAME = "Oishii";
 const SAVE_KEY = "kanaGarden.v1";
@@ -766,6 +793,14 @@ const TROPHIES = [
   { id: "bouquet", group: "Puzzles", name: "Full Bouquet", icon: "basket", desc: "All six dailies in one day.", test: () => Object.values(S.daily).some(d => Object.keys(d).length >= 6) },
   { id: "sunday", group: "Puzzles", name: "Brave Sunday", icon: "trophy", desc: "Beat a brutal Sunday daily.", test: () => stat("sunday") >= 1 },
   { id: "dailies30", group: "Puzzles", name: "Puzzle Lover", icon: "gift", desc: "Finish 30 daily puzzles.", test: () => stat("dailies") >= 30 },
+  // rally cards
+  ...RALLY_GAMES.flatMap(g => [
+    { id: "card_" + g.id, group: "Rally cards", name: `${g.name} Card`, icon: g.icon, desc: `Stamp all ${LEVELS_N} levels of ${g.name}.`, test: () => lvCleared(g.id) >= LEVELS_N },
+    { id: "perfect_" + g.id, group: "Rally cards", name: `Golden ${g.name}`, icon: g.icon, gold: true, desc: `Three stars on every ${g.name} level.`, test: () => lvTotal(g.id) >= LEVELS_N * 3 },
+  ]),
+  { id: "firststar3", group: "Rally cards", name: "Triple Star", icon: "star", desc: "Get ★★★ on any level.", test: () => RALLY_GAMES.some(g => { for (let n = 1; n <= LEVELS_N; n++) if (lvStars(g.id, n) === 3) return true; return false; }) },
+  { id: "stars100", group: "Rally cards", name: "Star Gazer", icon: "sparkles", desc: "Collect 100 stars.", test: () => allStars() >= 100 },
+  { id: "champion", group: "Rally cards", name: "Rally Champion", icon: "party", desc: "Every rally card all gold.", test: () => allStars() >= RALLY_GAMES.length * LEVELS_N * 3 },
 ];
 let trophyChecking = false;
 function checkTrophies() {
@@ -1021,7 +1056,7 @@ function renderPot(el) {
 
 // ---------- BOOK (collection, trophies, stamp book, settings) ----------
 function completionPct() {
-  const parts = [foundCount() / UNIQUE_WORDS.length, ALL_KANA.filter(x => kanaStage(x.k) >= 2).length / 46, trophyCount() / TROPHIES.length];
+  const parts = [foundCount() / UNIQUE_WORDS.length, ALL_KANA.filter(x => kanaStage(x.k) >= 2).length / 46, trophyCount() / TROPHIES.length, allStars() / (RALLY_GAMES.length * LEVELS_N * 3)];
   return Math.floor(parts.reduce((a, b) => a + b, 0) / parts.length * 100);
 }
 function viewBook(v) {
@@ -1029,9 +1064,14 @@ function viewBook(v) {
   v.innerHTML = `
   <section class="card stack"><header class="row">${IMGW("crown", 40)}<div style="flex:1;min-width:0"><h2>Collection</h2><p class="muted" style="font-size:.82rem">Everything you've grown, stamped and won.</p></div><span class="pill pink" style="font-size:.9rem">${completionPct()}%</span></header>
     <div class="bar" style="height:12px"><i style="width:${completionPct()}%"></i></div>
-    <div class="stats"><div class="stat"><b>${found.length}/${UNIQUE_WORDS.length}</b><span>stamps</span></div><div class="stat"><b>${ALL_KANA.filter(x => kanaStage(x.k) >= 2).length}/46</b><span>kana in bloom</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div></section>
+    <div class="stats"><div class="stat"><b>${found.length}/${UNIQUE_WORDS.length}</b><span>stamps</span></div><div class="stat"><b>${ALL_KANA.filter(x => kanaStage(x.k) >= 2).length}/46</b><span>kana in bloom</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div><div class="stats" style="grid-template-columns:1fr"><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
-    ${["Garden", "Stamps", "Sushi", "Puzzles"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+    ${["Garden", "Stamps", "Sushi", "Puzzles", "Rally cards"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+  </section>
+  <section class="stampbook"><header class="row"><h2>Rally cards</h2><span class="spacer"></span><span class="pill pink">${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3} ★</span></header>
+    <p class="muted" style="font-size:.85rem">One card per game. Clear a level to stamp it: bronze ★, silver ★★, gold ★★★.</p>
+    ${RALLY_GAMES.map(rg => { const tot = lvTotal(rg.id); return `<div class="stamppage-h">${IMGW(rg.icon, 26)}<h3>${rg.name}</h3><span class="spacer"></span>${tot >= LEVELS_N * 3 ? `<span class="kanseal" title="All gold">金</span>` : lvCleared(rg.id) >= LEVELS_N ? `<span class="kanseal" title="Card complete">完</span>` : `<small>${tot}/${LEVELS_N * 3} ★</small>`}</div>
+    <div class="rallyrow">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(rg.id, n); return s ? `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}, ${s} stars">${rallyStampHTML(rg.id, n, s, 58)}</button>` : `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}"><div class="empty small">${n}</div></button>`; }).join("")}</div>`; }).join("")}
   </section>
   <section class="stampbook"><header class="row"><h2>Stamp book</h2><span class="spacer"></span><span class="pill pink">${found.length}/${UNIQUE_WORDS.length} stamps</span></header>
     <p class="muted" style="font-size:.85rem">Like the 駅スタンプ (eki sutanpu, station stamps) at Japanese train stations: every new kanji you discover gets stamped here.</p>
@@ -1051,6 +1091,7 @@ function viewBook(v) {
     <div class="row"><button class="btn ghost small" id="reset">Start a new garden</button><span id="resetconfirm"></span></div>
     <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT).</p>
   </section>`;
+  $$("[data-rally]").forEach(b => b.onclick = () => openLevels(b.dataset.rally));
   $$("[data-trophy]").forEach(b => b.onclick = () => { const t = TROPHIES.find(x => x.id === b.dataset.trophy); const got = S.trophies && S.trophies[t.id]; toast(got ? `${t.name}: ${t.desc} (won ${got})` : `Locked: ${t.desc}`); });
   $("#nm").onchange = e => { S.name = e.target.value.trim().slice(0, 20); save(); render(); };
   $$("[data-role]").forEach(b => b.onclick = () => { S.role = b.dataset.role; save(); render(); });
@@ -1073,7 +1114,7 @@ function viewSushi(v) {
   <section class="card stack" style="background:linear-gradient(180deg,var(--sakura-soft),var(--surface))">
     <div class="row">${IMGW("sushi", 64)}<div style="flex:1;min-width:0"><h2>Sushi Belt</h2><p class="muted" style="font-size:.85rem">いらっしゃいませ！ (irasshaimase, "welcome!") Your buds are hungry. Feed each one the plate it's thinking of before it gets grumpy.</p></div></div>
     <div class="counter" style="pointer-events:none">${BUDS.map(b => `<div class="seat"><span class="lv">Lv ${bud(b.id).lvl}</span>${IMG(budSprite(b)).replace('class="em"', 'class="em budimg"')}<span class="name">${b.name}</span><span class="ro">loves ${b.likes}</span></div>`).join("")}</div>
-    <div class="row"><button class="btn pink" id="endless">${IMG("chopsticks")}Open the counter</button><span class="muted" style="font-size:.8rem">Best: ¥${(S.best.sushi || 0).toLocaleString()}</span></div>
+    <div class="row"><button class="btn pink" id="endless">${IMG("chopsticks")}Open the counter</button><button class="btn ghost" id="sushilv">${IMG("star")}Levels ${lvTotal("sushi")}/${LEVELS_N * 3}</button><span class="muted" style="font-size:.8rem">Best: ¥${(S.best.sushi || 0).toLocaleString()}</span></div>
   </section>
   <section class="card stack"><div class="row">${IMGW("calendar", 40)}<div style="flex:1;min-width:0"><h3>Chef's Special</h3><p class="muted" style="font-size:.82rem">Today's 90-second run. Same plates for both of you, so compare your yen.</p></div>${rec ? `<span class="pill done">¥${rec.score.toLocaleString()}</span>` : ""}</div>
     <div class="row"><button class="btn" id="daily">${rec ? "Play again (practice)" : "Play today's special"}</button></div></section>
@@ -1081,12 +1122,14 @@ function viewSushi(v) {
     <p style="font-size:.88rem">${S.role === "kanji" ? "You're the <b>Kanji reader</b>: buds think in pictures and English, plates show bare kanji. Look-alike decoys will try to trick you (牛 vs 午!)." : "You're the <b>Kana speller</b>: buds think in pictures and romaji, plates show kana. Watch for look-alikes like ぬ and め."} Switch roles in the Book tab.</p>
     <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Serving several right in a row builds a combo that multiplies your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
   $("#endless").onclick = () => startSushi("endless");
+  $("#sushilv").onclick = () => openLevels("sushi");
   $("#daily").onclick = () => startSushi(rec ? "practice" : "daily");
 }
 
 function startSushi(mode) {
-  openPlay(mode === "endless" ? "Sushi Belt" : "Chef's Special", (st, hud) => {
-    const rng = mode === "endless" ? RND : makeRng(todayKey() + ":sushi");
+  const level = /^L\d+$/.test(mode) ? +mode.slice(1) : null;
+  openPlay(mode === "endless" ? "Sushi Belt" : level ? `Sushi Lv ${level}` : "Chef's Special", (st, hud) => {
+    const rng = mode === "endless" ? RND : level ? makeRng("level:sushi:" + level) : makeRng(todayKey() + ":sushi");
     const timed = mode !== "endless"; const LIMIT = 90000;
     st.innerHTML = `<div class="sushi-wrap"><div class="belt moving" id="belt"></div><div class="counter" id="counter">${BUDS.map((b, i) => `<div class="seat" data-drop="${i}" id="seat${i}"></div>`).join("")}</div><p class="sushitip">Drag a plate to the bud who wants it, or tap the plate, then tap the bud.</p></div>`;
     const belt = $("#belt", st);
@@ -1099,7 +1142,7 @@ function startSushi(mode) {
       const wt = w => { const s = wordState(w); return 1 + Math.max(0, 6 - (s ? s.pts : 0)) + (s ? s.miss * 2 : 0); };
       let tot = pool.reduce((a, w) => a + wt(w), 0), r = rng.f() * tot, pick = pool[0];
       for (const w of pool) { r -= wt(w); if (r <= 0) { pick = w; break; } }
-      const max = Math.max(8000, 17000 - elapsed / 10);
+      const max = Math.max(7000, 17000 - elapsed / 10 - (level ? (level - 1) * 600 : 0));
       seats[i].order = { w: pick, t: max, max }; drawSeat(i);
     }
     function drawSeat(i, anim) {
@@ -1157,7 +1200,7 @@ function startSushi(mode) {
       if (yen > (S.best.sushi || 0)) S.best.sushi = yen; save();
       SFX.win(); if (served >= 10) confetti();
       const miss = [...missed.values()].slice(0, 8);
-      resultScreen(st, { icon: served >= 15 ? "crown" : "sushi", title: served >= 15 ? "Five-star counter!" : "Counter closed", score: `¥${yen.toLocaleString()}`,
+      if (level) { const tg = 900 + 250 * (level - 1); levelResult(st, "sushi", level, yen >= tg * 2 ? 3 : yen >= tg * 1.5 ? 2 : yen >= tg ? 1 : 0, "¥" + yen.toLocaleString()); } else resultScreen(st, { icon: served >= 15 ? "crown" : "sushi", title: served >= 15 ? "Five-star counter!" : "Counter closed", score: `¥${yen.toLocaleString()}`,
         lines: [`${served} plates served · best combo ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
         share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
         again: () => startSushi(mode === "daily" ? "practice" : mode) });
@@ -1166,7 +1209,7 @@ function startSushi(mode) {
     function frame(t) {
       if (over) return; if (!last) last = t; let dt = Math.min(60, t - last); last = t; if (paused) dt = 0;
       elapsed += dt;
-      const speed = Math.min(135, 48 + elapsed / 1000 * 0.9);
+      const speed = Math.min(150, 48 + (level ? (level - 1) * 7 : 0) + elapsed / 1000 * 0.9);
       const W = belt.clientWidth;
       plates.forEach(p => { p.x -= speed * dt / 1000; p.el.style.transform = `translateX(${p.x}px)`; });
       for (let i = plates.length - 1; i >= 0; i--) if (plates[i].x < -100) { if (DND.sel === plates[i].id) DND.sel = null; plates[i].el.remove(); plates.splice(i, 1); }
@@ -1192,10 +1235,10 @@ function startSushi(mode) {
 // ===== Daily puzzles =====
 const ENDLESS_D = {};
 function pzSetup(id, mode) {
-  const daily = mode === "daily";
-  const rng = daily ? makeRng(todayKey() + ":" + id) : RND;
-  const d = daily ? dayDifficulty() : (ENDLESS_D[id] ?? (ENDLESS_D[id] = .3));
-  return { daily, rng, d, bump: () => { if (!daily) ENDLESS_D[id] = Math.min(1, (ENDLESS_D[id] || .3) + .1); } };
+  const daily = mode === "daily"; const level = /^L\d+$/.test(mode || "") ? +mode.slice(1) : null;
+  const rng = daily ? makeRng(todayKey() + ":" + id) : level ? makeRng("level:" + id + ":" + level) : RND;
+  const d = daily ? dayDifficulty() : level ? (level - 1) / (LEVELS_N - 1) : (ENDLESS_D[id] ?? (ENDLESS_D[id] = .3));
+  return { daily, level, rng, d, bump: () => { if (!daily && !level) ENDLESS_D[id] = Math.min(1, (ENDLESS_D[id] || .3) + .1); } };
 }
 function startTimer(hud, extra = () => "") { const t0 = now(); const draw = () => { hud.innerHTML = `${extra()}<span class="chip">${IMG("hourglass")}${fmtTime(now() - t0)}</span>`; }; draw(); const iv = setInterval(draw, 1000); return { stop: () => clearInterval(iv), ms: () => now() - t0, redraw: draw }; }
 
@@ -1205,7 +1248,7 @@ const PUZZLES = [
   { id: "logic", name: "Garden Logic", jp: "にわ", icon: "rabbit", desc: "Read the Japanese clues and place everyone in the garden.", play: m => gardenLogic(m) },
   { id: "half", name: "Missing Half", jp: "はんぶん", icon: "puzzle", desc: "Drag in the missing piece to build the kanji. Trust your gut!", play: m => missingHalf(m) },
   { id: "line", name: "Number Line", jp: "かず", icon: "abacus", desc: "Line up kanji numbers and konbini prices, smallest to biggest.", play: m => numberLine(m) },
-  { id: "sushi", name: "Chef's Special", jp: "すし", icon: "sushi", desc: "Today's 90-second sushi rush. Compare yen with your partner.", play: m => startSushi(m === "daily" ? "daily" : "practice") },
+  { id: "sushi", name: "Chef's Special", jp: "すし", icon: "sushi", desc: "Today's 90-second sushi rush. Compare yen with your partner.", play: m => startSushi(m === "daily" ? "daily" : /^L\d+$/.test(m) ? m : "practice") },
 ];
 
 function viewPuzzles(v) {
@@ -1218,15 +1261,16 @@ function viewPuzzles(v) {
   <div class="bouquet">${PUZZLES.map(p => { const r = today[p.id]; return `<div class="pz ${r ? "done" : ""}">
     <div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : `<span class="pill">today</span>`}</div>
     <h3>${p.name}</h3><p>${p.desc}</p>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : ""}
-    <div class="row"><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
-  <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles are the same for both of you. Endless mode gets harder each time you clear one.</p>`;
+    <div class="row"><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button><button class="btn pink small" data-levels="${p.id}">${IMGW("star", 16)}${lvTotal(p.id)}/${LEVELS_N * 3}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
+  <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles and every level are the same for both of you, so you can compare stars. Endless mode gets harder each time you clear one.</p>`;
   $$("[data-pz]", v).forEach(b => b.onclick = () => PUZZLES.find(p => p.id === b.dataset.pz).play(b.dataset.mode));
+  $$("[data-levels]", v).forEach(b => b.onclick = () => openLevels(b.dataset.levels));
   const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${todayKey()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n"));
 }
 
 // ---------- 1. PETAL GUESS ----------
 function petalGuess(mode) {
-  const { daily, rng, bump } = pzSetup("petal", mode);
+  const { daily, rng, bump, level } = pzSetup("petal", mode);
   const pool = UNIQUE_WORDS.filter(w => isBasic(w.r) && [...w.r].length >= 2 && [...w.r].length <= 4);
   const ans = rng.pick(pool); const A = [...ans.r]; const L = A.length; const MAXG = 6;
   openPlay("Petal Guess", (st, hud) => {
@@ -1277,7 +1321,7 @@ function petalGuess(mode) {
       if (daily) setDaily("petal", { score: scoreTxt, line: `🌷 Petal Guess ${scoreTxt}${hint && S.role !== "kanji" ? " (hint)" : ""}` });
       if (win) { SFX.win(); confetti(); bump(); statMin("petalBest", guesses.length); save(); } else SFX.bad();
       setTimeout(() => {
-        resultScreen(st, { icon: win ? "tulip" : "wilted", title: win ? ["Genius!", "Amazing!", "Lovely!", "Nice!", "Phew!", "Just made it!"][guesses.length - 1] : "The petals fell…", score: scoreTxt, lines: [wordReveal(ans)], share: daily ? `${APP_NAME} 🌷 Petal Guess ${todayKey()} ${scoreTxt}\n${grid}` : "", again: () => petalGuess("endless"), againLabel: "Endless round" });
+        if (level) levelResult(st, "petal", level, win ? (guesses.length <= 3 && !(S.role === "kanji" ? hint === 2 : hint) ? 3 : guesses.length <= 4 ? 2 : 1) : 0, win ? `${guesses.length}/6` : "X/6"); else resultScreen(st, { icon: win ? "tulip" : "wilted", title: win ? ["Genius!", "Amazing!", "Lovely!", "Nice!", "Phew!", "Just made it!"][guesses.length - 1] : "The petals fell…", score: scoreTxt, lines: [wordReveal(ans)], share: daily ? `${APP_NAME} 🌷 Petal Guess ${todayKey()} ${scoreTxt}\n${grid}` : "", again: () => petalGuess("endless"), againLabel: "Endless round" });
         if (isNew) setTimeout(() => stampNow(ans), 500);
         say(ans.r);
       }, 900);
@@ -1304,7 +1348,7 @@ function makeSudoku(rng, d) {
   return { sol, g };
 }
 function gardenPlot(mode) {
-  const { daily, rng, d, bump } = pzSetup("plot", mode);
+  const { daily, rng, d, bump, level } = pzSetup("plot", mode);
   const { sol, g } = makeSudoku(rng, d);
   const kanjiMode = S.role === "kanji";
   let SYM;
@@ -1329,7 +1373,7 @@ function gardenPlot(mode) {
       over = true; timer.stop(); const t = fmtTime(timer.ms()); SFX.win(); confetti(); bump();
       SYM.forEach(x => [...x.s].forEach(c => waterKana(c))); addStat("plots"); statMin("plotBest", timer.ms()); save();
       if (daily) setDaily("plot", { score: t, line: `🥕 Garden Plot ${t}` });
-      setTimeout(() => resultScreen(st, { icon: "carrot", title: "Every bed is planted!", score: t, lines: [`<span class="glyph" style="font-size:1.3rem">${SYM.map(x => esc(x.s)).join(" ")}</span>`], share: daily ? `${APP_NAME} 🥕 Garden Plot ${todayKey()}\n${t} ${"🥕".repeat(3)}` : "", again: () => gardenPlot("endless"), againLabel: "Endless puzzle" }), 600);
+      setTimeout(() => level ? levelResult(st, "plot", level, timer.ms() < 180000 ? 3 : timer.ms() < 360000 ? 2 : 1, t) : resultScreen(st, { icon: "carrot", title: "Every bed is planted!", score: t, lines: [`<span class="glyph" style="font-size:1.3rem">${SYM.map(x => esc(x.s)).join(" ")}</span>`], share: daily ? `${APP_NAME} 🥕 Garden Plot ${todayKey()}\n${t} ${"🥕".repeat(3)}` : "", again: () => gardenPlot("endless"), againLabel: "Endless puzzle" }), 600);
     }
     draw();
     return () => timer.stop();
@@ -1375,7 +1419,7 @@ function makeLogic(rng, d) {
   return { items, pos, clues: rng.shuffle(chosen) };
 }
 function gardenLogic(mode) {
-  const { daily, rng, d, bump } = pzSetup("logic", mode);
+  const { daily, rng, d, bump, level } = pzSetup("logic", mode);
   const { items, pos, clues } = makeLogic(rng, d);
   openPlay("Garden Logic", (st, hud) => {
     const at = Array(6).fill(-1); // cell -> item
@@ -1412,7 +1456,7 @@ function gardenLogic(mode) {
       const t = fmtTime(timer.ms()); const sc = `${t}${mistakes ? ` · ${mistakes} slip${mistakes > 1 ? "s" : ""}` : ""}`;
       if (daily) setDaily("logic", { score: t, line: `🐰 Garden Logic ${sc}${peeks ? ` · ${peeks} peek${peeks > 1 ? "s" : ""}` : ""}` });
       $$(".lg-cell", st).forEach(c => c.classList.add("right"));
-      setTimeout(() => resultScreen(st, { icon: "rabbit", title: "Everyone's home!", score: sc, lines: [`${clues.length} clues · ${peeks} peeks`, `<span class="muted" style="font-size:.85rem">Grammar note: います (imasu) is for living things, あります (arimasu) for objects.</span>`], share: daily ? `${APP_NAME} 🐰 Garden Logic ${todayKey()}\n${sc}${peeks ? ` · ${peeks} peeks` : " · no peeks!"}` : "", again: () => gardenLogic("endless"), againLabel: "Endless garden" }), 700);
+      setTimeout(() => level ? levelResult(st, "logic", level, !mistakes && !peeks ? 3 : mistakes <= 1 ? 2 : 1, sc) : resultScreen(st, { icon: "rabbit", title: "Everyone's home!", score: sc, lines: [`${clues.length} clues · ${peeks} peeks`, `<span class="muted" style="font-size:.85rem">Grammar note: います (imasu) is for living things, あります (arimasu) for objects.</span>`], share: daily ? `${APP_NAME} 🐰 Garden Logic ${todayKey()}\n${sc}${peeks ? ` · ${peeks} peeks` : " · no peeks!"}` : "", again: () => gardenLogic("endless"), againLabel: "Endless garden" }), 700);
     }
     draw();
     return () => timer.stop();
@@ -1421,7 +1465,7 @@ function gardenLogic(mode) {
 
 // ---------- 4. MISSING HALF ----------
 function missingHalf(mode) {
-  const { daily, rng, d, bump } = pzSetup("half", mode);
+  const { daily, rng, d, bump, level } = pzSetup("half", mode);
   const N = 8; const rounds = rng.shuffle(PARTS).slice(0, N).map((p, i) => ({ p, miss: d >= .85 && i >= 4 ? ["a", "b"] : [rng.f() < .5 ? "a" : "b"] }));
   openPlay("Missing Half", (st, hud) => {
     let r = 0, slips = 0, reads = 0; const t0 = now(); const newStamps = [];
@@ -1460,7 +1504,7 @@ function missingHalf(mode) {
       const t = fmtTime(now() - t0); SFX.win(); confetti(); bump(); addStat("reads", reads); if (!slips) addStat("halfFlawless"); save();
       const sc = `${N - Math.min(N, slips)}/${N}`; const line = `🧩 Missing Half ${slips ? slips + " slip" + (slips > 1 ? "s" : "") : "flawless"} · ${reads} reading${reads === 1 ? "" : "s"} typed`;
       if (daily) setDaily("half", { score: sc, line });
-      resultScreen(st, { icon: "puzzle", title: slips ? "Kanji built!" : "Flawless intuition!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [`<span class="glyph" style="font-size:1.6rem">${rounds.map(x => x.p.k).join(" ")}</span>`, `${reads}/${N} readings typed · ${t}`], share: daily ? `${APP_NAME} 🧩 Missing Half ${todayKey()}\n${rounds.map(() => "🧩").join("")}\n${line.slice(3)}` : "", again: () => missingHalf("endless"), againLabel: "Endless set" });
+      if (level) levelResult(st, "half", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, `${slips} slip${slips === 1 ? "" : "s"}`); else resultScreen(st, { icon: "puzzle", title: slips ? "Kanji built!" : "Flawless intuition!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [`<span class="glyph" style="font-size:1.6rem">${rounds.map(x => x.p.k).join(" ")}</span>`, `${reads}/${N} readings typed · ${t}`], share: daily ? `${APP_NAME} 🧩 Missing Half ${todayKey()}\n${rounds.map(() => "🧩").join("")}\n${line.slice(3)}` : "", again: () => missingHalf("endless"), againLabel: "Endless set" });
       setTimeout(() => newStamps.forEach(stampNow), 600);
     }
     round();
@@ -1469,7 +1513,7 @@ function missingHalf(mode) {
 
 // ---------- 5. NUMBER LINE ----------
 function numberLine(mode) {
-  const { daily, rng, d, bump } = pzSetup("line", mode);
+  const { daily, rng, d, bump, level } = pzSetup("line", mode);
   const kanjiMode = S.role === "kanji";
   const face = (n, yen) => kanjiMode ? toKanji(n) + (yen ? "円" : "") : toYomi(n) + (yen ? "えん" : "");
   const roOf = (n, yen) => romaji(toYomi(n) + (yen ? "えん" : ""));
@@ -1521,10 +1565,67 @@ function numberLine(mode) {
       const t = fmtTime(now() - t0); SFX.win(); confetti(); bump(); if (!slips) addStat("lineFlawless"); save();
       const line = `🧮 Number Line ${slips ? slips + " slip" + (slips > 1 ? "s" : "") : "flawless"} · ${t}`;
       if (daily) setDaily("line", { score: slips, line });
-      resultScreen(st, { icon: "abacus", title: slips ? "All lined up!" : "Perfect counting!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [t, `<span class="muted" style="font-size:.85rem">Watch the sound changes: 300 is さんびゃく (sanbyaku) and 3,000 is さんぜん (sanzen).</span>`], share: daily ? `${APP_NAME} 🧮 Number Line ${todayKey()}\n${line.slice(3)}` : "", again: () => numberLine("endless"), againLabel: "Endless set" });
+      if (level) levelResult(st, "line", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, `${slips} slip${slips === 1 ? "" : "s"}`); else resultScreen(st, { icon: "abacus", title: slips ? "All lined up!" : "Perfect counting!", score: `${slips} slip${slips === 1 ? "" : "s"}`, lines: [t, `<span class="muted" style="font-size:.85rem">Watch the sound changes: 300 is さんびゃく (sanbyaku) and 3,000 is さんぜん (sanzen).</span>`], share: daily ? `${APP_NAME} 🧮 Number Line ${todayKey()}\n${line.slice(3)}` : "", again: () => numberLine("endless"), againLabel: "Endless set" });
     }
     round();
   });
+}
+
+// ---------- LEVEL LADDERS + RALLY STAMP CARDS ----------
+const RALLY_INK = { 1: "#A0642D", 2: "#6F7F92", 3: "#C38E12" };
+const rallyGame = id => RALLY_GAMES.find(g => g.id === id);
+function lvRec(id) { const L = S.levels || (S.levels = {}); return L[id] || (L[id] = {}); }
+function lvStars(id, n) { return (lvRec(id)[n] || {}).stars || 0; }
+function lvUnlocked(id, n) { return n === 1 || lvStars(id, n - 1) > 0; }
+function lvTotal(id) { let t = 0; for (let n = 1; n <= LEVELS_N; n++) t += lvStars(id, n); return t; }
+function lvCleared(id) { let c = 0; for (let n = 1; n <= LEVELS_N; n++) if (lvStars(id, n)) c++; return c; }
+const allStars = () => RALLY_GAMES.reduce((a, g) => a + lvTotal(g.id), 0);
+const starRow = (n, size = 18) => [1, 2, 3].map(i => `<img class="em ${i <= n ? "" : "staroff"}" src="${EMO.star}" alt="" style="width:${size}px;height:${size}px">`).join("");
+function rallyStampHTML(id, n, stars, size = 76, extra = "") {
+  const g = rallyGame(id); const ink = RALLY_INK[stars] || RALLY_INK[1]; const rot = (hashStr(id + n) % 15) - 7; const uid = id + n + size;
+  return `<div class="stamp rally ${extra}" style="--ink:${ink};--rot:${rot}deg;--sz:${size}px;width:${size}px;height:${size}px"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="ra${uid}" d="M 15 50 A 35 35 0 0 1 85 50"/></defs>
+  <circle cx="50" cy="50" r="46" fill="none" stroke="var(--ink)" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+  <text font-size="9.5" font-weight="800" fill="var(--ink)" letter-spacing="1.2"><textPath href="#ra${uid}" startOffset="50%" text-anchor="middle">${esc(g.name.toUpperCase())}</textPath></text>
+  <text x="50" y="84" font-size="11" fill="var(--ink)" text-anchor="middle" letter-spacing="1">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</text></svg>
+  <img class="em rally-e" src="${EMO[g.icon] || ""}" alt=""><span class="rally-n">Lv ${n}</span></div>`;
+}
+function openLevels(id) {
+  const g = rallyGame(id); const P = PUZZLES.find(p => p.id === id);
+  openPlay(`${g.name} levels`, (st, hud) => {
+    hud.innerHTML = `<span class="chip">${IMG("star")}${lvTotal(id)}/${LEVELS_N * 3}</span>`;
+    st.innerHTML = `<div class="card stack" style="gap:6px"><div class="row">${IMGW(g.icon, 44)}<div style="flex:1;min-width:0"><h3>${g.name} rally card</h3><p class="muted" style="font-size:.82rem">Clear a level to stamp your card. Bronze for ★, silver for ★★, gold for ★★★. Each level is the same for both of you.</p></div></div>
+      <div class="bar"><i style="width:${lvTotal(id) / (LEVELS_N * 3) * 100}%"></i></div></div>
+      <div class="ladder">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(id, n), open = lvUnlocked(id, n), rec = lvRec(id)[n];
+        return `<button class="lvnode ${s ? "cleared" : open ? "open" : "locked"}" ${open ? `data-lv="${n}"` : "disabled"} aria-label="Level ${n}${open ? "" : " locked"}">${s ? rallyStampHTML(id, n, s, 70) : `<span class="lvnum">${open ? n : IMGW("lock", 26)}</span>`}<span class="lvstars">${open ? starRow(s, 14) : ""}</span>${rec && rec.best ? `<small>${esc(rec.best)}</small>` : ""}</button>`; }).join("")}</div>
+      <p class="muted" style="font-size:.78rem;text-align:center">${id === "sushi" ? "Earn the target yen in 90 seconds: ★ at the target, ★★ at 1.5×, ★★★ at 2×. The target and belt speed rise each level." : "Levels get harder as you go. Replay any level to raise your stars."}</p>`;
+    $$("[data-lv]", st).forEach(b => b.onclick = () => (id === "sushi" ? startSushi("L" + b.dataset.lv) : P.play("L" + b.dataset.lv)));
+  });
+}
+function levelResult(st, id, n, stars, label) {
+  const g = rallyGame(id); const prev = lvStars(id, n); const rec = lvRec(id);
+  const improved = stars > prev;
+  if (improved) rec[n] = { stars, best: label, date: todayKey() };
+  save();
+  const next = n < LEVELS_N && (stars > 0 || prev > 0);
+  const share = `${APP_NAME} ${g.name} Lv ${n} ${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ${label}`;
+  st.innerHTML = `<div class="card result pop"><span class="eyebrow">${esc(g.name)} · Level ${n}</span>
+    ${stars ? rallyStampHTML(id, n, stars, 150, "thunk") : IMGW("wilted", 96)}
+    <div class="bigstars">${starRow(stars, 40)}</div><div class="score">${esc(label)}</div>
+    <p>${stars === 0 ? "Not quite! Give it another go." : improved ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : "Stamped onto your rally card!") : `Your best here is still ${"★".repeat(prev)}.`}</p>
+    ${stars < 3 ? `<p class="muted" style="font-size:.8rem">${starHint(id, n)}</p>` : `<p class="muted" style="font-size:.8rem">Perfect! Dare your partner to match it.</p>`}
+    <div class="sharebox">${esc(share)}</div><button class="btn pink" id="sharebtn">Copy result</button>
+    <div class="row" style="justify-content:center"><button class="btn ghost" id="retry">Retry</button>${next ? `<button class="btn" id="nextlv">Level ${n + 1}</button>` : ""}<button class="btn ghost" id="map">Level map</button></div></div>`;
+  const play = m => id === "sushi" ? startSushi(m) : PUZZLES.find(p => p.id === id).play(m);
+  $("#sharebtn", st).onclick = () => copyText(share);
+  $("#retry", st).onclick = () => play("L" + n);
+  if (next) $("#nextlv", st).onclick = () => play("L" + (n + 1));
+  $("#map", st).onclick = () => openLevels(id);
+  if (stars) { SFX.win(); if (stars === 3) confetti(40); }
+  setTimeout(() => holdCelebrations(false), 400);
+}
+function starHint(id, n) {
+  return ({ petal: "★★★: solve in 3 guesses or fewer without a hint. ★★: 4 or fewer.", plot: "★★★: under 3 minutes. ★★: under 6 minutes.", logic: "★★★: no slips and no peeks. ★★: at most one slip.",
+    half: "★★★: no slips. ★★: two slips or fewer.", line: "★★★: no slips. ★★: two slips or fewer.", sushi: `Target ¥${(900 + 250 * (n - 1)).toLocaleString()}: ★★ at 1.5×, ★★★ at 2×.` })[id];
 }
 
 render();

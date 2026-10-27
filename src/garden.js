@@ -129,7 +129,7 @@ function renderPot(el) {
 
 // ---------- BOOK (collection, trophies, stamp book, settings) ----------
 function completionPct() {
-  const parts = [foundCount() / UNIQUE_WORDS.length, ALL_KANA.filter(x => kanaStage(x.k) >= 2).length / 46, trophyCount() / TROPHIES.length];
+  const parts = [foundCount() / UNIQUE_WORDS.length, ALL_KANA.filter(x => kanaStage(x.k) >= 2).length / 46, trophyCount() / TROPHIES.length, allStars() / (RALLY_GAMES.length * LEVELS_N * 3)];
   return Math.floor(parts.reduce((a, b) => a + b, 0) / parts.length * 100);
 }
 function viewBook(v) {
@@ -137,9 +137,14 @@ function viewBook(v) {
   v.innerHTML = `
   <section class="card stack"><header class="row">${IMGW("crown", 40)}<div style="flex:1;min-width:0"><h2>Collection</h2><p class="muted" style="font-size:.82rem">Everything you've grown, stamped and won.</p></div><span class="pill pink" style="font-size:.9rem">${completionPct()}%</span></header>
     <div class="bar" style="height:12px"><i style="width:${completionPct()}%"></i></div>
-    <div class="stats"><div class="stat"><b>${found.length}/${UNIQUE_WORDS.length}</b><span>stamps</span></div><div class="stat"><b>${ALL_KANA.filter(x => kanaStage(x.k) >= 2).length}/46</b><span>kana in bloom</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div></section>
+    <div class="stats"><div class="stat"><b>${found.length}/${UNIQUE_WORDS.length}</b><span>stamps</span></div><div class="stat"><b>${ALL_KANA.filter(x => kanaStage(x.k) >= 2).length}/46</b><span>kana in bloom</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div><div class="stats" style="grid-template-columns:1fr"><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
-    ${["Garden", "Stamps", "Sushi", "Puzzles"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+    ${["Garden", "Stamps", "Sushi", "Puzzles", "Rally cards"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+  </section>
+  <section class="stampbook"><header class="row"><h2>Rally cards</h2><span class="spacer"></span><span class="pill pink">${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3} ★</span></header>
+    <p class="muted" style="font-size:.85rem">One card per game. Clear a level to stamp it: bronze ★, silver ★★, gold ★★★.</p>
+    ${RALLY_GAMES.map(rg => { const tot = lvTotal(rg.id); return `<div class="stamppage-h">${IMGW(rg.icon, 26)}<h3>${rg.name}</h3><span class="spacer"></span>${tot >= LEVELS_N * 3 ? `<span class="kanseal" title="All gold">金</span>` : lvCleared(rg.id) >= LEVELS_N ? `<span class="kanseal" title="Card complete">完</span>` : `<small>${tot}/${LEVELS_N * 3} ★</small>`}</div>
+    <div class="rallyrow">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(rg.id, n); return s ? `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}, ${s} stars">${rallyStampHTML(rg.id, n, s, 58)}</button>` : `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}"><div class="empty small">${n}</div></button>`; }).join("")}</div>`; }).join("")}
   </section>
   <section class="stampbook"><header class="row"><h2>Stamp book</h2><span class="spacer"></span><span class="pill pink">${found.length}/${UNIQUE_WORDS.length} stamps</span></header>
     <p class="muted" style="font-size:.85rem">Like the 駅スタンプ (eki sutanpu, station stamps) at Japanese train stations: every new kanji you discover gets stamped here.</p>
@@ -159,6 +164,7 @@ function viewBook(v) {
     <div class="row"><button class="btn ghost small" id="reset">Start a new garden</button><span id="resetconfirm"></span></div>
     <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT).</p>
   </section>`;
+  $$("[data-rally]").forEach(b => b.onclick = () => openLevels(b.dataset.rally));
   $$("[data-trophy]").forEach(b => b.onclick = () => { const t = TROPHIES.find(x => x.id === b.dataset.trophy); const got = S.trophies && S.trophies[t.id]; toast(got ? `${t.name}: ${t.desc} (won ${got})` : `Locked: ${t.desc}`); });
   $("#nm").onchange = e => { S.name = e.target.value.trim().slice(0, 20); save(); render(); };
   $$("[data-role]").forEach(b => b.onclick = () => { S.role = b.dataset.role; save(); render(); });

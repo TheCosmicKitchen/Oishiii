@@ -207,3 +207,14 @@ const STAMP_PAGES = [
   { id: "food", name: "Food", jp: "食べ物", themes: ["food"], trophy: "Foodie", icon: "dango" },
   { id: "things", name: "Places & things", jp: "町", themes: ["things"], trophy: "Town Explorer", icon: "houses" },
 ];
+
+// Games with 10-level ladders and rally stamp cards
+const RALLY_GAMES = [
+  { id: "petal", name: "Petal Guess", icon: "tulip" },
+  { id: "plot", name: "Garden Plot", icon: "carrot" },
+  { id: "logic", name: "Garden Logic", icon: "rabbit" },
+  { id: "half", name: "Missing Half", icon: "puzzle" },
+  { id: "line", name: "Number Line", icon: "abacus" },
+  { id: "sushi", name: "Sushi Belt", icon: "sushi" },
+];
+const LEVELS_N = 10;

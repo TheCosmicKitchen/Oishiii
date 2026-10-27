@@ -225,8 +225,8 @@ p{margin:0}
 .pz p{font-size:.78rem;color:var(--ink-soft);line-height:1.35;flex:1}
 .pz .row{gap:6px}
 .pz.done{border-color:var(--leaf)}
-.streak{display:flex;align-items:center;gap:12px}
-.streak .em{width:48px;height:48px}
+.bouquet-card{display:flex;align-items:center;gap:12px}
+.bouquet-card > .em{width:48px;height:48px}
 .flowers{display:flex;gap:2px}
 .flowers .em{width:26px;height:26px}
 .flowers .off{filter:grayscale(1);opacity:.3}
@@ -653,7 +653,7 @@ function dayDifficulty(d = new Date()) { return [1, .15, .3, .45, .6, .75, .9][d
 const DAYNAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 // ---- state
-const DEFAULT = () => ({ v: 1, name: "", role: "kana", romaji: true, sound: true, kana: {}, words: {}, buds: {}, daily: {}, best: {}, streak: { count: 0, last: "" }, served: 0 });
+const DEFAULT = () => ({ v: 1, name: "", role: "kana", romaji: true, sound: true, kana: {}, words: {}, buds: {}, daily: {}, best: {}, served: 0 });
 let S = DEFAULT();
 try { const raw = localStorage.getItem(SAVE_KEY); if (raw) S = Object.assign(DEFAULT(), JSON.parse(raw)); } catch (e) { }
 function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { } }
@@ -696,12 +696,10 @@ function rowUnlocked(i) { if (i === 0) return true; const prev = ROWS[i - 1]; re
 function dailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
 function setDaily(game, rec) {
   const t = todayKey(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
-  if (S.streak.last !== t) { const y = todayKey(new Date(now() - DAY)); S.streak.count = S.streak.last === y ? S.streak.count + 1 : 1; S.streak.last = t; }
   // keep only last 40 days of dailies
   const keys = Object.keys(S.daily).sort(); while (keys.length > 40) delete S.daily[keys.shift()];
   save();
 }
-function streakNow() { const t = todayKey(), y = todayKey(new Date(now() - DAY)); return (S.streak.last === t || S.streak.last === y) ? S.streak.count : 0; }
 
 // ---- sound (tiny synth blips, start after first tap)
 let AC = null;
@@ -815,7 +813,6 @@ const TABS = [
 function render() {
   const app = $("#app");
   app.innerHTML = `<header class="top"><div class="logo">${IMGW("blossom", 34)}<div><h1>${APP_NAME}</h1><small>おいしい</small></div></div>
-    <span class="chip" title="Daily streak">${IMG("fireflame")}${streakNow()}</span>
     <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "漢字" : "かな"}</span></header>
     <main id="view" class="stack"></main>`;
   const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span></button>`).join("")}</nav>`;
@@ -988,7 +985,7 @@ function viewSushi(v) {
     <div class="row"><button class="btn" id="daily">${rec ? "Play again (practice)" : "Play today's special"}</button></div></section>
   <section class="card stack"><h3>How it works</h3>
     <p style="font-size:.88rem">${S.role === "kanji" ? "You're the <b>Kanji reader</b>: buds think in pictures and English, plates show bare kanji. Look-alike decoys will try to trick you (牛 vs 午!)." : "You're the <b>Kana speller</b>: buds think in pictures and romaji, plates show kana. Watch for look-alikes like ぬ and め."} Switch roles in the Book tab.</p>
-    <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Streaks multiply your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
+    <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Serving several right in a row builds a combo that multiplies your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
   $("#endless").onclick = () => startSushi("endless");
   $("#daily").onclick = () => startSushi(rec ? "practice" : "daily");
 }
@@ -1067,8 +1064,8 @@ function startSushi(mode) {
       SFX.win(); if (served >= 10) confetti();
       const miss = [...missed.values()].slice(0, 8);
       resultScreen(st, { icon: served >= 15 ? "crown" : "sushi", title: served >= 15 ? "Five-star counter!" : "Counter closed", score: `¥${yen.toLocaleString()}`,
-        lines: [`${served} plates served · best streak ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
-        share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · streak ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
+        lines: [`${served} plates served · best combo ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
+        share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
         again: () => startSushi(mode === "daily" ? "practice" : mode) });
       setTimeout(() => newStamps.forEach(stampNow), 600);
     }
@@ -1121,7 +1118,7 @@ function viewPuzzles(v) {
   const today = S.daily[todayKey()] || {}; const doneN = PUZZLES.filter(p => today[p.id]).length;
   const d = dayDifficulty(); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
   v.innerHTML = `
-  <section class="card streak">${IMG("fireflame")}<div style="flex:1;min-width:0"><h2>${streakNow()} day streak</h2><p class="muted" style="font-size:.85rem">${DAYNAME[new Date().getDay()]} puzzles are <b>${diffName}</b>. Collect a flower for each one.</p>
+  <section class="card bouquet-card">${IMG("basket")}<div style="flex:1;min-width:0"><h2>Today's bouquet</h2><p class="muted" style="font-size:.85rem">${DAYNAME[new Date().getDay()]} puzzles are <b>${diffName}</b>. Collect a flower for each one.</p>
     <div class="flowers" style="margin-top:4px">${PUZZLES.map(p => IMG(["blossom", "tulip", "sunflower", "hibiscus", "sakura", "clover"][PUZZLES.indexOf(p)]).replace('class="em"', `class="em ${today[p.id] ? "" : "off"}"`)).join("")}</div></div></section>
   ${doneN ? `<button class="btn pink" id="shareall">${IMG("gift")}Share today's bouquet (${doneN}/6)</button>` : ""}
   <div class="bouquet">${PUZZLES.map(p => { const r = today[p.id]; return `<div class="pz ${r ? "done" : ""}">
@@ -1130,7 +1127,7 @@ function viewPuzzles(v) {
     <div class="row"><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
   <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles are the same for both of you. Endless mode gets harder each time you clear one.</p>`;
   $$("[data-pz]", v).forEach(b => b.onclick = () => PUZZLES.find(p => p.id === b.dataset.pz).play(b.dataset.mode));
-  const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${todayKey()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n") + `\n🔥 ${streakNow()} day streak`);
+  const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${todayKey()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n"));
 }
 
 // ---------- 1. PETAL GUESS ----------

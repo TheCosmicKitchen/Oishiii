@@ -21,7 +21,7 @@ function viewPuzzles(v) {
   const today = S.daily[todayKey()] || {}; const doneN = PUZZLES.filter(p => today[p.id]).length;
   const d = dayDifficulty(); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
   v.innerHTML = `
-  <section class="card streak">${IMG("fireflame")}<div style="flex:1;min-width:0"><h2>${streakNow()} day streak</h2><p class="muted" style="font-size:.85rem">${DAYNAME[new Date().getDay()]} puzzles are <b>${diffName}</b>. Collect a flower for each one.</p>
+  <section class="card bouquet-card">${IMG("basket")}<div style="flex:1;min-width:0"><h2>Today's bouquet</h2><p class="muted" style="font-size:.85rem">${DAYNAME[new Date().getDay()]} puzzles are <b>${diffName}</b>. Collect a flower for each one.</p>
     <div class="flowers" style="margin-top:4px">${PUZZLES.map(p => IMG(["blossom", "tulip", "sunflower", "hibiscus", "sakura", "clover"][PUZZLES.indexOf(p)]).replace('class="em"', `class="em ${today[p.id] ? "" : "off"}"`)).join("")}</div></div></section>
   ${doneN ? `<button class="btn pink" id="shareall">${IMG("gift")}Share today's bouquet (${doneN}/6)</button>` : ""}
   <div class="bouquet">${PUZZLES.map(p => { const r = today[p.id]; return `<div class="pz ${r ? "done" : ""}">
@@ -30,7 +30,7 @@ function viewPuzzles(v) {
     <div class="row"><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
   <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles are the same for both of you. Endless mode gets harder each time you clear one.</p>`;
   $$("[data-pz]", v).forEach(b => b.onclick = () => PUZZLES.find(p => p.id === b.dataset.pz).play(b.dataset.mode));
-  const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${todayKey()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n") + `\n🔥 ${streakNow()} day streak`);
+  const sa = $("#shareall", v); if (sa) sa.onclick = () => copyText(`${APP_NAME} 🌸 ${todayKey()}\n` + PUZZLES.filter(p => today[p.id]).map(p => today[p.id].line).join("\n"));
 }
 
 // ---------- 1. PETAL GUESS ----------

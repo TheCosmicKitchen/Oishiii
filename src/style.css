@@ -205,8 +205,8 @@ p{margin:0}
 .pz p{font-size:.78rem;color:var(--ink-soft);line-height:1.35;flex:1}
 .pz .row{gap:6px}
 .pz.done{border-color:var(--leaf)}
-.streak{display:flex;align-items:center;gap:12px}
-.streak .em{width:48px;height:48px}
+.bouquet-card{display:flex;align-items:center;gap:12px}
+.bouquet-card > .em{width:48px;height:48px}
 .flowers{display:flex;gap:2px}
 .flowers .em{width:26px;height:26px}
 .flowers .off{filter:grayscale(1);opacity:.3}

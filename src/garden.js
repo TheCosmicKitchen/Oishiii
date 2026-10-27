@@ -10,7 +10,6 @@ const TABS = [
 function render() {
   const app = $("#app");
   app.innerHTML = `<header class="top"><div class="logo">${IMGW("blossom", 34)}<div><h1>${APP_NAME}</h1><small>おいしい</small></div></div>
-    <span class="chip" title="Daily streak">${IMG("fireflame")}${streakNow()}</span>
     <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "漢字" : "かな"}</span></header>
     <main id="view" class="stack"></main>`;
   const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span></button>`).join("")}</nav>`;

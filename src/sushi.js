@@ -16,7 +16,7 @@ function viewSushi(v) {
     <div class="row"><button class="btn" id="daily">${rec ? "Play again (practice)" : "Play today's special"}</button></div></section>
   <section class="card stack"><h3>How it works</h3>
     <p style="font-size:.88rem">${S.role === "kanji" ? "You're the <b>Kanji reader</b>: buds think in pictures and English, plates show bare kanji. Look-alike decoys will try to trick you (牛 vs 午!)." : "You're the <b>Kana speller</b>: buds think in pictures and romaji, plates show kana. Watch for look-alikes like ぬ and め."} Switch roles in the Book tab.</p>
-    <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Streaks multiply your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
+    <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Serving several right in a row builds a combo that multiplies your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
   $("#endless").onclick = () => startSushi("endless");
   $("#daily").onclick = () => startSushi(rec ? "practice" : "daily");
 }
@@ -95,8 +95,8 @@ function startSushi(mode) {
       SFX.win(); if (served >= 10) confetti();
       const miss = [...missed.values()].slice(0, 8);
       resultScreen(st, { icon: served >= 15 ? "crown" : "sushi", title: served >= 15 ? "Five-star counter!" : "Counter closed", score: `¥${yen.toLocaleString()}`,
-        lines: [`${served} plates served · best streak ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
-        share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · streak ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
+        lines: [`${served} plates served · best combo ${bestCombo}`, miss.length ? `<span class="muted">Review these:</span><br>${miss.map(w => `<span class="glyph">${esc(w.k)}</span> ${esc(w.r)} <span class="ro">${esc(w.ro)} · ${esc(w.en)}</span>`).join("<br>")}` : "No mix-ups. Your buds are very full."],
+        share: timed ? `${APP_NAME} 🍣 Chef's Special ${todayKey()}\n¥${yen.toLocaleString()} · ${served} plates · combo ${bestCombo}\n${"🍣".repeat(Math.min(10, Math.ceil(served / 3)))}` : "",
         again: () => startSushi(mode === "daily" ? "practice" : mode) });
       setTimeout(() => newStamps.forEach(stampNow), 600);
     }

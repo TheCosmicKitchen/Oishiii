@@ -60,7 +60,7 @@ function dayDifficulty(d = new Date()) { return [1, .15, .3, .45, .6, .75, .9][d
 const DAYNAME = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 // ---- state
-const DEFAULT = () => ({ v: 1, name: "", role: "kana", romaji: true, sound: true, kana: {}, words: {}, buds: {}, daily: {}, best: {}, streak: { count: 0, last: "" }, served: 0 });
+const DEFAULT = () => ({ v: 1, name: "", role: "kana", romaji: true, sound: true, kana: {}, words: {}, buds: {}, daily: {}, best: {}, served: 0 });
 let S = DEFAULT();
 try { const raw = localStorage.getItem(SAVE_KEY); if (raw) S = Object.assign(DEFAULT(), JSON.parse(raw)); } catch (e) { }
 function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { } }
@@ -103,12 +103,10 @@ function rowUnlocked(i) { if (i === 0) return true; const prev = ROWS[i - 1]; re
 function dailyRec(game) { const d = S.daily[todayKey()]; return d && d[game]; }
 function setDaily(game, rec) {
   const t = todayKey(); (S.daily[t] || (S.daily[t] = {}))[game] = rec;
-  if (S.streak.last !== t) { const y = todayKey(new Date(now() - DAY)); S.streak.count = S.streak.last === y ? S.streak.count + 1 : 1; S.streak.last = t; }
   // keep only last 40 days of dailies
   const keys = Object.keys(S.daily).sort(); while (keys.length > 40) delete S.daily[keys.shift()];
   save();
 }
-function streakNow() { const t = todayKey(), y = todayKey(new Date(now() - DAY)); return (S.streak.last === t || S.streak.last === y) ? S.streak.count : 0; }
 
 // ---- sound (tiny synth blips, start after first tap)
 let AC = null;

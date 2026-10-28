@@ -13,6 +13,9 @@ The garden/planting metaphor tested poorly and was removed. Learning is a **rout
 
 Core kanji games: **Radical Builder** (pick the radicals of a kanji; spot a kanji from its radicals; RADKFILE components with Kanji alive names) and **Meaning Match** (pair kanji ↔ meaning).
 
+## The line: a rail trip across Japan
+Each sub-level is a real station (tools/route.tsv, 228 stops in order): Tokyo neighborhoods for kana, Tōkaidō for N5, Kansai & Sanyō for N4, Kyushu & Shikoku for N3, San'in, Hokuriku & the Alps for N2, and Kantō, Tōhoku & Hokkaido for N1, ending at Wakkanai. Clearing a sub-level lays track on the map (rails in `--rail` with `--tie` sleepers; next leg dashed sakura) and earns a station stamp: line-colored ink (kana blue, N5 red, N4 indigo, N3 green, N2 orange, N1 purple), circle / rounded square / octagon shapes, romaji on top, place kanji in the middle, prefecture and visit date below, like real 駅スタンプ. Stamps carry no emoji. Each station has one short, verified "known for" line.
+
 ## Look and feel (keep consistent)
 - **Theme:** soft Japanese spring: leaf greens, sakura pink, sky blue, warm wood accents (the old garden palette, without the planting mechanics). Very cute: bouncy pops, sakura confetti, buds that talk (おいしい！, うまい！, ちがう…, もう…).
 - **Art:** Microsoft Fluent Emoji **3D** only, embedded as 112px WebP data URIs.

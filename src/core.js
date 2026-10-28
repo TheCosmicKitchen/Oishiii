@@ -96,6 +96,7 @@ function stampHTML(w, size = 96, extra = "") {
 // ---- celebrations: stamps and trophies queue up; games hold them until the result screen
 const CELEB_Q = []; let celebBusy = false; let CELEB_HOLD = false;
 function stampNow(w) { CELEB_Q.push({ kind: "stamp", w }); nextCeleb(); }
+function stationNow(s) { CELEB_Q.push({ kind: "station", s }); nextCeleb(); }
 function stampMany(ws) { if (!ws.length) return; if (ws.length === 1) return stampNow(ws[0]); CELEB_Q.push({ kind: "many", ws }); nextCeleb(); }
 function holdCelebrations(on) { CELEB_HOLD = on; if (!on) nextCeleb(); }
 function nextCeleb() {
@@ -105,6 +106,10 @@ function nextCeleb() {
     const w = it.w;
     o.innerHTML = `<div class="stampcard"><span class="eyebrow">New stamp!</span>${stampHTML(w, 170, "thunk")}<div class="glyph" style="font-size:1.2rem">${esc(w.r)} <span class="ro">${esc(w.ro)}</span></div><b>${esc(w.en)}</b><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
     tone([196, 147], .09, "square", .06); setTimeout(() => SFX.pop(), 250);
+  } else if (it.kind === "station") {
+    const s = it.s;
+    o.innerHTML = `<div class="stampcard"><span class="eyebrow">Station stamp!</span>${stationStampHTML(s, 180, "thunk")}<b>${esc(s.stop.ro)}, ${esc(prefName(s))}</b><span style="font-size:.85rem">${esc(s.stop.f)}</span><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
+    tone([262, 196], .1, "square", .06); setTimeout(() => SFX.pop(), 260);
   } else if (it.kind === "many") {
     o.innerHTML = `<div class="stampcard"><span class="eyebrow">${it.ws.length} new stamps!</span><div class="manystamps">${it.ws.slice(0, 12).map((w, i) => `<div style="animation-delay:${i * .09}s" class="manyone">${stampHTML(w, 66, "thunk")}</div>`).join("")}</div><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
     it.ws.slice(0, 6).forEach((_, i) => setTimeout(() => tone([196, 147], .07, "square", .05), i * 90)); setTimeout(() => SFX.pop(), 600);
@@ -115,7 +120,7 @@ function nextCeleb() {
   }
   document.body.appendChild(o);
   let gone = false; const close = () => { if (gone) return; gone = true; o.remove(); celebBusy = false; if (!CELEB_Q.length && !PLAY && typeof render === "function") render(); setTimeout(nextCeleb, 150); };
-  o.onclick = close; setTimeout(close, it.kind === "stamp" ? 2600 : it.kind === "many" ? 3600 : 3400);
+  o.onclick = close; setTimeout(close, it.kind === "stamp" ? 2600 : it.kind === "many" || it.kind === "station" ? 3600 : 3400);
 }
 
 // ---- trophies
@@ -130,6 +135,9 @@ const TROPHIES = [
   { id: "firstclear", group: "Learn", name: "First Kanji Clear", icon: "pencil", desc: "Clear an N5 sub-level.", test: () => ALL_SUBS.some(s => !s.track.kana && subStars(s) > 0) },
   { id: "perfectsub", group: "Learn", name: "Perfect Ten", icon: "star", desc: "Get ★★★ on a sub-level.", test: () => ALL_SUBS.some(s => subStars(s) === 3) },
   ...TRACKS.filter(t => !t.kana).map(t => ({ id: "path_" + t.id, group: "Learn", name: `${t.name} Path`, icon: t.icon, desc: `Clear every ${t.name} sub-level.`, test: () => t.subs.every(s => subStars(s) > 0) })),
+  { id: "south", group: "Learn", name: "Southern Tip", icon: "train", desc: "Reach Nishi-Ōyama, Japan's southernmost JR station.", test: () => ALL_SUBS.some(s => s.stop && s.stop.st === "西大山" && visited(s)) },
+  { id: "east", group: "Learn", name: "First Sunrise", icon: "sun", desc: "Reach Higashi-Nemuro, Japan's easternmost station.", test: () => ALL_SUBS.some(s => s.stop && s.stop.st === "東根室" && visited(s)) },
+  { id: "north", group: "Learn", name: "End of the Line", icon: "crown", gold: true, desc: "Reach Wakkanai, Japan's northernmost station.", test: () => ALL_SUBS.some(s => s.stop && s.stop.st === "稚内" && visited(s)) },
   { id: "goldpath", group: "Learn", name: "Golden N5", icon: "crown", gold: true, desc: "★★★ on every N5 sub-level.", test: () => TRACKS[1].subs.every(s => subStars(s) === 3) },
   // stamps
   { id: "stamp1", group: "Stamps", name: "First Stamp", icon: "lantern", desc: "Collect your first kanji stamp.", test: () => foundCount() >= 1 },

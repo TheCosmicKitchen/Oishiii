@@ -4,7 +4,7 @@
   --bg:#F1F6EA; --surface:#FFFFFF; --surface-2:#E5EFDC; --ink:#22362A; --ink-soft:#5C7264;
   --leaf:#4E9F69; --leaf-deep:#2E7647; --sakura:#EE7299; --sakura-soft:#FCE2EB;
   --soil:#9C6B4A; --soil-deep:#704731; --stake:#E9CFA3; --sun:#F5C24F; --sky:#D3ECF6;
-  --line:#D2E1C9; --good:#3E9A5E; --near:#E6AE2E; --kin:#4F9FD0; --bad:#D9534F; --on-accent:#FFFFFF; --shadow:rgba(40,70,45,.14);
+  --sea:#D9EEF5; --land:#EEF5E6; --coast:#A9C3A0; --rail:#7A5236; --tie:#E9CFA3; --line:#D2E1C9; --good:#3E9A5E; --near:#E6AE2E; --kin:#4F9FD0; --bad:#D9534F; --on-accent:#FFFFFF; --shadow:rgba(40,70,45,.14);
   --f-display:"Mochiy Pop One","M PLUS Rounded 1c",system-ui,sans-serif;
   --f-body:"M PLUS Rounded 1c",system-ui,-apple-system,"Hiragino Maru Gothic ProN",sans-serif;
   --f-glyph:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
@@ -14,13 +14,13 @@
   --bg:#12201A; --surface:#1A2B22; --surface-2:#22372B; --ink:#E7F2E2; --ink-soft:#A6BFAE;
   --leaf:#6CC488; --leaf-deep:#94DDAA; --sakura:#FF8FB3; --sakura-soft:#3B2431;
   --soil:#6B4834; --soil-deep:#4C3223; --stake:#C9AC80; --sun:#EFC15A; --sky:#1E3845;
-  --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
+  --sea:#142A33; --land:#1F3529; --coast:#3E5E48; --rail:#C9A27A; --tie:#4A3424; --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
   color-scheme:dark; } }
 :root[data-theme="dark"]{
   --bg:#12201A; --surface:#1A2B22; --surface-2:#22372B; --ink:#E7F2E2; --ink-soft:#A6BFAE;
   --leaf:#6CC488; --leaf-deep:#94DDAA; --sakura:#FF8FB3; --sakura-soft:#3B2431;
   --soil:#6B4834; --soil-deep:#4C3223; --stake:#C9AC80; --sun:#EFC15A; --sky:#1E3845;
-  --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
+  --sea:#142A33; --land:#1F3529; --coast:#3E5E48; --rail:#C9A27A; --tie:#4A3424; --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
   color-scheme:dark; }
 
 html,body{height:100%}
@@ -415,7 +415,7 @@ label.lab{font-weight:800;font-size:.85rem}
 .subgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 8px}
 .subnode{position:relative;border:2px dashed var(--line);background:var(--surface);border-radius:18px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .subnode .subnum{position:absolute;top:-8px;left:-6px;background:var(--surface-2);color:var(--ink-soft);border-radius:99px;font-size:.68rem;font-weight:800;padding:1px 7px;font-variant-numeric:tabular-nums}
-.subnode .subprev{font-size:1.45rem;letter-spacing:1px;min-height:1.6rem;display:grid;place-items:center;white-space:nowrap}
+.subnode .subprev{display:grid;place-items:center;white-space:nowrap}
 .subnode small{font-size:.62rem;font-weight:800;color:var(--ink-soft)}
 .subnode.open{border:2px solid var(--sakura);background:var(--surface)}
 .subnode.next{animation:bob 2s ease-in-out infinite;box-shadow:0 4px 0 color-mix(in srgb,var(--sakura) 40%,transparent)}
@@ -474,3 +474,28 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .mm.k{background:color-mix(in srgb,var(--sky) 45%,var(--surface))}
 .bubble .want.big{font-size:.95rem}
 .radpair{display:inline-flex;align-items:center;gap:6px}
+
+/* ===== rail map ===== */
+.railmap-wrap{position:relative;border-radius:18px;overflow:hidden;border:1.5px solid var(--line)}
+.railmap{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:auto}
+.railmap .ml{fill:var(--ink);font-family:var(--f-glyph);font-weight:600;paint-order:stroke;stroke:var(--land);stroke-width:3px;stroke-linejoin:round}
+.railmap .mlnext{fill:var(--sakura)}
+.railmap .mstop.tap{cursor:pointer}
+.railmap .mpulse{fill:var(--sakura);opacity:.25;transform-box:fill-box;transform-origin:center;animation:mpulse 1.6s ease-out infinite}
+@keyframes mpulse{from{transform:scale(.6);opacity:.45}to{transform:scale(1.6);opacity:0}}
+.railmap .mplanned{animation:dashmove 1.2s linear infinite}
+@keyframes dashmove{to{stroke-dashoffset:-30}}
+.maptoggle{position:absolute;left:8px;bottom:8px;display:flex;gap:6px}
+.maptoggle .chip{cursor:pointer;font-size:.75rem;padding:3px 9px 3px 5px;box-shadow:0 2px 0 var(--line)}
+.maptoggle .chip.on{background:var(--sakura-soft);border-color:var(--sakura)}
+.stationcard{border-radius:16px;overflow:hidden;border:2px solid var(--lv);background:var(--surface)}
+.stbar{background:var(--lv);color:#FBF6EA;display:flex;justify-content:space-between;gap:8px;padding:4px 12px;font-size:.72rem;font-weight:800;letter-spacing:.04em;flex-wrap:wrap}
+.stbody{padding:10px 12px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.stname{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.stname .glyph{font-size:1.9rem;color:var(--lv)}
+.stname small{font-weight:800;color:var(--ink-soft)}
+.stbody p{font-size:.88rem}
+.subnode .subplace{font-size:1.2rem;color:var(--ink);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.subnode .subprev{font-size:.85rem;color:var(--ink-soft);letter-spacing:0;min-height:1rem}
+.subnode.cleared .subplace{color:var(--lv)}
+@media (prefers-reduced-motion: reduce){.railmap .mpulse,.railmap .mplanned{animation:none}}

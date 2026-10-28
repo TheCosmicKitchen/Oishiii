@@ -1,0 +1,229 @@
+# track	station (as named in ekidata)	place	reading	romaji	pref	known for
+kana	東京	東京	とうきょう	Tōkyō	13	The red-brick Marunouchi station building, opened in 1914
+kana	秋葉原	秋葉原	あきはばら	Akihabara	13	Electric Town: anime, games and retro arcades
+kana	上野	上野	うえの	Ueno	13	Cherry blossoms in Ueno Park and the zoo's giant pandas
+kana	浅草	浅草	あさくさ	Asakusa	13	Sensō-ji temple and the giant red lantern of Kaminarimon
+kana	原宿	原宿	はらじゅく	Harajuku	13	Takeshita Street crêpes and the forest of Meiji Jingū
+kana	渋谷	渋谷	しぶや	Shibuya	13	The scramble crossing and the faithful dog Hachikō
+n5	横浜	横浜	よこはま	Yokohama	14	Japan's biggest Chinatown and the Minato Mirai waterfront
+n5	鎌倉	鎌倉	かまくら	Kamakura	14	The Great Buddha and Tsurugaoka Hachimangū shrine
+n5	小田原	小田原	おだわら	Odawara	14	Odawara Castle and kamaboko fish cakes
+n5	熱海	熱海	あたみ	Atami	22	Seaside hot springs a short shinkansen hop from Tokyo
+n5	三島	三島	みしま	Mishima	22	Spring-fed rivers and Mt Fuji views from the Mishima Skywalk
+n5	静岡	静岡	しずおか	Shizuoka	22	Green tea fields with Mt Fuji behind them
+n5	浜松	浜松	はままつ	Hamamatsu	22	Grilled eel from Lake Hamana and a museum of musical instruments
+n5	名古屋	名古屋	なごや	Nagoya	23	Nagoya Castle's golden shachihoko and miso katsu
+n4	岐阜	岐阜	ぎふ	Gifu	21	Cormorant fishing on the Nagara River on summer nights
+n4	関ケ原	関ケ原	せきがはら	Sekigahara	21	The battlefield of 1600 that began the Edo period
+n4	彦根	彦根	ひこね	Hikone	25	Hikone Castle, a national treasure, and the cat mascot Hikonyan
+n4	京都	京都	きょうと	Kyōto	26	Over 1,600 temples, Kiyomizu-dera and the Gion geisha district
+n4	嵐山	嵐山	あらしやま	Arashiyama	26	The bamboo grove and the Togetsukyō bridge
+n4	稲荷	稲荷	いなり	Inari	26	Thousands of red torii gates at Fushimi Inari Taisha
+n4	宇治	宇治	うじ	Uji	26	Matcha, and Byōdō-in, the temple on the 10-yen coin
+n4	奈良	奈良	なら	Nara	29	Bowing deer and the Great Buddha of Tōdai-ji
+n4	大阪	大阪	おおさか	Ōsaka	27	Osaka Castle and kuidaore, eating until you drop
+n4	難波	難波	なんば	Namba	27	Dōtonbori's neon, the Glico runner and takoyaki
+n4	天王寺	天王寺	てんのうじ	Tennōji	27	Shitennō-ji, founded in 593 by Prince Shōtoku
+n4	神戸	神戸	こうべ	Kōbe	28	Kobe beef and the harbor lights at night
+n4	姫路	姫路	ひめじ	Himeji	28	Himeji Castle, the White Heron Castle
+n4	岡山	岡山	おかやま	Okayama	33	Momotarō the Peach Boy and Kōrakuen garden
+n4	倉敷	倉敷	くらしき	Kurashiki	33	Willow-lined canals of the Bikan historical quarter
+n4	尾道	尾道	おのみち	Onomichi	34	Hillside temples, cats, and the Shimanami Kaidō bike route
+n4	広島	広島	ひろしま	Hiroshima	34	The Peace Memorial and Hiroshima-style okonomiyaki
+n3	宮島口	宮島口	みやじまぐち	Miyajimaguchi	34	The ferry to Itsukushima Shrine's floating torii
+n3	岩国	岩国	いわくに	Iwakuni	35	Kintaikyō, a wooden bridge of five arches
+n3	下関	下関	しものせき	Shimonoseki	35	Fugu pufferfish, the city's famous dish
+n3	門司港	門司港	もじこう	Mojikō	40	A retro station from 1914 and harbor-side brick buildings
+n3	小倉	小倉	こくら	Kokura	40	Kokura Castle and yaki-udon, said to be born here
+n3	博多	博多	はかた	Hakata	40	Tonkotsu ramen and riverside yatai food stalls
+n3	太宰府	太宰府	だざいふ	Dazaifu	40	Dazaifu Tenmangū, where students pray for exam luck
+n3	西鉄柳川	柳川	やながわ	Yanagawa	40	Punting boats along castle-town canals
+n3	佐賀	佐賀	さが	Saga	41	A hot-air balloon fiesta every autumn
+n3	有田	有田	ありた	Arita	41	Arita porcelain, made here for 400 years
+n3	長崎	長崎	ながさき	Nagasaki	42	Champon noodles and a sparkling night view
+n3	島原	島原	しまばら	Shimabara	42	A castle town with carp swimming in its waterways
+n3	熊本	熊本	くまもと	Kumamoto	43	Kumamoto Castle and the bear mascot Kumamon
+n3	阿蘇	阿蘇	あそ	Aso	43	One of the world's largest volcanic calderas
+n3	出水	出水	いずみ	Izumi	46	More than 10,000 cranes spend the winter here
+n3	鹿児島中央	鹿児島	かごしま	Kagoshima	46	Smoky Sakurajima volcano across the bay
+n3	指宿	指宿	いぶすき	Ibusuki	46	Hot sand baths on the beach
+n3	西大山	西大山	にしおおやま	Nishi-Ōyama	46	Japan's southernmost JR station, facing Mt Kaimon
+n3	霧島神宮	霧島神宮	きりしまじんぐう	Kirishima-Jingū	46	A shrine in the misty Kirishima mountains
+n3	都城	都城	みやこのじょう	Miyakonojō	45	Home of Kirishima shōchū
+n3	青島	青島	あおしま	Aoshima	45	A tiny island shrine ringed by the "devil's washboard" rocks
+n3	宮崎	宮崎	みやざき	Miyazaki	45	Palm-lined streets, mangoes and chicken nanban
+n3	大分	大分	おおいた	Ōita	44	Toriten chicken tempura, in the prefecture with the most hot springs
+n3	由布院	由布院	ゆふいん	Yufuin	44	A quiet onsen town under twin-peaked Mt Yufu
+n3	日田	日田	ひた	Hita	44	An old merchant quarter called the "little Kyoto" of Kyushu
+n3	中津	中津	なかつ	Nakatsu	44	The karaage fried chicken capital
+n3	別府	別府	べっぷ	Beppu	44	The steaming "hells" of Japan's hot spring capital
+n3	八幡浜	八幡浜	やわたはま	Yawatahama	38	Mikan oranges and the ferry from Beppu
+n3	宇和島	宇和島	うわじま	Uwajima	38	Taimeshi sea-bream rice and a hilltop castle
+n3	松山	松山	まつやま	Matsuyama	38	Dōgo Onsen, one of Japan's oldest hot springs
+n3	高知	高知	こうち	Kōchi	39	Seared bonito (katsuo no tataki) and the Yosakoi festival
+n3	大歩危	大歩危	おおぼけ	Ōboke	36	A deep river gorge with emerald water
+n3	徳島	徳島	とくしま	Tokushima	36	The Awa Odori dance festival
+n3	鳴門	鳴門	なると	Naruto	36	Giant whirlpools in the Naruto Strait
+n3	高松	高松	たかまつ	Takamatsu	37	Sanuki udon and Ritsurin Garden
+n3	琴平	琴平	ことひら	Kotohira	37	785 stone steps up to Konpira-san shrine
+n3	丸亀	丸亀	まるがめ	Marugame	37	Marugame Castle and bone-in grilled chicken
+n2	児島	児島	こじま	Kojima	33	Jeans Street and the Great Seto Bridge
+n2	備中高梁	高梁	たかはし	Takahashi	33	Bitchū Matsuyama, a castle above the clouds
+n2	米子	米子	よなご	Yonago	31	The gateway to Mt Daisen
+n2	境港	境港	さかいみなと	Sakaiminato	31	A street of bronze yōkai from GeGeGe no Kitarō
+n2	松江	松江	まつえ	Matsue	32	Matsue Castle and sunsets over Lake Shinji
+n2	出雲市	出雲	いずも	Izumo	32	Izumo Taisha, the shrine of matchmaking
+n2	倉吉	倉吉	くらよし	Kurayoshi	31	White-walled storehouses along a canal
+n2	鳥取	鳥取	とっとり	Tottori	31	The famous Tottori Sand Dunes
+n2	城崎温泉	城崎温泉	きのさきおんせん	Kinosaki Onsen	28	Hopping between seven public baths in a yukata
+n2	天橋立	天橋立	あまのはしだて	Amanohashidate	26	A pine-covered sandbar, one of Japan's three great views
+n2	敦賀	敦賀	つるが	Tsuruga	18	The western end of the Hokuriku Shinkansen since 2024
+n2	福井	福井	ふくい	Fukui	18	Dinosaur fossils, and dinosaurs outside the station
+n2	芦原温泉	芦原温泉	あわらおんせん	Awara Onsen	18	Hot springs near the Tōjinbō sea cliffs
+n2	加賀温泉	加賀温泉	かがおんせん	Kaga Onsen	17	Kutani pottery and a cluster of onsen villages
+n2	金沢	金沢	かなざわ	Kanazawa	17	Kenroku-en garden and gold leaf on everything
+n2	富山	富山	とやま	Toyama	16	Firefly squid, glass art and the Tateyama mountains
+n2	宇奈月温泉	宇奈月温泉	うなづきおんせん	Unazuki Onsen	16	The little trains of the Kurobe Gorge Railway
+n2	糸魚川	糸魚川	いといがわ	Itoigawa	15	Jade stones on the beaches
+n2	湯田中	湯田中	ゆだなか	Yudanaka	20	Snow monkeys bathing in hot springs
+n2	長野	長野	ながの	Nagano	20	Zenkō-ji temple and the 1998 Winter Olympics
+n2	穂高	穂高	ほたか	Hotaka	20	Wasabi farms in the Azumino valley
+n2	松本	松本	まつもと	Matsumoto	20	Matsumoto Castle, the black "crow castle"
+n2	上諏訪	上諏訪	かみすわ	Kami-Suwa	20	Lake Suwa fireworks and the Onbashira festival
+n2	奈良井	奈良井	ならい	Narai	20	A post town on the old Nakasendō road
+n2	木曽福島	木曽福島	きそふくしま	Kiso-Fukushima	20	Soba and an old checkpoint of the Kiso valley
+n2	南木曽	南木曽	なぎそ	Nagiso	20	A walk to the preserved post town of Tsumago
+n2	中津川	中津川	なかつがわ	Nakatsugawa	21	Chestnut kurikinton sweets and the road to Magome
+n2	下呂	下呂	げろ	Gero	21	One of Japan's three famous hot springs
+n2	高山	高山	たかやま	Takayama	21	Old merchant streets and Hida beef
+n2	飛騨古川	飛騨古川	ひだふるかわ	Hida-Furukawa	21	Carp-filled canals beside white-walled storehouses
+n2	甲府	甲府	こうふ	Kōfu	19	Grapes, wine and hōtō noodle stew
+n2	石和温泉	石和温泉	いさわおんせん	Isawa Onsen	19	Hot springs among peach orchards
+n2	大月	大月	おおつき	Ōtsuki	19	Saruhashi, the "monkey bridge"
+n2	河口湖	河口湖	かわぐちこ	Kawaguchiko	19	Mt Fuji reflected in Lake Kawaguchi
+n2	富士山	富士山	ふじさん	Fujisan	19	A station named after the mountain itself
+n2	御殿場	御殿場	ごてんば	Gotemba	22	Shopping and hiking at the foot of Mt Fuji
+n2	箱根湯本	箱根湯本	はこねゆもと	Hakone-Yumoto	14	Hot springs and the Hakone mountain railway
+n1	伊東	伊東	いとう	Itō	22	Hot springs on the Izu coast
+n1	伊豆急下田	下田	しもだ	Shimoda	22	The Black Ships port where Japan opened to the West in 1854
+n1	修善寺	修善寺	しゅぜんじ	Shuzenji	22	A bamboo path in an onsen town dating to the 800s
+n1	江ノ島	江ノ島	えのしま	Enoshima	14	An island shrine with sunset views of Mt Fuji
+n1	横須賀	横須賀	よこすか	Yokosuka	14	Navy curry
+n1	川崎	川崎	かわさき	Kawasaki	14	Kawasaki Daishi temple
+n1	品川	品川	しながわ	Shinagawa	13	The first post station on the old Tōkaidō road
+n1	築地	築地	つきじ	Tsukiji	13	Sushi breakfasts at the outer fish market
+n1	両国	両国	りょうごく	Ryōgoku	13	Sumo wrestling at the Kokugikan
+n1	押上	押上	おしあげ	Oshiage	13	Tokyo Skytree, 634 meters tall
+n1	柴又	柴又	しばまた	Shibamata	13	Old downtown Tokyo, home of the Tora-san films
+n1	池袋	池袋	いけぶくろ	Ikebukuro	13	Sunshine City and the anime shops of Otome Road
+n1	吉祥寺	吉祥寺	きちじょうじ	Kichijōji	13	Inokashira Park, a stroll from the Ghibli Museum
+n1	高尾山口	高尾山	たかおさん	Takaosan	13	Mt Takao, Tokyo's favorite day hike
+n1	奥多摩	奥多摩	おくたま	Okutama	13	Tokyo's own mountains and river gorges
+n1	川越	川越	かわごえ	Kawagoe	11	"Little Edo" and its wooden bell tower
+n1	西武秩父	秩父	ちちぶ	Chichibu	11	Hills of pink moss phlox and a winter night festival
+n1	熊谷	熊谷	くまがや	Kumagaya	11	One of Japan's hottest cities in summer
+n1	大宮	大宮	おおみや	Ōmiya	11	The Railway Museum
+n1	舞浜	舞浜	まいはま	Maihama	12	Tokyo Disney Resort
+n1	千葉	千葉	ちば	Chiba	12	The world's longest suspended monorail
+n1	安房鴨川	鴨川	かもがわ	Kamogawa	12	Orcas at Kamogawa Sea World
+n1	成田	成田	なりた	Narita	12	Naritasan temple and grilled eel on the approach street
+n1	佐原	佐原	さわら	Sawara	12	A canal town of old merchant houses
+n1	銚子	銚子	ちょうし	Chōshi	12	Soy sauce breweries and the Inubōsaki lighthouse
+n1	鹿島神宮	鹿島神宮	かしまじんぐう	Kashima-Jingū	08	One of the oldest shrines in eastern Japan
+n1	大洗	大洗	おおあらい	Ōarai	08	A torii gate standing on the rocks in the sea
+n1	水戸	水戸	みと	Mito	08	Kairakuen plum garden and natto
+n1	笠間	笠間	かさま	Kasama	08	Kasama pottery and chestnuts
+n1	つくば	つくば	つくば	Tsukuba	08	A science city at the foot of Mt Tsukuba
+n1	益子	益子	ましこ	Mashiko	09	Mashiko pottery
+n1	宇都宮	宇都宮	うつのみや	Utsunomiya	09	Gyōza dumplings
+n1	日光	日光	にっこう	Nikkō	09	Tōshō-gū and the "see no evil" monkeys
+n1	鬼怒川温泉	鬼怒川温泉	きぬがわおんせん	Kinugawa Onsen	09	A river gorge onsen and the Edo Wonderland theme park
+n1	佐野	佐野	さの	Sano	09	Sano ramen
+n1	足利	足利	あしかが	Ashikaga	09	A flower park with giant wisteria
+n1	桐生	桐生	きりゅう	Kiryū	10	An old silk-weaving town
+n1	高崎	高崎	たかさき	Takasaki	10	Daruma dolls
+n1	上州富岡	富岡	とみおか	Tomioka	10	Tomioka Silk Mill, a World Heritage site
+n1	横川	横川	よこかわ	Yokokawa	10	Tōge no kamameshi, rice in a clay pot
+n1	軽井沢	軽井沢	かるいざわ	Karuizawa	20	A cool summer resort in the mountains
+n1	土合	土合	どあい	Doai	10	The "mole station", nearly 500 steps underground
+n1	越後湯沢	越後湯沢	えちごゆざわ	Echigo-Yuzawa	15	Ski slopes in the "snow country" of Kawabata's novel
+n1	長岡	長岡	ながおか	Nagaoka	15	One of Japan's three great fireworks festivals
+n1	燕三条	燕三条	つばめさんじょう	Tsubame-Sanjō	15	Metal crafts: spoons, knives and tableware
+n1	新潟	新潟	にいがた	Niigata	15	Koshihikari rice and sake
+n1	村上	村上	むらかみ	Murakami	15	Salmon hung to dry in the sea breeze
+n1	鶴岡	鶴岡	つるおか	Tsuruoka	06	Dewa Sanzan, three sacred mountains
+n1	酒田	酒田	さかた	Sakata	06	Sankyo rice storehouses lined with zelkova trees
+n1	象潟	象潟	きさかた	Kisakata	05	Rice paddies that were once a bay, praised by the poet Bashō
+n1	新庄	新庄	しんじょう	Shinjō	06	Boat rides down the Mogami River
+n1	大石田	大石田	おおいしだ	Ōishida	06	The bus to Ginzan Onsen's gas-lit inns
+n1	天童	天童	てんどう	Tendō	06	Hand-carved shōgi pieces
+n1	山寺	山寺	やまでら	Yamadera	06	A thousand steps up to a cliffside temple
+n1	山形	山形	やまがた	Yamagata	06	Cherries, and imoni potato stew in autumn
+n1	米沢	米沢	よねざわ	Yonezawa	06	Yonezawa beef
+n1	喜多方	喜多方	きたかた	Kitakata	07	Kitakata ramen, eaten even for breakfast
+n1	会津若松	会津若松	あいづわかまつ	Aizu-Wakamatsu	07	Tsuruga Castle and the red cow toy akabeko
+n1	湯野上温泉	湯野上温泉	ゆのかみおんせん	Yunokami Onsen	07	A thatched-roof station near the Ōuchi-juku post town
+n1	猪苗代	猪苗代	いなわしろ	Inawashiro	07	Lake Inawashiro, the "heavenly mirror lake"
+n1	福島	福島	ふくしま	Fukushima	07	Peaches and the flower hill of Hanamiyama
+n1	白石	白石	しろいし	Shiroishi	04	Shiroishi Castle and short umen noodles
+n1	仙台	仙台	せんだい	Sendai	04	Grilled beef tongue and the Tanabata festival
+n1	松島海岸	松島	まつしま	Matsushima	04	Pine-covered islands, one of Japan's three great views
+n1	石巻	石巻	いしのまき	Ishinomaki	04	A street of manga statues by Ishinomori Shōtarō
+n1	鳴子温泉	鳴子温泉	なるこおんせん	Naruko Onsen	04	Kokeshi dolls and a gorge of autumn colors
+n1	気仙沼	気仙沼	けせんぬま	Kesennuma	04	A busy fishing port famous for shark fin
+n1	一ノ関	一関	いちのせき	Ichinoseki	03	Mochi feasts and boat songs in Geibikei gorge
+n1	平泉	平泉	ひらいずみ	Hiraizumi	03	The golden hall of Chūson-ji
+n1	花巻	花巻	はなまき	Hanamaki	03	Hometown of the poet Miyazawa Kenji
+n1	遠野	遠野	とおの	Tōno	03	Folk tales of kappa water sprites
+n1	釜石	釜石	かまいし	Kamaishi	03	An iron town that hosted the 2019 Rugby World Cup
+n1	宮古	宮古	みやこ	Miyako	03	Jōdogahama, a beach of white rocks
+n1	久慈	久慈	くじ	Kuji	03	The ama divers of the Sanriku coast
+n1	八戸	八戸	はちのへ	Hachinohe	02	Morning markets and sea-urchin soup
+n1	盛岡	盛岡	もりおか	Morioka	03	Wanko soba, bowl after tiny bowl
+n1	田沢湖	田沢湖	たざわこ	Tazawako	05	Japan's deepest lake
+n1	角館	角館	かくのだて	Kakunodate	05	Samurai houses under weeping cherry trees
+n1	秋田	秋田	あきた	Akita	05	The Kantō festival's towering lantern poles
+n1	男鹿	男鹿	おが	Oga	05	Namahage demons who visit on New Year's Eve
+n1	大館	大館	おおだて	Ōdate	05	Hachikō's hometown and kiritanpo hotpot
+n1	十二湖	十二湖	じゅうにこ	Jūniko	02	The blue Aoike pond in a beech forest
+n1	五所川原	五所川原	ごしょがわら	Goshogawara	02	Giant Tachineputa festival floats
+n1	弘前	弘前	ひろさき	Hirosaki	02	Hirosaki Castle's cherry blossoms and apples
+n1	青森	青森	あおもり	Aomori	02	The Nebuta festival and apples
+n1	浅虫温泉	浅虫温泉	あさむしおんせん	Asamushi Onsen	02	A seaside onsen on Mutsu Bay
+n1	大湊	大湊	おおみなと	Ōminato	02	The gateway to the sacred Mt Osorezan
+n1	木古内	木古内	きこない	Kikonai	01	The first stop in Hokkaido after the Seikan Tunnel
+n1	函館	函館	はこだて	Hakodate	01	Squid, the morning market and a famous night view
+n1	五稜郭	五稜郭	ごりょうかく	Goryōkaku	01	A star-shaped fort
+n1	大沼公園	大沼	おおぬま	Ōnuma	01	Lakes and islets beneath Mt Komagatake
+n1	森	森	もり	Mori	01	Ikameshi, squid stuffed with rice
+n1	長万部	長万部	おしゃまんべ	Oshamambe	01	Crab rice bentō
+n1	洞爺	洞爺	とうや	Tōya	01	A caldera lake with fireworks on summer nights
+n1	室蘭	室蘭	むろらん	Muroran	01	Factory night views and curry ramen
+n1	登別	登別	のぼりべつ	Noboribetsu	01	Hell Valley and its oni statues
+n1	白老	白老	しらおい	Shiraoi	01	Upopoy, the national Ainu museum
+n1	苫小牧	苫小牧	とまこまい	Tomakomai	01	Hokki surf clams
+n1	千歳	千歳	ちとせ	Chitose	01	Salmon swimming upriver in autumn
+n1	札幌	札幌	さっぽろ	Sapporo	01	Miso ramen and the Snow Festival
+n1	小樽	小樽	おたる	Otaru	01	The canal, glass workshops and music boxes
+n1	余市	余市	よいち	Yoichi	01	A whisky distillery by the sea
+n1	倶知安	倶知安	くっちゃん	Kutchan	01	A ski town at the foot of Mt Yōtei
+n1	ニセコ	ニセコ	にせこ	Niseko	01	Deep powder snow
+n1	旭川	旭川	あさひかわ	Asahikawa	01	Asahiyama Zoo's penguin walk and shōyu ramen
+n1	美瑛	美瑛	びえい	Biei	01	Patchwork hills and the Blue Pond
+n1	富良野	富良野	ふらの	Furano	01	Lavender fields in July
+n1	新得	新得	しんとく	Shintoku	01	Soba from the Tokachi plains
+n1	帯広	帯広	おびひろ	Obihiro	01	Butadon, grilled pork rice bowls
+n1	池田	池田	いけだ	Ikeda	01	Tokachi wine from a castle-shaped winery
+n1	釧路	釧路	くしろ	Kushiro	01	Red-crowned cranes and the Kushiro Marsh
+n1	厚岸	厚岸	あっけし	Akkeshi	01	Oysters all year round
+n1	根室	根室	ねむろ	Nemuro	01	Hanasaki crab on Japan's eastern edge
+n1	東根室	東根室	ひがしねむろ	Higashi-Nemuro	01	Japan's easternmost station
+n1	摩周	摩周	ましゅう	Mashū	01	One of the clearest lakes in the world
+n1	川湯温泉	川湯温泉	かわゆおんせん	Kawayu Onsen	01	The steaming sulfur vents of Mt Iō
+n1	知床斜里	知床	しれとこ	Shiretoko	01	The gateway to the wild Shiretoko peninsula
+n1	網走	網走	あばしり	Abashiri	01	Drift ice and an old prison museum
+n1	北見	北見	きたみ	Kitami	01	Onions and yakiniku
+n1	上川	上川	かみかわ	Kamikawa	01	The gateway to Sōunkyō gorge
+n1	名寄	名寄	なよろ	Nayoro	01	Fields of sunflowers
+n1	音威子府	音威子府	おといねっぷ	Otoineppu	01	Black soba noodles
+n1	稚内	稚内	わっかない	Wakkanai	01	Japan's northernmost station: the end of the line!

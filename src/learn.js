@@ -44,17 +44,20 @@ function viewLearn(v) {
     <div class="stats"><div class="stat"><b>${plantedKana().length}</b><span>kana / 46</span></div><div class="stat"><b>${stamped}</b><span>kanji / ${KJ.length.toLocaleString()}</span></div><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}</b><span>levels / ${ALL_SUBS.length}</span></div></div>
     <div class="row">${nx ? `<button class="btn pink" id="continue">${IMG("sparkles")}${subStars(nx) ? "Replay" : "Continue"} ${esc(nx.title)}</button>` : ""}<button class="btn ghost" id="review" ${stamped || plantedKana().length ? "" : "disabled"}>${IMG("droplet")}Review</button></div></div></section>
   <section class="card stack path">
-    <header class="row"><button class="trainbtn" id="train" aria-label="Your route">${IMGW("station", 40)}</button><div style="flex:1;min-width:0"><h2>The route</h2><p class="muted" style="font-size:.8rem">Kana → N5 → N4 → N3 → N2 → N1. Each stop has 10 kanji.</p></div></header>
+    <header class="row"><button class="trainbtn" id="train" aria-label="Your line">${IMGW("train", 40)}</button><div style="flex:1;min-width:0"><h2>The line</h2><p class="muted" style="font-size:.8rem">Every stop is a real station. Clear its 10 kanji to lay track and ride there, from Tokyo to Wakkanai.</p></div></header>
+    ${railMapHTML(cur)}
+    ${nx ? stationCardHTML(nx, subStars(nx) ? "Revisit" : "Next stop") : ""}
     <div class="tracks" role="tablist">${TRACKS.map(t => { const done = t.subs.filter(s => subStars(s)).length; return `<button class="trk ${t === cur ? "on" : ""}" data-track="${t.id}" role="tab" aria-selected="${t === cur}">${IMGW(t.icon, 26)}<b>${t.jp}</b><small>${done}/${t.subs.length}</small></button>`; }).join("")}</div>
     <div class="row"><span class="eyebrow">${cur.kana ? "Hiragana" : `JLPT ${cur.name} · ${cur.subs.reduce((a, s) => a + s.items.length, 0)} kanji`}</span><span class="spacer"></span><span class="pill pink">${trackStars(cur)}/${cur.subs.length * 3} ★</span></div>
-    <div class="subgrid">${cur.subs.map(s => { const open = subUnlocked(s), st = subStars(s), dn = subDoneCount(s); const prev = s.items.slice(0, 3).map(it => isKanaSub(s) ? it : it.k).join("");
+    <div class="subgrid">${cur.subs.map(s => { const open = subUnlocked(s), st = subStars(s), dn = subDoneCount(s); const prev = s.items.slice(0, 4).map(it => isKanaSub(s) ? it : it.k).join("");
       return `<button class="subnode ${st ? "cleared" : open ? "open" : "locked"} ${s === nx ? "next" : ""}" ${open ? `data-sub="${s.id}"` : "disabled"} style="--lv:${STAMP_INK[cur.id] || "var(--leaf-deep)"}" aria-label="${esc(s.title)}${open ? "" : " locked"}">
-        <span class="subnum">${cur.kana ? s.num : s.num}</span><span class="subprev glyph">${open ? esc(prev) : IMGW("lock", 22)}</span><span class="lvstars">${starRow(st, 12)}</span><small>${dn}/${s.items.length}</small></button>`; }).join("")}</div>
+        <span class="subnum">${s.num}</span><span class="subplace glyph">${open ? esc(s.stop.p) : IMGW("lock", 22)}</span><span class="subprev glyph">${open ? esc(prev) : ""}</span><span class="lvstars">${starRow(st, 12)}</span><small>${open ? esc(s.stop.ro) : `${dn}/${s.items.length}`}</small></button>`; }).join("")}</div>
   </section>
   ${Object.keys(GATES).some(id => !gateOpen(id)) ? `<section class="card stack" style="gap:8px"><header class="row">${IMGW("station", 34)}<div style="flex:1;min-width:0"><h3>Next unlocks</h3><p class="muted" style="font-size:.8rem">Games only use kana you've learned and kanji you've stamped.</p></div></header>
     ${Object.keys(GATES).filter(id => !gateOpen(id)).slice(0, 3).map(id => `<div class="row" style="gap:8px;flex-wrap:nowrap">${IMGW(GATES[id].icon, 30)}<div style="flex:1;min-width:0"><b style="font-size:.88rem">${GATES[id].name}</b>${lockCard(id)}</div></div>`).join("")}</section>` : ""}`;
   $$("[data-track]", v).forEach(b => b.onclick = () => { S.track = b.dataset.track; save(); render(); });
-  $$("[data-sub]", v).forEach(b => b.onclick = () => openSub(SUB_BY[b.dataset.sub]));
+  $$(".subnode[data-sub]", v).forEach(b => b.onclick = () => openSub(SUB_BY[b.dataset.sub]));
+  bindRailMap(v);
   const c = $("#continue", v); if (c) c.onclick = () => openSub(nx);
   $("#review", v).onclick = startReview;
   // hidden: tap the little station five times to unlock up to any stop
@@ -81,7 +84,7 @@ function openSub(s) {
   openPlay(s.title, (st, hud) => {
     const stars = subStars(s);
     hud.innerHTML = `<span class="chip">${IMG("star")}${stars}/3</span>`;
-    st.innerHTML = `<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? "Study the cards, then pass the clear test to learn these kana." : "Study the cards, then pass the clear test to stamp all of these kanji. Mistakes come back until you get them."}</p></div></div>
+    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(s.stop.p)}.` : `Study the cards, then pass the clear test to lay track to ${esc(s.stop.p)} and stamp all of these kanji. Mistakes come back until you get them.`}</p></div></div>
       <div class="bigstars">${starRow(stars, 30)}</div>
       <div class="row" style="justify-content:center"><button class="btn ghost" id="study">${IMG("book")}Study cards</button><button class="btn pink" id="clear">${IMG("check")}${stars ? "Retest for stars" : "Clear test"}</button></div></div>
       <div class="itemgrid">${s.items.map((it, i) => isKanaSub(s)
@@ -221,13 +224,14 @@ function startClear(s) {
       onAnswer: (q, ok) => { if (q.w && isStamped(q.w)) touchWord(q.w, ok, false); },
       onFinish: ({ mistakes, total, missed }) => {
         const stars = starsFor(mistakes); const prev = subStars(s); const fresh = [];
-        if (stars > prev) S.subs[s.id] = { stars, date: todayKey() };
+        const firstVisit = !prev;
+        if (stars > prev) S.subs[s.id] = { stars, date: todayKey(), first: (S.subs[s.id] && S.subs[s.id].first) || todayKey() };
         if (isKanaSub(s)) s.items.forEach(k => { S.kana[k] = S.kana[k] || { pts: 7, last: now() }; S.kana[k].pts = Math.max(7, S.kana[k].pts); });
         else s.items.forEach(w => { if (touchWord(w, true, true)) fresh.push(w); });
         addStat("clears"); save();
         const nx = ALL_SUBS[s.idx + 1];
         SFX.win(); if (stars === 3) confetti(40);
-        st.innerHTML = `<div class="card result pop"><span class="eyebrow">${esc(s.title)} cleared!</span>${IMGW(stars === 3 ? "crown" : "sakura", 90)}
+        st.innerHTML = `<div class="card result pop"><span class="eyebrow">${esc(s.title)} cleared!</span>${firstVisit ? `<h2>Track laid to ${esc(s.stop.p)}!</h2><p class="muted" style="font-size:.85rem">${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : IMGW(stars === 3 ? "crown" : "sakura", 90)}
           <div class="bigstars">${starRow(stars, 40)}</div><div class="score">${mistakes} mistake${mistakes === 1 ? "" : "s"}</div>
           <p>${stars > prev ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : isKanaSub(s) ? "These kana are learned!" : `${fresh.length} kanji stamped into your book!`) : `Your best here is still ${"★".repeat(prev)}.`}</p>
           ${missed.length ? `<p class="muted" style="font-size:.85rem">Tricky ones: ${[...new Set(missed.map(q => q.w ? q.w.k : q.k))].map(x => `<span class="glyph">${esc(x)}</span>`).join(" ")}</p>` : ""}
@@ -235,7 +239,7 @@ function startClear(s) {
         $("#retry", st).onclick = () => startClear(s);
         if (nx) $("#nextsub", st).onclick = () => openSub(nx);
         $("#done", st).onclick = () => closePlay();
-        setTimeout(() => { stampMany(fresh); holdCelebrations(false); }, 500);
+        setTimeout(() => { if (firstVisit) stationNow(s); stampMany(fresh); holdCelebrations(false); }, 500);
       }
     });
   });
@@ -276,12 +280,13 @@ function viewBook(v) {
   v.innerHTML = `
   <section class="card stack"><header class="row">${IMGW("crown", 40)}<div style="flex:1;min-width:0"><h2>Collection</h2><p class="muted" style="font-size:.82rem">Everything you've learned, stamped and won.</p></div><span class="pill pink" style="font-size:.9rem">${completionPct()}%</span></header>
     <div class="bar" style="height:12px"><i style="width:${completionPct()}%"></i></div>
-    <div class="stats"><div class="stat"><b>${found}/${UNIQUE_WORDS.length}</b><span>stamps</span></div><div class="stat"><b>${plantedKana().length}/46</b><span>kana learned</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div>
-    <div class="stats" style="grid-template-columns:1fr 1fr"><div class="stat"><b>${ALL_SUBS.reduce((a, s) => a + subStars(s), 0)}/${ALL_SUBS.length * 3}</b><span>route stars</span></div><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
+    <div class="stats"><div class="stat"><b>${found}/${UNIQUE_WORDS.length}</b><span>kanji stamps</span></div><div class="stat"><b>${plantedKana().length}/46</b><span>kana learned</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div>
+    <div class="stats"><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}/${ALL_SUBS.length}</b><span>stations</span></div><div class="stat"><b>${ALL_SUBS.reduce((a, s) => a + subStars(s), 0)}/${ALL_SUBS.length * 3}</b><span>route stars</span></div><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
     ${["Learn", "Stamps", "Sushi", "Puzzles", "Rally cards"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
   </section>
-  <section class="stampbook"><header class="row"><h2>Stamp book</h2><span class="spacer"></span><span class="pill pink">${found}/${UNIQUE_WORDS.length} stamps</span></header>
+  ${stationStampsHTML()}
+  <section class="stampbook"><header class="row"><h2>Kanji stamps</h2><span class="spacer"></span><span class="pill pink">${found}/${UNIQUE_WORDS.length} stamps</span></header>
     <p class="muted" style="font-size:.85rem">Like the 駅スタンプ (eki sutanpu, station stamps) at Japanese train stations: every kanji you clear gets stamped here, one page per JLPT level.</p>
     ${STAMP_PAGES.map(pg => { const ws = pageWords(pg); const got = ws.filter(isStamped).length; return `<details class="stamppage" data-page="${pg.id}" ${BOOK_OPEN[pg.id] ? "open" : ""}><summary class="stamppage-h">${IMGW(pg.icon, 24)}<h3>${pg.name}</h3><span class="spacer"></span>${got === ws.length ? `<span class="kanseal" title="Page complete">完</span>` : `<small>${got}/${ws.length}</small>`}</summary><div class="pagebody">${BOOK_OPEN[pg.id] ? stampGridHTML(pg) : ""}</div></details>`; }).join("")}
   </section>
@@ -303,8 +308,8 @@ function viewBook(v) {
     <div class="row"><button class="btn ghost small" id="reset">Start over</button><span id="resetconfirm"></span></div>
     <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT). Kanji, readings and meanings from KANJIDIC2; radicals from RADKFILE, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (CC BY-SA 4.0). Radical names from Kanji alive (CC BY 4.0). JLPT levels from Jonathan Waller's lists (CC BY).</p>
   </section>`;
-  $$("details.stamppage", v).forEach(d => d.addEventListener("toggle", () => { const pg = STAMP_PAGES.find(p => p.id === d.dataset.page); BOOK_OPEN[pg.id] = d.open; const body = $(".pagebody", d); if (d.open && !body.innerHTML) { body.innerHTML = stampGridHTML(pg); bindStampClicks(body); } }));
-  bindStampClicks(v);
+  $$("details.stamppage[data-page]", v).forEach(d => d.addEventListener("toggle", () => { const pg = STAMP_PAGES.find(p => p.id === d.dataset.page); BOOK_OPEN[pg.id] = d.open; const body = $(".pagebody", d); if (d.open && !body.innerHTML) { body.innerHTML = stampGridHTML(pg); bindStampClicks(body); } }));
+  bindStampClicks(v); bindStationStamps(v);
   $$("[data-rally]", v).forEach(b => b.onclick = () => openLevels(b.dataset.rally));
   $$("[data-trophy]", v).forEach(b => b.onclick = () => { const t = TROPHIES.find(x => x.id === b.dataset.trophy); const got = S.trophies && S.trophies[t.id]; toast(got ? `${t.name}: ${t.desc} (won ${got})` : `Locked: ${t.desc}`); });
   $("#nm").onchange = e => { S.name = e.target.value.trim().slice(0, 20); save(); render(); };

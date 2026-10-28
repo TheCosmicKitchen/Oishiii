@@ -9,7 +9,7 @@ Writes:
 import os
 ROOT = os.path.dirname(os.path.abspath(__file__))
 rd = lambda *p: open(os.path.join(ROOT, *p), encoding="utf-8").read()
-JS_ORDER = ["data.js", "kanji-data.js", "kanji.js", "core.js", "learn.js", "sushi.js", "puzzles.js"]
+JS_ORDER = ["data.js", "kanji-data.js", "kanji.js", "route-data.js", "core.js", "learn.js", "rail.js", "sushi.js", "puzzles.js"]
 
 body = (rd("src", "shell.html")
         .replace("/*CSS*/", rd("src", "style.css"))

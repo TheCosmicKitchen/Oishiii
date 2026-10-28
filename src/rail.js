@@ -5,6 +5,10 @@ const LINE_NAME = { kana: "Tokyo loop", n5: "Tōkaidō line", n4: "Kansai & Sany
 const visited = s => subStars(s) > 0;
 const lastVisited = () => { let v = null; for (const s of ALL_SUBS) if (visited(s)) v = s; return v; };
 const prefName = s => PREF_NAMES[s.stop.pref] || "";
+// Cities are the big destinations on the line; the stops between them are the track you lay to get there
+const isCity = s => !!(s && s.stop && s.stop.c);
+const CITY_SUBS = ALL_SUBS.filter(isCity);
+const nextCityFrom = s => ALL_SUBS.slice(s.idx).find(isCity);
 let MAP_ALL = false;
 
 function railMapHTML(track) {
@@ -22,12 +26,22 @@ function railMapHTML(track) {
   const seg = (a, b) => `M${a.stop.x},${a.stop.y}L${b.stop.x},${b.stop.y}`;
   let built = "", planned = "", ahead = "";
   for (let i = 1; i < ALL_SUBS.length; i++) { const a = ALL_SUBS[i - 1], b = ALL_SUBS[i]; if (visited(b) && visited(a)) built += seg(a, b); else if (b === nx && visited(a)) planned += seg(a, b); else if (!all && focus.includes(b) && focus.includes(a)) ahead += seg(a, b); }
-  const labeled = []; const near = (s) => labeled.some(p => Math.hypot(p.x - s.stop.x, p.y - s.stop.y) < 26 * k);
+  // labels: cities first (always on this line's map; reached ones on the all-Japan map), then the stops between
+  const labeled = [], labels = new Map(); const near = (s) => labeled.some(p => Math.hypot(p.x - s.stop.x, p.y - s.stop.y) < 26 * k * (all ? .7 : 1));
+  [...focus.filter(isCity), ...focus.filter(s => !isCity(s))].forEach(s => {
+    const city = isCity(s), isNext = s === nx;
+    const want = all ? city && (visited(s) || isNext) : city || visited(s) || isNext || subUnlocked(s);
+    if (!want || (near(s) && !(city && !all))) return;
+    labeled.push(s.stop);
+    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""}">${esc(s.stop.p)}</text>`);
+  });
   const dots = focus.map(s => {
-    const v = visited(s), open = subUnlocked(s), isNext = s === nx; const r = (isNext ? 7 : v ? 5.5 : 3.6) * k * (all ? .6 : 1);
+    const v = visited(s), open = subUnlocked(s), isNext = s === nx, city = isCity(s); const r = (isNext ? 7 : city ? 6.5 : v ? 5.5 : 3.6) * k * (all ? .6 : 1);
     const fill = v ? LINE_INK[s.track.id] : isNext ? "var(--sakura)" : "var(--surface)";
-    const label = !all && (v || isNext || open) && !near(s) ? (labeled.push(s.stop), `<text x="${s.stop.x + 8 * k}" y="${s.stop.y + 4 * k}" font-size="${(isNext ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""}">${esc(s.stop.p)}</text>`) : "";
-    return `<g class="mstop ${open ? "tap" : ""}" ${open ? `data-sub="${s.id}"` : ""}><circle cx="${s.stop.x}" cy="${s.stop.y}" r="${r * 2.2}" fill="transparent"/>${isNext ? `<circle cx="${s.stop.x}" cy="${s.stop.y}" r="${r * 1.9}" class="mpulse"/>` : ""}<circle cx="${s.stop.x}" cy="${s.stop.y}" r="${r}" fill="${fill}" stroke="${v ? "var(--surface)" : open ? "var(--sakura)" : "var(--coast)"}" stroke-width="${1.6 * k * (all ? .6 : 1)}"/>${label}</g>`;
+    const stroke = v ? "var(--surface)" : open ? "var(--sakura)" : city ? LINE_INK[s.track.id] : "var(--coast)"; const sw = (city ? 2.2 : 1.6) * k * (all ? .6 : 1);
+    const mark = city ? `<rect x="${s.stop.x - r}" y="${s.stop.y - r}" width="${r * 2}" height="${r * 2}" rx="${r * .45}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`
+      : `<circle cx="${s.stop.x}" cy="${s.stop.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+    return `<g class="mstop ${open ? "tap" : ""}" ${open ? `data-sub="${s.id}"` : ""}><circle cx="${s.stop.x}" cy="${s.stop.y}" r="${r * 2.2}" fill="transparent"/>${isNext ? `<circle cx="${s.stop.x}" cy="${s.stop.y}" r="${r * 1.9}" class="mpulse"/>` : ""}${mark}${labels.get(s) || ""}</g>`;
   }).join("");
   const here = cur || ALL_SUBS[0]; const tk = 30 * k * (all ? .8 : 1);
   const train = EMO.train ? `<image href="${EMO.train}" x="${here.stop.x - tk / 2}" y="${here.stop.y - tk - 4 * k}" width="${tk}" height="${tk}" class="mtrain"/>` : "";
@@ -46,13 +60,32 @@ function bindRailMap(root) {
 }
 function stationCardHTML(s, label = "Next stop") {
   if (!s) return "";
+  const nc = isCity(s) ? null : nextCityFrom(s); const away = nc ? nc.idx - s.idx : 0;
   return `<div class="stationcard" style="--lv:${LINE_INK[s.track.id]}"><div class="stbar"><span>${esc(label)}</span><span>${esc(LINE_NAME[s.track.id])} · ${esc(s.title)}</span></div>
     <div class="stbody"><div class="stname"><span class="glyph">${esc(s.stop.p)}</span><small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small></div>
-    <p>${esc(s.stop.f)}</p><span class="pill">${esc(prefName(s))}</span></div></div>`;
+    <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(nc.stop.p)} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
+}
+
+// City stamps: bigger scalloped seals, one for each of the 36 cities on the line
+function cityStampHTML(s, size = 96, extra = "") {
+  const ink = LINE_INK[s.track.id]; const rot = (hashStr(s.id) % 9) - 4; const name = s.stop.p; const n = [...name].length;
+  const fs = n <= 2 ? 30 : n === 3 ? 21 : 16; const N = 20, R = 43;
+  const pts = Array.from({ length: N }, (_, i) => [50 + R * Math.cos(2 * Math.PI * i / N - Math.PI / 2), 50 + R * Math.sin(2 * Math.PI * i / N - Math.PI / 2)].map(v => v.toFixed(2)));
+  const scallop = `M${pts[0].join(",")}` + pts.map((_, i) => `A6.9 6.9 0 0 1 ${pts[(i + 1) % N].join(",")}`).join("") + "Z";
+  const rec = S.subs[s.id] || {}; const date = (rec.first || rec.date || "").replace(/-/g, ".");
+  return `<div class="stamp station city ${extra}" style="--ink:${ink};--rot:${rot}deg;width:${size}px;height:${size}px"><svg viewBox="0 0 100 100" aria-hidden="true">
+    <path d="${scallop}" fill="none" stroke="${ink}" stroke-width="3"/><circle cx="50" cy="50" r="37" fill="none" stroke="${ink}" stroke-width="1"/>
+    <text x="50" y="27" font-size="6.5" font-weight="800" fill="${ink}" text-anchor="middle" letter-spacing="1.1">${esc(s.stop.ro.toUpperCase().slice(0, 14))}</text>
+    <text x="50" y="35" font-size="5.5" font-weight="800" fill="${ink}" text-anchor="middle" letter-spacing="1.6">★ CITY ★</text>
+    <text x="50" y="${59 + (30 - fs) * .25}" font-size="${fs}" fill="${ink}" text-anchor="middle" font-family="Klee One, serif" font-weight="600">${esc(name)}</text>
+    <line x1="27" y1="66" x2="73" y2="66" stroke="${ink}" stroke-width=".8"/>
+    <text x="50" y="74" font-size="6" font-weight="800" fill="${ink}" text-anchor="middle" letter-spacing=".5">${esc(prefName(s).toUpperCase())} · ${esc(s.track.jp)}</text>
+    ${date ? `<text x="50" y="82" font-size="5.5" fill="${ink}" text-anchor="middle" letter-spacing=".8" font-family="ui-monospace, monospace">${esc(date)}</text>` : ""}</svg></div>`;
 }
 
 // Station stamps: the real 駅スタンプ you collect at each stop, inked in the line's color
 function stationStampHTML(s, size = 96, extra = "") {
+  if (isCity(s)) return cityStampHTML(s, size, extra);
   const ink = LINE_INK[s.track.id]; const rot = (hashStr(s.id) % 13) - 6; const uid = "ss" + s.idx + "_" + size;
   const shape = ["circle", "square", "oct"][s.idx % 3]; const name = s.stop.p; const n = [...name].length;
   const fs = n <= 2 ? 32 : n === 3 ? 26 : n === 4 ? 21 : 17;
@@ -71,15 +104,16 @@ function stationStampHTML(s, size = 96, extra = "") {
 function stationStampsHTML() {
   const got = ALL_SUBS.filter(visited).length;
   return `<section class="stampbook"><header class="row"><h2>Station stamps</h2><span class="spacer"></span><span class="pill pink">${got}/${ALL_SUBS.length} stations</span></header>
-    <p class="muted" style="font-size:.85rem">One 駅スタンプ for every stop on the line. Clear a stop's sub-level to ride there and stamp it.</p>
-    ${TRACKS.map(t => { const g = t.subs.filter(visited).length; return `<details class="stamppage" data-spage="${t.id}" ${BOOK_OPEN["st_" + t.id] ? "open" : ""}><summary class="stamppage-h">${IMGW(t.icon, 24)}<h3>${esc(LINE_NAME[t.id])}</h3><span class="spacer"></span>${g === t.subs.length ? `<span class="kanseal">完</span>` : `<small>${g}/${t.subs.length}</small>`}</summary><div class="pagebody">${BOOK_OPEN["st_" + t.id] ? stationGridHTML(t) : ""}</div></details>`; }).join("")}
+    <p class="muted" style="font-size:.85rem">One 駅スタンプ for every stop on the line, and a scalloped city stamp for each of the ${CITY_SUBS.length} cities. Clear a stop's sub-level to ride there and stamp it.</p>
+    ${[{ id: "cities", icon: "houses", name: "City stamps", subs: CITY_SUBS }, ...TRACKS.map(t => ({ id: t.id, icon: t.icon, name: LINE_NAME[t.id], subs: t.subs }))].map(p => { const g = p.subs.filter(visited).length; return `<details class="stamppage" data-spage="${p.id}" ${BOOK_OPEN["st_" + p.id] ? "open" : ""}><summary class="stamppage-h">${IMGW(p.icon, 24)}<h3>${esc(p.name)}</h3><span class="spacer"></span>${g === p.subs.length ? `<span class="kanseal">完</span>` : `<small>${g}/${p.subs.length}</small>`}</summary><div class="pagebody">${BOOK_OPEN["st_" + p.id] ? stationGridHTML(p.subs) : ""}</div></details>`; }).join("")}
   </section>`;
 }
-function stationGridHTML(t) {
-  return `<div class="stampgrid">${t.subs.map(s => visited(s) ? `<button class="stampslot" data-station="${s.id}" aria-label="${esc(s.stop.ro)}">${stationStampHTML(s, 80)}<small>${esc(s.stop.ro)}</small></button>` : `<div class="stampslot"><div class="empty sm">${esc(s.num)}</div><small>${subUnlocked(s) ? esc(s.stop.p) : "???"}</small></div>`).join("")}</div>`;
+const stampPageSubs = id => id === "cities" ? CITY_SUBS : TRACKS.find(x => x.id === id).subs;
+function stationGridHTML(subs) {
+  return `<div class="stampgrid">${subs.map((s, i) => visited(s) ? `<button class="stampslot" data-station="${s.id}" aria-label="${esc(s.stop.ro)}">${stationStampHTML(s, 80)}<small>${esc(s.stop.ro)}</small></button>` : `<div class="stampslot"><div class="empty sm">${i + 1}</div><small>${subUnlocked(s) ? esc(s.stop.p) : "???"}</small></div>`).join("")}</div>`;
 }
 function bindStationStamps(root) {
-  $$("details.stamppage[data-spage]", root).forEach(d => d.addEventListener("toggle", () => { const t = TRACKS.find(x => x.id === d.dataset.spage); BOOK_OPEN["st_" + t.id] = d.open; const body = $(".pagebody", d); if (d.open && !body.innerHTML) { body.innerHTML = stationGridHTML(t); bindStationClicks(body); } }));
+  $$("details.stamppage[data-spage]", root).forEach(d => d.addEventListener("toggle", () => { const id = d.dataset.spage; BOOK_OPEN["st_" + id] = d.open; const body = $(".pagebody", d); if (d.open && !body.innerHTML) { body.innerHTML = stationGridHTML(stampPageSubs(id)); bindStationClicks(body); } }));
   bindStationClicks(root);
 }
 function bindStationClicks(root) {

@@ -108,7 +108,7 @@ function nextCeleb() {
     tone([196, 147], .09, "square", .06); setTimeout(() => SFX.pop(), 250);
   } else if (it.kind === "station") {
     const s = it.s;
-    o.innerHTML = `<div class="stampcard"><span class="eyebrow">Station stamp!</span>${stationStampHTML(s, 180, "thunk")}<b>${esc(s.stop.ro)}, ${esc(prefName(s))}</b><span style="font-size:.85rem">${esc(s.stop.f)}</span><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
+    o.innerHTML = `<div class="stampcard"><span class="eyebrow">${isCity(s) ? "City stamp!" : "Station stamp!"}</span>${stationStampHTML(s, 180, "thunk")}<b>${esc(s.stop.ro)}, ${esc(prefName(s))}</b><span style="font-size:.85rem">${esc(s.stop.f)}</span><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
     tone([262, 196], .1, "square", .06); setTimeout(() => SFX.pop(), 260);
   } else if (it.kind === "many") {
     o.innerHTML = `<div class="stampcard"><span class="eyebrow">${it.ws.length} new stamps!</span><div class="manystamps">${it.ws.slice(0, 12).map((w, i) => `<div style="animation-delay:${i * .09}s" class="manyone">${stampHTML(w, 66, "thunk")}</div>`).join("")}</div><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
@@ -137,6 +137,8 @@ const TROPHIES = [
   ...TRACKS.filter(t => !t.kana).map(t => ({ id: "path_" + t.id, group: "Learn", name: `${t.name} Path`, icon: t.icon, desc: `Clear every ${t.name} sub-level.`, test: () => t.subs.every(s => subStars(s) > 0) })),
   { id: "south", group: "Learn", name: "Southern Tip", icon: "train", desc: "Reach Nishi-Ōyama, Japan's southernmost JR station.", test: () => ALL_SUBS.some(s => s.stop && s.stop.st === "西大山" && visited(s)) },
   { id: "east", group: "Learn", name: "First Sunrise", icon: "sun", desc: "Reach Higashi-Nemuro, Japan's easternmost station.", test: () => ALL_SUBS.some(s => s.stop && s.stop.st === "東根室" && visited(s)) },
+  { id: "firstcity", group: "Learn", name: "Big City Lights", icon: "houses", desc: "Lay track all the way to your first city after Tokyo.", test: () => CITY_SUBS.slice(1).some(visited) },
+  { id: "cities", group: "Learn", name: "Grand Tour", icon: "japan", gold: true, desc: "Reach all 36 cities on the line.", test: () => CITY_SUBS.every(visited) },
   { id: "north", group: "Learn", name: "End of the Line", icon: "crown", gold: true, desc: "Reach Wakkanai, Japan's northernmost station.", test: () => ALL_SUBS.some(s => s.stop && s.stop.st === "稚内" && visited(s)) },
   { id: "goldpath", group: "Learn", name: "Golden N5", icon: "crown", gold: true, desc: "★★★ on every N5 sub-level.", test: () => TRACKS[1].subs.every(s => subStars(s) === 3) },
   // stamps

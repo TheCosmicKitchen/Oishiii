@@ -423,6 +423,8 @@ label.lab{font-weight:800;font-size:.85rem}
 .subnode.cleared .subprev{color:var(--lv)}
 .subnode.cleared .subnum{background:var(--lv);color:#FBF6EA}
 .subnode.locked{opacity:.55}
+.subnode.city{border-radius:22px;border-width:3px}
+.subnode.city::after{content:"City";position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--lv,var(--sakura));color:#FBF6EA;border-radius:99px;font-size:.6rem;font-weight:800;padding:1px 7px;letter-spacing:.04em}
 .itemgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .itemcard{position:relative;border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .itemcard .glyph{font-size:1.9rem}
@@ -480,6 +482,7 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .railmap{display:block;width:100%;height:auto;max-width:100%;aspect-ratio:auto}
 .railmap .ml{fill:var(--ink);font-family:var(--f-glyph);font-weight:600;paint-order:stroke;stroke:var(--land);stroke-width:3px;stroke-linejoin:round}
 .railmap .mlnext{fill:var(--sakura)}
+.railmap .mlcity{font-weight:800}
 .railmap .mstop.tap{cursor:pointer}
 .railmap .mpulse{fill:var(--sakura);opacity:.25;transform-box:fill-box;transform-origin:center;animation:mpulse 1.6s ease-out infinite}
 @keyframes mpulse{from{transform:scale(.6);opacity:.45}to{transform:scale(1.6);opacity:0}}
@@ -495,6 +498,9 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .stname .glyph{font-size:1.9rem;color:var(--lv)}
 .stname small{font-weight:800;color:var(--ink-soft)}
 .stbody p{font-size:.88rem}
+.pill.citypill{background:var(--lv);color:#FBF6EA}
+.pill.nextcity{background:color-mix(in srgb,var(--lv) 12%,var(--surface));color:var(--lv)}
+.result.arrival h2{color:var(--sakura)}
 .subnode .subplace{font-size:1.2rem;color:var(--ink);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .subnode .subprev{font-size:.85rem;color:var(--ink-soft);letter-spacing:0;min-height:1rem}
 .subnode.cleared .subplace{color:var(--lv)}

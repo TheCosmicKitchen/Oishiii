@@ -50,7 +50,7 @@ function viewLearn(v) {
     <div class="tracks" role="tablist">${TRACKS.map(t => { const done = t.subs.filter(s => subStars(s)).length; return `<button class="trk ${t === cur ? "on" : ""}" data-track="${t.id}" role="tab" aria-selected="${t === cur}">${IMGW(t.icon, 26)}<b>${t.jp}</b><small>${done}/${t.subs.length}</small></button>`; }).join("")}</div>
     <div class="row"><span class="eyebrow">${cur.kana ? "Hiragana" : `JLPT ${cur.name} · ${cur.subs.reduce((a, s) => a + s.items.length, 0)} kanji`}</span><span class="spacer"></span><span class="pill pink">${trackStars(cur)}/${cur.subs.length * 3} ★</span></div>
     <div class="subgrid">${cur.subs.map(s => { const open = subUnlocked(s), st = subStars(s), dn = subDoneCount(s); const prev = s.items.slice(0, 4).map(it => isKanaSub(s) ? it : it.k).join("");
-      return `<button class="subnode ${st ? "cleared" : open ? "open" : "locked"} ${s === nx ? "next" : ""}" ${open ? `data-sub="${s.id}"` : "disabled"} style="--lv:${STAMP_INK[cur.id] || "var(--leaf-deep)"}" aria-label="${esc(s.title)}${open ? "" : " locked"}">
+      return `<button class="subnode ${st ? "cleared" : open ? "open" : "locked"} ${s === nx ? "next" : ""} ${isCity(s) ? "city" : ""}" ${open ? `data-sub="${s.id}"` : "disabled"} style="--lv:${STAMP_INK[cur.id] || "var(--leaf-deep)"}" aria-label="${esc(s.title)}${open ? "" : " locked"}">
         <span class="subnum">${s.num}</span><span class="subplace glyph">${open ? esc(s.stop.p) : IMGW("lock", 22)}</span><span class="subprev glyph">${open ? esc(prev) : ""}</span><span class="lvstars">${starRow(st, 12)}</span><small>${open ? esc(s.stop.ro) : `${dn}/${s.items.length}`}</small></button>`; }).join("")}</div>
   </section>
   ${Object.keys(GATES).some(id => !gateOpen(id)) ? `<section class="card stack" style="gap:8px"><header class="row">${IMGW("station", 34)}<div style="flex:1;min-width:0"><h3>Next unlocks</h3><p class="muted" style="font-size:.8rem">Games only use kana you've learned and kanji you've stamped.</p></div></header>
@@ -230,8 +230,9 @@ function startClear(s) {
         else s.items.forEach(w => { if (touchWord(w, true, true)) fresh.push(w); });
         addStat("clears"); save();
         const nx = ALL_SUBS[s.idx + 1];
-        SFX.win(); if (stars === 3) confetti(40);
-        st.innerHTML = `<div class="card result pop"><span class="eyebrow">${esc(s.title)} cleared!</span>${firstVisit ? `<h2>Track laid to ${esc(s.stop.p)}!</h2><p class="muted" style="font-size:.85rem">${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : IMGW(stars === 3 ? "crown" : "sakura", 90)}
+        const arrived = firstVisit && isCity(s);
+        SFX.win(); if (stars === 3 || arrived) confetti(arrived ? 70 : 40);
+        st.innerHTML = `<div class="card result pop ${arrived ? "arrival" : ""}"><span class="eyebrow">${esc(s.title)} cleared!</span>${arrived ? `${IMGW("houses", 72)}<h2>Welcome to ${esc(s.stop.p)}!</h2><p class="muted" style="font-size:.85rem">City ${CITY_SUBS.indexOf(s) + 1} of ${CITY_SUBS.length} · ${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : firstVisit ? `<h2>Track laid to ${esc(s.stop.p)}!</h2><p class="muted" style="font-size:.85rem">${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : IMGW(stars === 3 ? "crown" : "sakura", 90)}
           <div class="bigstars">${starRow(stars, 40)}</div><div class="score">${mistakes} mistake${mistakes === 1 ? "" : "s"}</div>
           <p>${stars > prev ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : isKanaSub(s) ? "These kana are learned!" : `${fresh.length} kanji stamped into your book!`) : `Your best here is still ${"★".repeat(prev)}.`}</p>
           ${missed.length ? `<p class="muted" style="font-size:.85rem">Tricky ones: ${[...new Set(missed.map(q => q.w ? q.w.k : q.k))].map(x => `<span class="glyph">${esc(x)}</span>`).join(" ")}</p>` : ""}

@@ -20,15 +20,15 @@ for g in stations:
 LAT0 = 36.0; KX = math.cos(math.radians(LAT0)) * 100; KY = 100
 proj = lambda lon, lat: (round((lon - 128) * KX, 2), round((46 - lat) * KY, 2))
 out, missing = [], []
-for tr, st, place, kana, ro, pref, fact in rows:
+for tr, st, place, kana, ro, pref, fact, *city in rows:
     cands = [s for s in idx.get(st, []) if s["prefecture"] == pref]
     if not cands: missing.append(f"{st}({pref}) have:{sorted(set(s['prefecture'] for s in idx.get(st, [])))}"); continue
     lat = sum(s["lat"] for s in cands) / len(cands); lon = sum(s["lon"] for s in cands) / len(cands)
     spread = max(abs(s["lat"] - lat) + abs(s["lon"] - lon) for s in cands)
     if spread > 0.05: print("spread", st, round(spread, 3), [(s["lat"], s["lon"]) for s in cands][:4])
     x, y = proj(lon, lat)
-    out.append({"t": tr, "st": st, "p": place, "r": kana, "ro": ro, "pref": int(pref), "f": fact, "x": x, "y": y})
-print("missing", missing)
+    out.append({"t": tr, "st": st, "p": place, "r": kana, "ro": ro, "pref": int(pref), "f": fact, "x": x, "y": y, **({"c": 1} if city and city[0] == "city" else {})})
+print("missing", missing, "cities", sum(1 for o in out if o.get("c")))
 # outline: union of prefectures, drop tiny islands, simplify
 polys = []
 for f in geo["features"]:

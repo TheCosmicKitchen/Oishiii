@@ -34,10 +34,15 @@ const KANA_SUBS = [
   { title: "ら・わ rows", items: ["ら", "り", "る", "れ", "ろ", "わ", "を", "ん"] },
   { title: "Extras", items: ["゛", "ゃ", "ゅ", "ょ", "っ"] },
 ];
-function chunk(list, size) { const out = []; for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size)); if (out.length > 1 && out[out.length - 1].length < size / 2) { const last = out.pop(); out[out.length - 1].push(...last); } return out; }
+// Grounded levels (GROUND, from tools/ground_kanji.py) teach each stop the kanji found around it; the rest keep
+// frequency order in sub-levels of 10, split so there is exactly one sub-level per stop on the route
+const BORROWED = new Set(Object.entries(GROUND).flatMap(([t, subs]) => [...subs.join("")].filter(k => KJ_BY[k] && "n" + KJ_BY[k].n !== t)));
+const stopsOn = t => ROUTE.filter(r => r.t === t).length;
+function chunkTo(list, size, want) { const out = []; for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size)); while (out.length > want) { const last = out.pop(); out[out.length - 1].push(...last); } return out; }
+const levelSubs = n => GROUND["n" + n] ? GROUND["n" + n].map(ks => [...ks].map(k => KJ_BY[k])) : chunkTo(KJ.filter(w => w.n === n && !BORROWED.has(w.k)), SUB_SIZE, stopsOn("n" + n));
 const TRACKS = [
   { id: "kana", name: "Kana", jp: "かな", icon: "seedling", kana: true, subs: KANA_SUBS.map(s => ({ title: s.title, items: s.items })) },
-  ...[5, 4, 3, 2, 1].map(n => ({ id: "n" + n, name: "N" + n, jp: "N" + n, n, icon: STAMP_PAGES[5 - n].icon, subs: chunk(KJ.filter(w => w.n === n), SUB_SIZE).map((items, i) => ({ title: `N${n} · ${i + 1}`, items })) })),
+  ...[5, 4, 3, 2, 1].map(n => ({ id: "n" + n, name: "N" + n, jp: "N" + n, n, icon: STAMP_PAGES[5 - n].icon, subs: levelSubs(n).map((items, i) => ({ title: `N${n} · ${i + 1}`, items })) })),
 ];
 const ALL_SUBS = [];
 TRACKS.forEach(t => t.subs.forEach((s, i) => { s.id = t.id + "-" + (i + 1); s.track = t; s.num = i + 1; s.idx = ALL_SUBS.length; ALL_SUBS.push(s); }));

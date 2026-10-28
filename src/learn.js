@@ -84,12 +84,12 @@ function openSub(s) {
   openPlay(s.title, (st, hud) => {
     const stars = subStars(s);
     hud.innerHTML = `<span class="chip">${IMG("star")}${stars}/3</span>`;
-    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(s.stop.p)}.` : `Study the cards, then pass the clear test to lay track to ${esc(s.stop.p)} and stamp all of these kanji. Mistakes come back until you get them.`}</p></div></div>
+    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(s.stop.p)}.` : `Study the cards, then pass the clear test to lay track to ${esc(s.stop.p)} and stamp all of these kanji. Mistakes come back until you get them.`}</p>${!isKanaSub(s) && tiedHere(s).length ? `<p class="localnote">${IMGW("station", 20)}<span>${tiedHere(s).length} of these ${s.items.length} kanji are on station signs around ${esc(s.stop.p)}${s.items.some(w => TIES[w.k] && TIES[w.k][0] === "mei") ? `, plus its local special` : ""}.</span></p>` : ""}</div></div>
       <div class="bigstars">${starRow(stars, 30)}</div>
       <div class="row" style="justify-content:center"><button class="btn ghost" id="study">${IMG("book")}Study cards</button><button class="btn pink" id="clear">${IMG("check")}${stars ? "Retest for stars" : "Clear test"}</button></div></div>
       <div class="itemgrid">${s.items.map((it, i) => isKanaSub(s)
         ? `<button class="itemcard ${S.kana[it] ? "got" : ""}" data-i="${i}"><span class="glyph">${esc(it)}</span><small>${esc(kanaRo(it))}</small></button>`
-        : `<button class="itemcard ${isStamped(it) ? "got" : ""}" data-i="${i}" style="--lv:${STAMP_INK[it.t]}"><span class="glyph">${esc(it.k)}</span><small>${esc(it.en)}</small>${isStamped(it) ? `<i class="gotdot"></i>` : ""}</button>`).join("")}</div>
+        : `<button class="itemcard ${isStamped(it) ? "got" : ""} ${TIES[it.k] ? (TIES[it.k][0] === "mei" ? "mei" : "local") : ""}" data-i="${i}" style="--lv:${STAMP_INK[it.t]}"><span class="glyph">${esc(it.k)}</span><small>${esc(it.en)}</small>${isStamped(it) ? `<i class="gotdot"></i>` : ""}</button>`).join("")}</div>
       <p class="muted" style="font-size:.78rem;text-align:center">★★★ for 0–1 mistakes · ★★ for up to 4 · ★ for finishing.</p>`;
     $("#study", st).onclick = () => openStudy(s, 0);
     $("#clear", st).onclick = () => startClear(s);
@@ -111,6 +111,7 @@ function studyCardHTML(s, it) {
   return `<div class="card lesson kcard-big" style="--lv:${STAMP_INK[w.t]}"><span class="eyebrow">JLPT ${w.t.toUpperCase()} · ${w.s} strokes</span>
     <div class="row" style="justify-content:center;gap:14px">${IMGW(w.e, 54)}<div class="glyph big pop">${esc(w.k)}</div></div>
     <div class="meanings"><b>${esc(w.ens[0])}</b>${w.ens.slice(1).map(m => `<span>${esc(m)}</span>`).join("")}</div>
+    ${tieHTML(w)}
     <div class="radrow"><span class="eyebrow">Radicals</span><div class="radchips">${radsOf(w).map((r, i) => `<span class="radpair">${i ? `<span class="plus">+</span>` : ""}<span class="radchip"><span class="glyph">${esc(radGlyph(r))}</span><small>${esc(radMean(r))}</small></span></span>`).join("")}</div></div>
     <div class="readings">${w.on.length ? `<div><span class="eyebrow">On'yomi</span><div class="rlist">${w.on.map(x => `<button class="rd" data-say="${esc(x)}"><span class="glyph">${esc(x)}</span>${showRo() ? `<small>${esc(romaji(x))}</small>` : ""}</button>`).join("")}</div></div>` : ""}
       ${w.kun.length ? `<div><span class="eyebrow">Kun'yomi</span><div class="rlist">${w.kun.map(x => `<button class="rd" data-say="${esc(x.replace(".", ""))}"><span class="glyph">${kunHTML(x)}</span>${showRo() ? `<small>${esc(romaji(x.replace(".", "")))}</small>` : ""}</button>`).join("")}</div></div>` : ""}</div></div>`;

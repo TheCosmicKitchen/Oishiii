@@ -66,6 +66,16 @@ function stationCardHTML(s, label = "Next stop") {
     <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(nc.stop.p)} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
 }
 
+// Why a kanji is taught at its stop: the stop's own name, a real station sign nearby, or the city's local special (名物)
+const SUB_OF_K = Object.fromEntries(ALL_SUBS.flatMap(s => s.track.kana ? [] : s.items.map(w => [w.k, s])));
+const tiedHere = s => s.items.filter(w => TIES[w.k] && TIES[w.k][0] === "st");
+function tieHTML(w) {
+  const t = TIES[w.k], s = SUB_OF_K[w.k]; if (!t || !s) return "";
+  const mark = txt => [...txt].map(c => c === w.k ? `<b>${esc(c)}</b>` : esc(c)).join("");
+  if (t[0] === "mei") return `<div class="localtie mei" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${esc(s.stop.p)}'s local special · 名物</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(t[2]))} · ${esc(t[3])}</small><p>${esc(t[4])}</p></div>`;
+  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.p)} · ${t[2]} km` : `In the name ${esc(s.stop.p)}`}</span><div class="glyph">${mark(t[1])}<span class="eki">駅</span></div></div>`;
+}
+
 // City stamps: bigger scalloped seals, one for each of the 36 cities on the line
 function cityStampHTML(s, size = 96, extra = "") {
   const ink = LINE_INK[s.track.id]; const rot = (hashStr(s.id) % 9) - 4; const name = s.stop.p; const n = [...name].length;

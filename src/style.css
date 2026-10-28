@@ -431,6 +431,17 @@ label.lab{font-weight:800;font-size:.85rem}
 .itemcard small{font-size:.62rem;font-weight:700;color:var(--ink-soft);line-height:1.15;text-align:center;overflow-wrap:anywhere}
 .itemcard.got{border-color:var(--lv, var(--sakura));background:color-mix(in srgb,var(--lv, var(--sakura)) 8%,var(--surface))}
 .gotdot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--lv, var(--sakura))}
+.itemcard.local::before,.itemcard.mei::before{content:"";position:absolute;top:5px;left:5px;width:7px;height:7px;border-radius:2px;border:1.5px solid var(--lv, var(--sakura))}
+.itemcard.mei{border-style:dashed;border-color:var(--sun)}
+.itemcard.mei::before{border-color:var(--sun);background:var(--sun)}
+.localtie{align-self:stretch;border:1.5px dashed var(--lv, var(--sakura));border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;background:color-mix(in srgb,var(--lv, var(--sakura)) 6%,var(--surface))}
+.localtie .glyph{font-size:1.5rem;letter-spacing:.04em}
+.localtie .glyph b{color:var(--lv, var(--sakura));font-weight:600}
+.localtie .eki{font-size:.85rem;color:var(--ink-soft);margin-left:4px}
+.localtie small{font-weight:800;color:var(--ink-soft)}
+.localtie p{font-size:.82rem;text-align:center;margin:0}
+.localtie.mei{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 12%,var(--surface))}
+.localnote{display:flex;gap:6px;align-items:center;font-size:.8rem;font-weight:700;color:var(--ink-soft);margin:4px 0 0}
 .kcard-big .glyph.big{font-size:6.5rem;color:var(--lv)}
 .meanings{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;align-items:baseline}
 .meanings b{font-family:var(--f-display);font-weight:400;font-size:1.4rem;color:var(--sakura)}

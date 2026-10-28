@@ -79,7 +79,7 @@ p{margin:0}
 
 /* garden */
 .hello{display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,var(--sky),var(--surface));border:1.5px solid var(--line);border-radius:var(--r-lg);padding:14px 16px}
-.hello .em{width:58px;height:58px;flex:none}
+.hello > .em{width:58px;height:58px;flex:none}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
 .stat{background:var(--surface);border-radius:var(--r-md);padding:6px 8px;text-align:center}
 .stat b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.15rem;font-variant-numeric:tabular-nums}
@@ -345,7 +345,7 @@ label.lab{font-weight:800;font-size:.85rem}
 /* station stamps (駅スタンプ) — real ink on real paper, so the paper stays light in both themes */
 .stamp{position:relative;flex:none;display:grid;place-items:center;transform:rotate(var(--rot));opacity:.92}
 .stamp svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.stamp-k{font-family:var(--f-glyph);font-weight:600;color:var(--ink);font-size:calc(var(--sz,96px) * .3);line-height:1;position:relative;top:-2%}
+.stamp-k{font-family:var(--f-glyph);font-weight:600;color:var(--ink);font-size:calc(var(--sz,96px) * .4);line-height:1;position:relative;top:2%}
 .stamp-e{position:absolute;width:24%!important;height:24%!important;bottom:20%;left:50%;transform:translateX(-50%);filter:grayscale(1) sepia(1) saturate(3) hue-rotate(-30deg);opacity:.75}
 .stamp.thunk{animation:thunk .55s cubic-bezier(.2,1.4,.4,1)}
 @keyframes thunk{0%{transform:rotate(var(--rot)) scale(2.4);opacity:0}55%{transform:rotate(var(--rot)) scale(.92);opacity:1}100%{transform:rotate(var(--rot)) scale(1)}}
@@ -388,7 +388,7 @@ label.lab{font-weight:800;font-size:.85rem}
 .staroff{filter:grayscale(1);opacity:.25}
 .bigstars{display:flex;gap:6px;justify-content:center}
 .stamp.rally .rally-e{position:absolute;width:34%!important;height:34%!important;top:30%;left:50%;transform:translateX(-50%)}
-.stamp.rally .rally-n{position:absolute;bottom:25%;left:0;right:0;text-align:center;font-family:var(--f-display);color:var(--ink);font-size:calc(var(--sz) * .13)}
+.stamp.rally .rally-n{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);color:var(--ink);font-size:calc(var(--sz) * .34);line-height:1;padding-bottom:4%}
 .rallyrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 4px;justify-items:center}
 .stampslot .empty.small{width:54px;height:54px;font-size:1rem;font-family:var(--f-display)}
 .trophy.goldt.got .medal{background:radial-gradient(circle at 35% 30%,#FFFBE6,#FFD84D 55%,#E0A100);box-shadow:0 3px 0 #B9821A,0 0 12px 2px rgba(255,200,40,.55)}
@@ -403,3 +403,74 @@ label.lab{font-weight:800;font-size:.85rem}
 .potstage > .em{width:64px;height:64px}
 .slot{width:40px;height:50px;font-size:1.35rem}
 .tile.extra{background:var(--sakura-soft)}
+
+/* ===== Learn path ===== */
+.trainbtn{background:var(--sky);border:0;border-radius:16px;width:52px;height:52px;display:grid;place-items:center;flex:none;padding:0}
+.trainbtn:active{transform:scale(.94)}
+.tracks{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.trk{border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.trk b{font-family:var(--f-display);font-weight:400;font-size:.95rem;line-height:1.1}
+.trk small{font-size:.62rem;font-weight:800;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.trk.on{background:var(--sakura-soft);border-color:var(--sakura);box-shadow:0 3px 0 color-mix(in srgb,var(--sakura) 45%,transparent)}
+.subgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 8px}
+.subnode{position:relative;border:2px dashed var(--line);background:var(--surface);border-radius:18px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.subnode .subnum{position:absolute;top:-8px;left:-6px;background:var(--surface-2);color:var(--ink-soft);border-radius:99px;font-size:.68rem;font-weight:800;padding:1px 7px;font-variant-numeric:tabular-nums}
+.subnode .subprev{font-size:1.45rem;letter-spacing:1px;min-height:1.6rem;display:grid;place-items:center;white-space:nowrap}
+.subnode small{font-size:.62rem;font-weight:800;color:var(--ink-soft)}
+.subnode.open{border:2px solid var(--sakura);background:var(--surface)}
+.subnode.next{animation:bob 2s ease-in-out infinite;box-shadow:0 4px 0 color-mix(in srgb,var(--sakura) 40%,transparent)}
+.subnode.cleared{border:2px solid var(--lv);background:color-mix(in srgb,var(--lv) 9%,var(--surface))}
+.subnode.cleared .subprev{color:var(--lv)}
+.subnode.cleared .subnum{background:var(--lv);color:#FBF6EA}
+.subnode.locked{opacity:.55}
+.itemgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.itemcard{position:relative;border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.itemcard .glyph{font-size:1.9rem}
+.itemcard small{font-size:.62rem;font-weight:700;color:var(--ink-soft);line-height:1.15;text-align:center;overflow-wrap:anywhere}
+.itemcard.got{border-color:var(--lv, var(--sakura));background:color-mix(in srgb,var(--lv, var(--sakura)) 8%,var(--surface))}
+.gotdot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--lv, var(--sakura))}
+.kcard-big .glyph.big{font-size:6.5rem;color:var(--lv)}
+.meanings{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;align-items:baseline}
+.meanings b{font-family:var(--f-display);font-weight:400;font-size:1.4rem;color:var(--sakura)}
+.meanings span{font-size:.85rem;color:var(--ink-soft);font-weight:700}
+.radrow,.readings > div{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
+.readings{display:flex;flex-direction:column;gap:8px;width:100%}
+.radchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.radchip{display:inline-flex;flex-direction:column;align-items:center;background:var(--surface-2);border-radius:12px;padding:4px 10px;min-width:52px}
+.radchip .glyph{font-size:1.5rem}
+.radchip small{font-size:.66rem;font-weight:800;color:var(--ink-soft)}
+.plus{font-family:var(--f-display);color:var(--sakura)}
+.rlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.rd{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:4px 10px;display:flex;flex-direction:column;align-items:center}
+.rd .glyph{font-size:1.15rem}
+.rd small{font-size:.66rem;color:var(--ink-soft);font-weight:700}
+.oku{color:var(--ink-soft);opacity:.8}
+.qfb{text-align:center;font-size:.9rem;min-height:1.4em;line-height:1.6}
+.qfb .glyph{font-size:1.1rem}
+.radtray{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.radtile{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;box-shadow:0 3px 0 var(--line);min-width:0}
+.radtile .glyph{font-size:1.8rem}
+.radtile small{font-size:.68rem;font-weight:800;color:var(--ink-soft);text-align:center;overflow-wrap:anywhere}
+.radtile.sel{background:var(--sakura-soft);border-color:var(--sakura);transform:translateY(-2px)}
+.radtile.right{background:var(--good);border-color:var(--good);color:var(--on-accent)}
+.radtile.right small,.radtile.wrong small,.radtile.missed small{color:inherit}
+.radtile.wrong{background:var(--bad);border-color:var(--bad);color:var(--on-accent)}
+.radtile.missed{border:2px dashed var(--good);background:color-mix(in srgb,var(--good) 18%,var(--surface))}
+.manystamps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;justify-items:center}
+.manyone{animation:pop .5s cubic-bezier(.2,1.6,.4,1) both}
+details.stamppage > summary{list-style:none;cursor:pointer}
+details.stamppage > summary::-webkit-details-marker{display:none}
+details.stamppage > summary::after{content:"▾";margin-left:6px;color:#7A6A58}
+details.stamppage:not([open]) > summary::after{content:"▸"}
+.stampslot .empty.sm{width:72px;height:72px;font-size:1.1rem}
+/* meaning match */
+.mm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mm{border:2px solid var(--line);background:var(--surface);border-radius:14px;min-height:74px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--line);min-width:0}
+.mm .glyph{font-size:2rem}
+.mm span.mt{font-size:.85rem;font-weight:800;text-align:center;overflow-wrap:anywhere;line-height:1.2}
+.mm small{font-size:.62rem;color:var(--ink-soft)}
+.mm.sel{background:var(--sakura-soft);border-color:var(--sakura)}
+.mm.gone{visibility:hidden}
+.mm.k{background:color-mix(in srgb,var(--sky) 45%,var(--surface))}
+.bubble .want.big{font-size:.95rem}
+.radpair{display:inline-flex;align-items:center;gap:6px}

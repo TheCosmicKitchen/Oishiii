@@ -10,6 +10,8 @@ function pzSetup(id, mode) {
 function startTimer(hud, extra = () => "") { const t0 = now(); const draw = () => { hud.innerHTML = `${extra()}<span class="chip">${IMG("hourglass")}${fmtTime(now() - t0)}</span>`; }; draw(); const iv = setInterval(draw, 1000); return { stop: () => clearInterval(iv), ms: () => now() - t0, redraw: draw }; }
 
 const PUZZLES = [
+  { id: "radical", name: "Radical Builder", jp: "ぶしゅ", icon: "bricks", desc: "Pick the radicals that build each kanji, then spot kanji from their parts.", play: m => radicalBuilder(m) },
+  { id: "match", name: "Meaning Match", jp: "いみ", icon: "heartribbon", desc: "Pair every kanji with its meaning as fast as you can.", play: m => meaningMatch(m) },
   { id: "petal", name: "Petal Guess", jp: "はなびら", icon: "tulip", desc: "Guess the hidden word in 6 tries. Blue petals mean same kana row or vowel.", play: m => petalGuess(m) },
   { id: "plot", name: "Garden Plot", jp: "はたけ", icon: "carrot", desc: "Kana sudoku: every row, column and bed gets each kana once.", play: m => gardenPlot(m) },
   { id: "logic", name: "Garden Logic", jp: "にわ", icon: "rabbit", desc: "Read the Japanese clues and place everyone in the garden.", play: m => gardenLogic(m) },
@@ -24,15 +26,15 @@ function viewPuzzles(v) {
   const d = dayDifficulty(); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
   v.innerHTML = `
   <section class="card bouquet-card">${IMG("basket")}<div style="flex:1;min-width:0"><h2>Today's bouquet</h2><p class="muted" style="font-size:.85rem">${DAYNAME[new Date().getDay()]} puzzles are <b>${diffName}</b>. Collect a flower for each one.</p>
-    <div class="flowers" style="margin-top:4px">${PUZZLES.map(p => IMG(["blossom", "tulip", "sunflower", "hibiscus", "sakura", "clover"][PUZZLES.indexOf(p)]).replace('class="em"', `class="em ${today[p.id] ? "" : "off"}"`)).join("")}</div></div></section>
-  ${doneN ? `<button class="btn pink" id="shareall">${IMG("gift")}Share today's bouquet (${doneN}/6)</button>` : ""}
+    <div class="flowers" style="margin-top:4px">${PUZZLES.map(p => IMG(["cherries", "butterfly", "blossom", "tulip", "sunflower", "hibiscus", "sakura", "clover"][PUZZLES.indexOf(p)]).replace('class="em"', `class="em ${today[p.id] ? "" : "off"}"`)).join("")}</div></div></section>
+  ${doneN ? `<button class="btn pink" id="shareall">${IMG("gift")}Share today's bouquet (${doneN}/${PUZZLES.length})</button>` : ""}
   <div class="bouquet">${PUZZLES.map(p => { const r = today[p.id]; return `<div class="pz ${r ? "done" : ""}">
     <div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : `<span class="pill">today</span>`}</div>
     <h3>${p.name}</h3><p>${p.desc}</p>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : ""}
     ${gateOpen(p.id) ? "" : lockCard(p.id)}
     <div class="row" ${gateOpen(p.id) ? "" : 'style="opacity:.45;pointer-events:none"'}><button class="btn small ${r ? "ghost" : ""}" data-pz="${p.id}" data-mode="${r ? "practice" : "daily"}">${r ? "Replay" : "Play"}</button><button class="btn pink small" data-levels="${p.id}">${IMGW("star", 16)}${lvTotal(p.id)}/${LEVELS_N * 3}</button>${p.id !== "sushi" ? `<button class="btn ghost small" data-pz="${p.id}" data-mode="endless">Endless</button>` : ""}</div></div>`; }).join("")}</div>
-  <section class="card stack"><header class="row">${IMGW("calendar", 40)}<div style="flex:1;min-width:0"><h2>Puzzle archive</h2><p class="muted" style="font-size:.82rem">Every past day's puzzles stay playable forever. No catching up required: fill them in whenever you like.</p></div><span class="pill pink">${archiveDone()}/${archiveDates().length * 6}</span></header>
-    <div class="archive">${archiveDates().map(k => { const n = Object.keys(S.daily[k] || {}).length; const dt = dateFromKey(k); return `<button class="aday ${n >= 6 ? "full" : ""}" data-day="${k}"><span class="ro">${DAYNAME[dt.getDay()].slice(0, 3)}</span><b>${dt.getMonth() + 1}/${dt.getDate()}</b><span class="adots">${n >= 6 ? IMGW("basket", 18) : `${n}/6`}</span></button>`; }).join("")}</div></section>
+  <section class="card stack"><header class="row">${IMGW("calendar", 40)}<div style="flex:1;min-width:0"><h2>Puzzle archive</h2><p class="muted" style="font-size:.82rem">Every past day's puzzles stay playable forever. No catching up required: fill them in whenever you like.</p></div><span class="pill pink">${archiveDone()}/${archiveDates().length * PUZZLES.length}</span></header>
+    <div class="archive">${archiveDates().map(k => { const n = Object.keys(S.daily[k] || {}).length; const dt = dateFromKey(k); return `<button class="aday ${n >= PUZZLES.length ? "full" : ""}" data-day="${k}"><span class="ro">${DAYNAME[dt.getDay()].slice(0, 3)}</span><b>${dt.getMonth() + 1}/${dt.getDate()}</b><span class="adots">${n >= PUZZLES.length ? IMGW("basket", 18) : `${n}/${PUZZLES.length}`}</span></button>`; }).join("")}</div></section>
   <p class="muted" style="font-size:.78rem;text-align:center">Daily puzzles and every level are the same for both of you, so you can compare stars. Endless mode gets harder each time you clear one.</p>`;
   $$("[data-pz]", v).forEach(b => b.onclick = () => playPz(b.dataset.pz, b.dataset.mode));
   $$("[data-levels]", v).forEach(b => b.onclick = () => openLevels(b.dataset.levels));
@@ -267,7 +269,7 @@ function missingHalf(mode) {
       }
       DND.onDrop = (pick, drop) => {
         const x = tray[+pick.slice(1)]; if (filled[drop] === true) return;
-        if (x === p[drop] || (p.a === p.b && miss.includes(drop) && x === p.a)) { filled[drop] = true; tray.splice(+pick.slice(1), 1); SFX.good(); if (filled.a && filled.b) { SFX.pop(); const w = UNIQUE_WORDS.find(w => w.k === p.k); if (w && touchWord(w, true, true)) newStamps.push(w); save(); draw(true); } else draw(); }
+        if (x === p[drop] || (p.a === p.b && miss.includes(drop) && x === p.a)) { filled[drop] = true; tray.splice(+pick.slice(1), 1); SFX.good(); if (filled.a && filled.b) { SFX.pop(); const w = KJ_BY[p.k]; if (w && isStamped(w)) touchWord(w, true, false); save(); draw(true); } else draw(); }
         else { slips++; SFX.bad(); drawHud(); const z = $(`[data-drop="${drop}"]`, st); z && (z.classList.add("shake"), setTimeout(() => z.classList.remove("shake"), 400)); }
       };
       DND.onTap = null;
@@ -366,7 +368,7 @@ function rallyStampHTML(id, n, stars, size = 76, extra = "") {
   <circle cx="50" cy="50" r="46" fill="none" stroke="var(--ink)" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
   <text font-size="9.5" font-weight="800" fill="var(--ink)" letter-spacing="1.2"><textPath href="#ra${uid}" startOffset="50%" text-anchor="middle">${esc(g.name.toUpperCase())}</textPath></text>
   <text x="50" y="84" font-size="11" fill="var(--ink)" text-anchor="middle" letter-spacing="1">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</text></svg>
-  <img class="em rally-e" src="${EMO[g.icon] || ""}" alt=""><span class="rally-n">Lv ${n}</span></div>`;
+  <span class="rally-n">${n}</span></div>`;
 }
 function openLevels(id) {
   if (!gateOpen(id)) { toast(GATES[id].need + " to unlock " + GATES[id].name); return; }
@@ -405,7 +407,7 @@ function levelResult(st, id, n, stars, label) {
 }
 function starHint(id, n) {
   return ({ petal: "★★★: solve in 3 guesses or fewer without a hint. ★★: 4 or fewer.", plot: "★★★: under 3 minutes. ★★: under 6 minutes.", logic: "★★★: no slips and no peeks. ★★: at most one slip.",
-    half: "★★★: no slips. ★★: two slips or fewer.", line: "★★★: no slips. ★★: two slips or fewer.", sushi: `Target ¥${(900 + 250 * (n - 1)).toLocaleString()}: ★★ at 1.5×, ★★★ at 2×.` })[id];
+    half: "★★★: no slips. ★★: two slips or fewer.", radical: "★★★: no slips. ★★: two slips or fewer.", match: "★★★: no mismatches. ★★: two or fewer.", line: "★★★: no slips. ★★: two slips or fewer.", sushi: `Target ¥${(900 + 250 * (n - 1)).toLocaleString()}: ★★ at 1.5×, ★★★ at 2×.` })[id];
 }
 
 // ---------- ARCHIVE ----------
@@ -416,9 +418,71 @@ function openArchiveDay(k) {
   const dt = dateFromKey(k); const d = dayDifficulty(dt); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
   openPlay(`${DAYNAME[dt.getDay()]} ${dt.getMonth() + 1}/${dt.getDate()}`, (st, hud) => {
     const recs = S.daily[k] || {};
-    hud.innerHTML = `<span class="chip">${IMG("basket")}${Object.keys(recs).length}/6</span>`;
+    hud.innerHTML = `<span class="chip">${IMG("basket")}${Object.keys(recs).length}/${PUZZLES.length}</span>`;
     st.innerHTML = `<p class="muted" style="text-align:center;font-size:.85rem">The exact puzzles from ${k}. ${DAYNAME[dt.getDay()]}s are <b>${diffName}</b>.</p>
       <div class="bouquet">${PUZZLES.map(p => { const r = recs[p.id]; return `<div class="pz ${r ? "done" : ""}"><div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : ""}</div><h3>${p.name}</h3>${r ? `<div style="font-size:.78rem;font-weight:800">${esc(r.line.replace(/^\S+\s/, ""))}</div>` : `<p></p>`}${gateOpen(p.id) ? "" : lockCard(p.id)}<div class="row" ${gateOpen(p.id) ? "" : 'style="opacity:.45;pointer-events:none"'}><button class="btn small ${r ? "ghost" : ""}" data-arc="${p.id}">${r ? "Replay" : "Play"}</button></div></div>`; }).join("")}</div>`;
     $$("[data-arc]", st).forEach(b => b.onclick = () => { const id = b.dataset.arc; playPz(id, recs[id] ? "practice" : "D" + k); });
+  });
+}
+
+// ---------- RADICAL BUILDER ----------
+function radicalBuilder(mode) {
+  const { daily, rng, d, bump, level } = pzSetup("radical", mode);
+  const pool = stampedWords().filter(w => radsOf(w).length >= 2 || (radsOf(w).length === 1 && radGlyph(radsOf(w)[0]) !== w.k));
+  const src = (pool.length >= 6 ? pool : stampedWords()).sort((a, b) => a.id - b.id);
+  const N = d > .6 ? 10 : 8;
+  const picks = rng.shuffle(src).slice(0, Math.min(N, src.length));
+  while (picks.length < N) picks.push(rng.pick(src));
+  const qs = picks.map((w, i) => ({ t: i % 2 && d >= .2 ? "which" : "rad", w, pool: src.length >= 4 ? src : KJ }));
+  openPlay("Radical Builder", (st, hud) => {
+    const t0 = now();
+    runQuiz(st, hud, qs, { requeue: false,
+      onAnswer: (q, ok) => touchWord(q.w, ok, false),
+      onFinish: ({ mistakes, total, missed }) => {
+        const t = fmtTime(now() - t0); bump(); if (!mistakes) addStat("radFlawless"); save(); SFX.win(); if (!mistakes) confetti();
+        const label = `${mistakes} slip${mistakes === 1 ? "" : "s"}`;
+        if (daily) setDaily("radical", { score: mistakes, line: `🧱 Radical Builder ${mistakes ? label : "flawless"} · ${t}` });
+        if (level) return levelResult(st, "radical", level, mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1, label);
+        resultScreen(st, { icon: "bricks", title: mistakes ? "Kanji taken apart!" : "Radical detective!", score: label, lines: [`${total} kanji · ${t}`, missed.length ? missed.map(q => `<span class="glyph">${esc(q.w.k)}</span> = ${radsOf(q.w).map(r => `<span class="glyph">${esc(radGlyph(r))}</span> ${esc(radMean(r))}`).join(" + ")}`).join("<br>") : ""],
+          share: daily ? `${APP_NAME} 🧱 Radical Builder ${playDate()}\n${mistakes ? label : "flawless"} · ${t}` : "", again: () => radicalBuilder("endless"), againLabel: "Endless set" });
+      } });
+  });
+}
+
+// ---------- MEANING MATCH ----------
+function meaningMatch(mode) {
+  const { daily, rng, d, bump, level } = pzSetup("match", mode);
+  const src = stampedWords().sort((a, b) => a.id - b.id);
+  const per = d > .6 ? 6 : d > .3 ? 5 : 4; const boards = 3;
+  const order = rng.shuffle(src); const rounds = [];
+  for (let b = 0; b < boards; b++) { const set = []; const used = new Set(); for (const w of [...order.slice(b * per), ...rng.shuffle(src)]) { if (set.length >= per) break; if (used.has(w.k) || set.some(x => x.en === w.en)) continue; used.add(w.k); set.push(w); } rounds.push(set); }
+  openPlay("Meaning Match", (st, hud) => {
+    let b = 0, slips = 0, sel = null; const t0 = now(); let iv = 0;
+    const drawHud = () => { hud.innerHTML = `<span class="chip">${Math.min(b + 1, boards)}/${boards}</span>${slips ? `<span class="chip">${IMG("wilted")}${slips}</span>` : ""}<span class="chip">${IMG("hourglass")}${fmtTime(now() - t0)}</span>`; };
+    iv = setInterval(drawHud, 1000);
+    function board() {
+      if (b >= boards) return finish(); drawHud();
+      const set = rounds[b]; let left = set.length;
+      const tiles = rng.shuffle([...set.map(w => ({ kind: "k", w })), ...set.map(w => ({ kind: "m", w }))]);
+      st.innerHTML = `<p class="muted" style="text-align:center;font-size:.85rem">Tap a kanji, then its meaning.</p><div class="mm-grid">${tiles.map((t, i) => t.kind === "k" ? `<button class="mm k" data-i="${i}"><span class="glyph">${esc(t.w.k)}</span>${S.role === "kana" && showRo() && d < .7 ? `<small>${esc(t.w.r)}</small>` : ""}</button>` : `<button class="mm" data-i="${i}"><span class="mt">${esc(t.w.en)}</span></button>`).join("")}</div>`;
+      $$(".mm", st).forEach(el => el.onclick = () => {
+        const t = tiles[+el.dataset.i]; if (el.classList.contains("gone")) return;
+        if (!sel) { sel = { t, el }; el.classList.add("sel"); SFX.tap(); return; }
+        if (sel.el === el) { el.classList.remove("sel"); sel = null; return; }
+        if (sel.t.kind === t.kind) { sel.el.classList.remove("sel"); sel = { t, el }; el.classList.add("sel"); SFX.tap(); return; }
+        const a = sel; sel = null; a.el.classList.remove("sel");
+        if (a.t.w === t.w) { a.el.classList.add("gone"); el.classList.add("gone"); SFX.good(); touchWord(t.w, true, false); say(t.w.r); left--; if (!left) { b++; setTimeout(board, 350); } }
+        else { slips++; SFX.bad(); touchWord(a.t.kind === "k" ? a.t.w : t.w, false, false); [a.el, el].forEach(x => { x.classList.add("shake"); setTimeout(() => x.classList.remove("shake"), 400); }); toast(`${a.t.kind === "k" ? a.t.w.k : t.w.k} means "${(a.t.kind === "k" ? a.t.w : t.w).en}"`); drawHud(); }
+      });
+    }
+    function finish() {
+      clearInterval(iv); const ms = now() - t0; const t = fmtTime(ms); bump(); if (!slips) addStat("matchFlawless"); save(); SFX.win(); if (!slips) confetti();
+      const label = `${slips ? slips + " mismatch" + (slips > 1 ? "es" : "") : "flawless"} · ${t}`;
+      if (daily) setDaily("match", { score: ms, line: `💞 Meaning Match ${label}` });
+      if (level) return levelResult(st, "match", level, slips === 0 ? 3 : slips <= 2 ? 2 : 1, label);
+      resultScreen(st, { icon: "heartribbon", title: slips ? "All matched!" : "Perfect pairs!", score: t, lines: [`${boards * per} pairs · ${slips} mismatches`], share: daily ? `${APP_NAME} 💞 Meaning Match ${playDate()}\n${label}` : "", again: () => meaningMatch("endless"), againLabel: "Endless set" });
+    }
+    board();
+    return () => clearInterval(iv);
   });
 }

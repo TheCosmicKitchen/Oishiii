@@ -1,5 +1,4 @@
 // ===== Sushi Belt =====
-const BUD_THEMES = { mame: ["nature", "colors"], piyo: ["animals", "people"], kinoko: ["food", "things"] };
 const TIERS = [{ yen: 100, c: "#8FC3E6", p: .5 }, { yen: 150, c: "#F09AB4", p: .25 }, { yen: 200, c: "#93CB88", p: .17 }, { yen: 500, c: "#E8B53A", p: .08, gold: true }];
 const budSprite = b => b.sprites[Math.min(2, Math.floor((bud(b.id).lvl - 1) / 3))];
 const faceOf = w => S.role === "kanji" ? w.k : w.r;
@@ -17,7 +16,7 @@ function viewSushi(v) {
     <div class="row"><button class="btn" id="daily" ${gateOpen("sushi") ? "" : "disabled"}>${rec ? "Play again (practice)" : "Play today's special"}</button></div></section>
   <section class="card stack"><h3>How it works</h3>
     <p style="font-size:.88rem">${S.role === "kanji" ? "You're the <b>Kanji reader</b>: buds think in pictures and English, plates show bare kanji. Look-alike decoys will try to trick you (牛 vs 午!)." : "You're the <b>Kana speller</b>: buds think in pictures and romaji, plates show kana. Watch for look-alikes like ぬ and め."} Switch roles in the Book tab.</p>
-    <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Serving several right in a row builds a combo that multiplies your yen. Buds level up as they eat, and at level 3 they start ordering two-kanji words.</p></section>`;
+    <p style="font-size:.88rem">Plate colors set the price: blue ¥100, pink ¥150, green ¥200, and rare gold ¥500. Serving several right in a row builds a combo that multiplies your yen. Buds level up as they eat. Mame loves little kanji, Piyo medium ones, and Kinoko big ones.</p></section>`;
   $("#endless").onclick = () => startSushi("endless");
   $("#sushilv").onclick = () => openLevels("sushi");
   $("#daily").onclick = () => startSushi(rec ? "practice" : "daily");
@@ -35,8 +34,7 @@ function startSushi(mode) {
     let yen = 0, combo = 0, bestCombo = 0, hearts = 3, served = 0, elapsed = 0, last = 0, raf = 0, over = false, plateId = 0, paused = false;
     const missed = new Map(); const newStamps = []; const plates = []; const seats = BUDS.map(() => ({ order: null, wait: 0, msg: "", msgT: 0 }));
     const stamped = stampedWords();
-    const poolFor = b => { const p = stamped.filter(w => BUD_THEMES[b.id].includes(w.t) && ([...w.k].length === 1 || bud(b.id).lvl >= 3)); return p.length >= 2 ? p : stamped; };
-    const _oldPoolFor = b => UNIQUE_WORDS.filter(w => BUD_THEMES[b.id].includes(w.t) && ([...w.k].length === 1 || bud(b.id).lvl >= 3) && (S.role === "kanji" || w.r.length <= 5));
+    const poolFor = b => { const p = stamped.filter(w => b.fits(w)); return p.length >= 2 ? p : stamped; };
     function newOrder(i) {
       const b = BUDS[i]; const active = new Set(seats.map(s => s.order && faceOf(s.order.w)));
       let pool = poolFor(b).filter(w => !active.has(faceOf(w))); if (!pool.length) pool = stamped.filter(w => !active.has(faceOf(w))); if (!pool.length) pool = stamped;
@@ -50,7 +48,7 @@ function startSushi(mode) {
       const b = BUDS[i], s = seats[i], el = $("#seat" + i, st), o = s.order; const bs = bud(b.id);
       let bubble;
       if (s.msg) bubble = `<div class="glyph" style="font-size:1.3rem">${s.msg}</div><div class="ro">${s.msgRo || ""}</div>`;
-      else if (o) bubble = `${IMG(o.w.e)}${S.role === "kana" && showRo() ? `<div class="wro">${esc(o.w.ro)}</div>` : ""}<div class="want">${esc(o.w.en)}</div>`;
+      else if (o) bubble = `${IMG(o.w.e)}${S.role === "kana" && showRo() ? `<div class="wro">${esc(o.w.ro)}</div>` : ""}<div class="want ${o.w.e ? "" : "big"}">${esc(o.w.en)}</div>`;
       else bubble = `<div class="muted">…</div>`;
       el.innerHTML = `<span class="lv">Lv ${bs.lvl}</span><div class="bubble">${bubble}</div><div class="patience"><i></i></div>${IMG(budSprite(b)).replace('class="em"', 'class="em budimg"')}<span class="name">${b.name}</span>`;
       if (anim) { el.classList.remove("bounce", "shake"); void el.offsetWidth; el.classList.add(anim); }
@@ -81,7 +79,7 @@ function startSushi(mode) {
         combo++; bestCombo = Math.max(bestCombo, combo); statMax("maxCombo", combo); if (p.tier.gold) addStat("golds"); served++; S.served = (S.served || 0) + 1;
         const mult = 1 + Math.min(4, Math.floor(combo / 4)) * .25; const gain = Math.round(p.tier.yen * mult); yen += gain;
         p.el.remove(); plates.splice(plates.indexOf(p), 1);
-        if (touchWord(want, true, true)) { newStamps.push(want); toast(`New stamp: ${want.k}!`); }
+        touchWord(want, true, false);
         const bs = bud(b.id); bs.xp++; const need = 4 + bs.lvl * 2; if (bs.xp >= need) { bs.xp = 0; bs.lvl++; toast(`${b.name} grew to level ${bs.lvl}!`); SFX.win(); confetti(16); }
         s.msg = rng.f() < .5 ? "おいしい！" : "うまい！"; s.msgRo = (s.msg === "おいしい！" ? "oishii! " : "umai! ") + `· ${want.k} ${want.r}`; s.msgT = 1100; s.order = null; drawSeat(seatIdx, "bounce");
         const f = document.createElement("div"); f.className = "floaty"; f.textContent = "+¥" + gain + (mult > 1 ? ` ×${mult}` : ""); $("#seat" + seatIdx, st).appendChild(f); setTimeout(() => f.remove(), 1000);

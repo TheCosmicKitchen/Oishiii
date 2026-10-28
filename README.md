@@ -1,6 +1,6 @@
 # Oishii おいしい
 
-A cute Japanese learning game for two adult beginners. Grow kana in a garden, pop kanji out of the Kanji Pot, feed sushi to your buds, collect 駅スタンプ (station stamps) for every kanji you learn, and play six daily puzzles together.
+A cute Japanese learning game for two adult beginners. Learn kana, then climb a route of 2,211 JLPT kanji from N5 to N1 in sub-levels of ten, take kanji apart into radicals, match them to meanings, feed sushi to your buds, collect 駅スタンプ (station stamps) for every kanji you clear, and play eight daily puzzles together.
 
 ## Play
 
@@ -10,15 +10,15 @@ Progress is saved per device in the browser (localStorage).
 
 ## What's in it
 
-- **Garden:** plant hiragana row by row, water them with quick quizzes, watch them grow from sprout to bud to bloom.
-- **Kanji Pot:** a flower pot where you spell a word's reading with your grown kana (plus ゛ and small kana from the extras bed) and the kanji grows out and gets stamped.
-- **Quiz what you've learned:** every game only uses kana you've planted and kanji you've stamped, and unlocks once you have enough of them.
-- **Sushi Belt:** buds order by picture; drag them the right plate before they get grumpy. Look-alike decoys, combos, plate prices, levelling buds.
-- **Daily puzzles** (same puzzles for both players each day): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Endless mode for each.
-- **Levels & rally cards:** each game has 10 levels worth up to ★★★; clearing one stamps that game's rally card in bronze, silver or gold.
-- **Collection:** a stamp for every kanji, 49 trophies, page-complete seals, and an overall completion meter.
-- **Puzzle archive:** every past day's puzzles stay playable, so nothing expires and there's always more to complete.
-- **Two roles:** Kana speller (kana + romaji) and Kanji reader (bare kanji, WaniKani style). Typing converts romaji to kana like WaniKani.
+- **The route (Learn tab):** kana first (6 sub-levels), then JLPT N5 → N1, each split into sub-levels of 10 kanji (228 stops in all). Each stop has study cards (meanings, on'yomi and kun'yomi with romaji, and the radicals that build the kanji) and a clear test. Mistakes come back until you get them, WaniKani style; 0–1 mistakes earns ★★★. Clearing a stop stamps its kanji.
+- **Secret ticket:** tap the little station on the route five times to unlock up to any stop (stamps and stars still have to be earned).
+- **Review:** a mixed quiz of your stamped kanji and learned kana, weighted toward the ones you miss.
+- **Radical Builder:** pick the radicals that make up a kanji, and spot a kanji from its parts.
+- **Meaning Match:** pair kanji with their meanings against the clock.
+- **Sushi Belt:** buds order stamped kanji by picture and meaning; drag them the right plate. Look-alike decoys, combos, plate prices, levelling buds.
+- **More daily puzzles** (same seed for both players): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Every game has endless mode, 10 levels and a rally stamp card, and every past day stays playable in the archive.
+- **Collection:** a stamp for every kanji (one page per JLPT level), trophies, route and rally stars, and a completion meter. No streaks, nothing expires.
+- **Two roles:** Kana speller (reading choices with romaji) and Kanji reader (typed readings, WaniKani style, bare kanji). Typing converts romaji to kana like WaniKani.
 
 ## Develop
 
@@ -30,9 +30,11 @@ python3 build.py
 
 This writes `index.html` (full standalone page) and `dist/oishii.html` (page body for publishing as a Claude artifact).
 
-- `src/data.js` — kana, vocabulary, kanji parts, puzzle content
+- `src/data.js` — kana, puzzle content, buds, games
+- `src/kanji-data.js` — generated JLPT kanji and radical data (do not edit by hand)
+- `src/kanji.js` — kanji entries, tracks and sub-levels
 - `src/core.js` — state, helpers, drag and drop, sounds, stamps, kana typing
-- `src/garden.js` — app shell, garden, Kanji Pot, stamp book, settings
+- `src/learn.js` — app shell, the route, study cards, quiz engine, review, stamp book, settings
 - `src/sushi.js` — Sushi Belt
 - `src/puzzles.js` — the daily puzzles
 - `src/style.css` — all styles and color tokens
@@ -40,8 +42,20 @@ This writes `index.html` (full standalone page) and `dist/oishii.html` (page bod
 
 See [STYLE_GUIDE.md](STYLE_GUIDE.md) for the look and feel and the roadmap.
 
+### Regenerating the kanji data
+
+```
+npm pack @johnmorrisdotca/bushu@1.1.0 && tar xzf johnmorrisdotca-bushu-1.1.0.tgz
+curl -O https://raw.githubusercontent.com/davidluzgouveia/kanji-data/master/kanji.json
+node tools/extract_radicals.mjs "$PWD/package" kanji.json tools/data/kraw.json
+python3 tools/make_kanji_data.py tools/data/kraw.json
+```
+
 ## Credits
 
 - Emoji art: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT License).
 - Romaji-to-kana typing: [WanaKana](https://github.com/WaniKani/WanaKana) (MIT License), loaded from jsDelivr.
+- Kanji, meanings and readings: [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) via [davidluzgouveia/kanji-data](https://github.com/davidluzgouveia/kanji-data). JLPT levels: Jonathan Waller's lists ([tanos.co.uk](http://www.tanos.co.uk/jlpt/), CC BY).
+- Radicals: RADKFILE/KRADFILE by Michael Raine, James Breen and the Electronic Dictionary Research and Development Group, via [@johnmorrisdotca/bushu](https://www.npmjs.com/package/@johnmorrisdotca/bushu). Radical names: [Kanji alive](https://kanjialive.com/) (CC BY 4.0).
+- *Radicals and kanji from RADKFILE and KANJIDIC2, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (https://www.edrdg.org/edrdg/licence.html).* The generated `src/kanji-data.js` is shared under CC BY-SA 4.0.
 - Fonts: Mochiy Pop One, M PLUS Rounded 1c, Klee One (Google Fonts, SIL Open Font License).

@@ -1,5 +1,5 @@
-// ===== Kana Garden — content data =====
-// Kana beds follow the gojūon rows. Each kana has a hint word with a Fluent Emoji.
+// ===== Oishii — content data =====
+// Kana rows follow the gojūon order. Each kana has a hint word with a Fluent Emoji.
 const ROWS = [
   { id: "a",  name: "あ", ro: "a",  kana: [["あ","a"],["い","i"],["う","u"],["え","e"],["お","o"]] },
   { id: "ka", name: "か", ro: "ka", kana: [["か","ka"],["き","ki"],["く","ku"],["け","ke"],["こ","ko"]] },
@@ -35,67 +35,6 @@ const HINTS = {
   "わ":["わに","wani","crocodile","croc"], "を":["すしをたべる","sushi o taberu","particle: marks the object","link"], "ん":["ほん","hon","book (ends in ん)","books"],
 };
 
-// Vocabulary. k = kanji, r = kana reading, ro = romaji, en = meaning, e = emoji key, t = theme
-// Readings that use only basic kana can be made in the Kanji Pot.
-const WORDS = [
-  // nature
-  ["山","やま","yama","mountain","mountain","nature"], ["川","かわ","kawa","river","river","nature"],
-  ["木","き","ki","tree","tree","nature"], ["花","はな","hana","flower","blossom","nature"],
-  ["森","もり","mori","forest","evergreen","nature"], ["空","そら","sora","sky","sky","nature"],
-  ["雨","あめ","ame","rain","rain","nature"], ["雪","ゆき","yuki","snow","snowflake","nature"],
-  ["火","ひ","hi","fire","fire","nature"], ["日","ひ","hi","sun, day","sun","nature"],
-  ["月","つき","tsuki","moon","moon","nature"], ["星","ほし","hoshi","star","star","nature"],
-  ["石","いし","ishi","stone","rock","nature"], ["草","くさ","kusa","grass","herb","nature"],
-  ["竹","たけ","take","bamboo","bamboo","nature"], ["田","た","ta","rice field","rice","nature"],
-  ["庭","にわ","niwa","garden","garden","nature"], ["春","はる","haru","spring","tulip","nature"],
-  ["夏","なつ","natsu","summer","beach","nature"], ["秋","あき","aki","autumn","maple","nature"],
-  ["冬","ふゆ","fuyu","winter","snowman","nature"], ["水","みず","mizu","water","droplet","nature"],
-  // body & people
-  ["目","め","me","eye","eye","people"], ["耳","みみ","mimi","ear","ear","people"],
-  ["口","くち","kuchi","mouth","mouth","people"], ["手","て","te","hand","hand","people"],
-  ["足","あし","ashi","foot, leg","foot","people"], ["鼻","はな","hana","nose","nose","people"],
-  ["人","ひと","hito","person","person","people"], ["子","こ","ko","child","child","people"],
-  ["兄","あに","ani","older brother","boy","people"], ["姉","あね","ane","older sister","girl","people"],
-  ["顔","かお","kao","face","smile","people"], ["声","こえ","koe","voice","speaking","people"],
-  ["愛","あい","ai","love","heart","people"],
-  // animals
-  ["犬","いぬ","inu","dog","dog","animals"], ["猫","ねこ","neko","cat","cat","animals"],
-  ["鳥","とり","tori","bird","bird","animals"], ["魚","さかな","sakana","fish","fish","animals"],
-  ["虫","むし","mushi","bug","bug","animals"], ["馬","うま","uma","horse","horse","animals"],
-  ["牛","うし","ushi","cow","cow","animals"], ["猿","さる","saru","monkey","monkey","animals"],
-  ["貝","かい","kai","shellfish","shell","animals"], ["亀","かめ","kame","turtle","turtle","animals"],
-  ["兎","うさぎ","usagi","rabbit","rabbit","animals"], ["豚","ぶた","buta","pig","pig","animals"],
-  // food
-  ["肉","にく","niku","meat","meat","food"], ["酒","さけ","sake","sake, alcohol","sake","food"],
-  ["塩","しお","shio","salt","salt","food"], ["卵","たまご","tamago","egg","egg","food"],
-  ["米","こめ","kome","rice (uncooked)","cookedrice","food"], ["茶","ちゃ","cha","tea","teacup","food"],
-  ["牛肉","ぎゅうにく","gyuuniku","beef","meat","food"], ["弁当","べんとう","bentou","boxed lunch","bento","food"],
-  ["寿司","すし","sushi","sushi","sushi","food"], ["団子","だんご","dango","dumplings on a stick","dango","food"],
-  ["魚","さかな","sakana","fish","fish","food"],
-  // places & things
-  ["家","いえ","ie","house","house","things"], ["店","みせ","mise","shop","store","things"],
-  ["町","まち","machi","town","houses","things"], ["道","みち","michi","road","road","things"],
-  ["駅","えき","eki","station","station","things"], ["車","くるま","kuruma","car","car","things"],
-  ["船","ふね","fune","ship","ship","things"], ["本","ほん","hon","book","books","things"],
-  ["紙","かみ","kami","paper","paper","things"], ["傘","かさ","kasa","umbrella","umbrella","things"],
-  ["箱","はこ","hako","box","package","things"], ["部屋","へや","heya","room","bed","things"],
-  ["円","えん","en","yen","yen","things"], ["日本","にほん","nihon","Japan","japan","things"],
-  ["橋","はし","hashi","bridge","bridge","things"], ["糸","いと","ito","thread","thread","things"],
-  ["門","もん","mon","gate","door","things"], ["湯","ゆ","yu","hot water","onsen","things"],
-  // colors & positions
-  ["赤","あか","aka","red","redcircle","colors"], ["青","あお","ao","blue","bluecircle","colors"],
-  ["白","しろ","shiro","white","whitecircle","colors"], ["黒","くろ","kuro","black","blackcircle","colors"],
-  ["色","いろ","iro","color","palette","colors"],
-  ["上","うえ","ue","up, above","up","colors"], ["下","した","shita","down, below","down","colors"],
-  ["中","なか","naka","inside, middle","target","colors"], ["外","そと","soto","outside","door","colors"],
-  ["左","ひだり","hidari","left","left","colors"], ["右","みぎ","migi","right","right","colors"],
-  // numbers
-  ["一","いち","ichi","one","k1","numbers"], ["二","に","ni","two","k2","numbers"], ["三","さん","san","three","k3","numbers"],
-  ["四","よん","yon","four","k4","numbers"], ["五","ご","go","five","k5","numbers"], ["六","ろく","roku","six","k6","numbers"],
-  ["七","なな","nana","seven","k7","numbers"], ["八","はち","hachi","eight","k8","numbers"], ["九","きゅう","kyuu","nine","k9","numbers"],
-  ["十","じゅう","juu","ten","k10","numbers"], ["百","ひゃく","hyaku","hundred","hundred","numbers"], ["千","せん","sen","thousand","moneybag","numbers"],
-  ["万","まん","man","ten thousand","moneywings","numbers"],
-].map(([k,r,ro,en,e,t],i)=>({id:i,k,r,ro,en,e,t}));
 
 
 
@@ -197,25 +136,15 @@ const KONBINI = [
   {k:"花",r:"はな",ro:"hana",en:"flowers",e:"tulip"},
 ];
 
-// Buds who sit at the sushi counter
-const BUDS = [
-  {id:"mame", name:"Mame", jp:"まめ", theme:"nature", likes:"nature", sprites:["seedling","tulip","sakura"]},
-  {id:"piyo", name:"Piyo", jp:"ぴよ", theme:"animals", likes:"animals", sprites:["hatching","babychick","bird"]},
-  {id:"kinoko", name:"Kinoko", jp:"きのこ", theme:"food", likes:"food & things", sprites:["mushroom","mushroom","mushroom"]},
-];
+// Buds who sit at the sushi counter (defined below with RALLY_GAMES)
 
-// Stamp book pages (each completed page earns a trophy)
-const STAMP_PAGES = [
-  { id: "nature", name: "Nature & colors", jp: "自然", themes: ["nature", "colors"], trophy: "Nature Walker", icon: "maple" },
-  { id: "animals", name: "Animals", jp: "動物", themes: ["animals"], trophy: "Zookeeper", icon: "monkey" },
-  { id: "people", name: "People & body", jp: "人", themes: ["people"], trophy: "People Person", icon: "smile" },
-  { id: "food", name: "Food", jp: "食べ物", themes: ["food"], trophy: "Foodie", icon: "dango" },
-  { id: "things", name: "Places & things", jp: "町", themes: ["things"], trophy: "Town Explorer", icon: "houses" },
-  { id: "numbers", name: "Numbers", jp: "数", themes: ["numbers"], trophy: "Counting Sheep", icon: "abacus" },
-  { id: "built", name: "Built kanji", jp: "組", themes: ["built"], trophy: "Master Builder", icon: "bricks" },
-];
 
 // Games with 10-level ladders and rally stamp cards
+const BUDS = [
+  { id: "mame", name: "Mame", jp: "まめ", likes: "little kanji (1–5 strokes)", fits: w => w.s <= 5, sprites: ["seedling", "tulip", "sakura"] },
+  { id: "piyo", name: "Piyo", jp: "ぴよ", likes: "medium kanji (6–9 strokes)", fits: w => w.s >= 6 && w.s <= 9, sprites: ["hatching", "babychick", "bird"] },
+  { id: "kinoko", name: "Kinoko", jp: "きのこ", likes: "big kanji (10+ strokes)", fits: w => w.s >= 10, sprites: ["mushroom", "mushroom", "mushroom"] },
+];
 const RALLY_GAMES = [
   { id: "petal", name: "Petal Guess", icon: "tulip" },
   { id: "plot", name: "Garden Plot", icon: "carrot" },
@@ -223,14 +152,11 @@ const RALLY_GAMES = [
   { id: "half", name: "Missing Half", icon: "puzzle" },
   { id: "line", name: "Number Line", icon: "abacus" },
   { id: "sushi", name: "Sushi Belt", icon: "sushi" },
+  { id: "radical", name: "Radical Builder", icon: "bricks" },
+  { id: "match", name: "Meaning Match", icon: "heartribbon" },
 ];
 const LEVELS_N = 10;
 
-// Kanji built in Missing Half join the stamp book on their own page
-for (const p of PARTS) if (!WORDS.some(w => w.k === p.k)) WORDS.push({ id: WORDS.length, k: p.k, r: p.r, ro: p.ro, en: p.en, e: p.e, t: "built" });
-// dedupe by kanji+reading (魚 appears in two themes; keep first for collection)
-const WORD_KEYS = new Set();
-const UNIQUE_WORDS = WORDS.filter(w => { const key = w.k + w.r; if (WORD_KEYS.has(key)) return false; WORD_KEYS.add(key); return true; });
 
 // Extras bed: marks and small kana that unlock words with sounds like が, ぎゅ, っ
 const EXTRAS = [

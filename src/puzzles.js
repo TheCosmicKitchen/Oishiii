@@ -15,7 +15,7 @@ const PUZZLES = [
   { id: "match", name: "Meaning Match", jp: "いみ", icon: "heartribbon", desc: "Pair every kanji with its meaning as fast as you can.", play: m => meaningMatch(m) },
   { id: "petal", name: "Petal Guess", jp: "はなびら", icon: "tulip", desc: "Guess the hidden word in 6 tries. Blue petals mean same kana row or vowel.", play: m => petalGuess(m) },
   { id: "plot", name: "Garden Plot", jp: "はたけ", icon: "carrot", desc: "Kana sudoku: every row, column and bed gets each kana once.", play: m => gardenPlot(m) },
-  { id: "logic", name: "Garden Logic", jp: "にわ", icon: "rabbit", desc: "Read the Japanese clues and place everyone in the garden.", play: m => gardenLogic(m) },
+  { id: "logic", name: "Garden Logic", jp: "にわ", icon: "rabbit", desc: "Read the kanji clues and place everyone in the garden.", play: m => gardenLogic(m) },
   { id: "half", name: "Missing Half", jp: "はんぶん", icon: "puzzle", desc: "Drag in the missing piece to build the kanji. Trust your gut!", play: m => missingHalf(m) },
   { id: "line", name: "Number Line", jp: "かず", icon: "abacus", desc: "Line up kanji numbers and konbini prices, smallest to biggest.", play: m => numberLine(m) },
   { id: "sushi", name: "Chef's Special", jp: "すし", icon: "sushi", desc: "Today's 90-second sushi rush. Compare yen with your partner.", play: m => startSushi(m === "daily" || /^[LD]\d/.test(m) ? m : "practice") },
@@ -162,7 +162,9 @@ function logicClues(items, pos) {
   const C = []; const rc = i => [Math.floor(i / 3), i % 3];
   const verb = (it, neg) => ANIMATE.has(it.k) ? (neg ? ["いません", "imasen"] : ["います", "imasu"]) : (neg ? ["ありません", "arimasen"] : ["あります", "arimasu"]);
   const mk = (kind, a, b, test, jpW, kaW, roW, enW, neg = false) => { const A = items[a], B = b != null ? items[b] : null; const [vk, vr] = verb(A, neg);
-    C.push({ kind, test, jp: `${A.k}は${B ? B.k + "の" : ""}${jpW}に${vk}。`, kana: `${A.r}は ${B ? B.r + "の " : ""}${kaW}に ${vk}`, ro: `${A.ro} wa ${B ? B.ro + " no " : ""}${roW} ni ${vr}`, en: `The ${A.en} is ${neg ? "not " : ""}${enW}${B ? " the " + B.en : ""}.` }); };
+    C.push({ kind, test, jp: `${A.k}は${B ? B.k + "の" : ""}${jpW}に${vk}。`, kana: `${A.r}は ${B ? B.r + "の " : ""}${kaW}に ${vk}`, ro: `${A.ro} wa ${B ? B.ro + " no " : ""}${roW} ni ${vr}`, en: `The ${A.en} is ${neg ? "not " : ""}${enW}${B ? " the " + B.en : ""}.`,
+      // the clue as shown: English, with the item written as a kanji (Kanji reader) or in romaji (Kana speller)
+      enK: `${A.k} is ${neg ? "not " : ""}${enW}${B ? " " + B.k : ""}.`, enR: `${A.ro} is ${neg ? "not " : ""}${enW}${B ? " " + B.ro : ""}.` }); };
   for (let a = 0; a < 6; a++) {
     const [ra, ca] = rc(pos[a]);
     mk("col", a, null, p => p[a] % 3 === ca, ["左はし", "真ん中", "右はし"][ca], ["ひだりはし", "まんなか", "みぎはし"][ca], ["hidari-hashi", "mannaka", "migi-hashi"][ca], ["in the left column", "in the middle column", "in the right column"][ca]);
@@ -204,11 +206,11 @@ function gardenLogic(mode) {
     function draw() {
       const tray = items.map((_, i) => i).filter(i => !at.includes(i));
       const itemBtn = i => `<button class="lg-item" data-pick="i${i}" aria-label="item ${i + 1}">${IMG(items[i].e)}${labels ? `<span class="lbl">${esc(S.role === "kanji" ? items[i].k : items[i].r)}</span>` : ""}</button>`;
-      st.innerHTML = `<p class="muted" style="font-size:.85rem;text-align:center">Read the clues and drag everyone into the right spot. Tap a clue to ${S.role === "kanji" ? "see its reading" : "see the English"}.</p>
-      <div class="clues">${clues.map((c, j) => `<button class="cluerow ${struck.has(j) ? "struck" : ""}" data-clue="${j}">${S.role === "kanji" ? `<span class="jp">${esc(c.jp)}</span>${shown.has(j) ? `<span class="kn">${esc(c.kana)}</span>${showRo() ? `<span class="ro">${esc(c.ro)}</span>` : ""}<span class="en">${esc(c.en)}</span>` : ""}` : `<span class="kn" style="color:var(--ink);font-size:1.1rem">${esc(c.kana)}</span>${showRo() ? `<span class="ro">${esc(c.ro)}</span>` : ""}${shown.has(j) ? `<span class="en">${esc(c.en)}</span>` : ""}`}</button>`).join("")}</div>
-      <div class="lg-axis"><span>左 hidari</span><span>真ん中 mannaka</span><span>右 migi</span></div>
+      st.innerHTML = `<p class="muted" style="font-size:.85rem;text-align:center">Read the clues and drag everyone into the right spot. Tap a clue to see it in plain English.</p>
+      <div class="clues">${clues.map((c, j) => `<button class="cluerow ${struck.has(j) ? "struck" : ""}" data-clue="${j}">${S.role === "kanji" ? `<span class="jp">${[...c.enK].map(ch => /[一-鿿]/.test(ch) ? `<b>${esc(ch)}</b>` : esc(ch)).join("")}</span>` : `<span class="kn" style="color:var(--ink);font-size:1.05rem">${esc(c.enR)}</span>`}${shown.has(j) ? `<span class="en">${esc(c.en)}</span>` : ""}</button>`).join("")}</div>
+      <div class="lg-axis"><span>左 left</span><span>middle</span><span>右 right</span></div>
       <div class="lg-grid">${at.map((it, c) => `<div class="lg-cell" data-drop="c${c}" aria-label="${["top", "bottom"][Math.floor(c / 3)]} ${["left", "middle", "right"][c % 3]}">${it >= 0 ? itemBtn(it) : ""}</div>`).join("")}</div>
-      <div class="lg-axis"><span>上の段 ue no dan = top row · 下の段 shita no dan = bottom row</span></div>
+      <div class="lg-axis"><span>上 top row · 下 bottom row</span></div>
       <div class="lg-tray">${tray.map(itemBtn).join("") || `<button class="btn pink" id="lgcheck">${IMG("check")}Check my garden</button>`}</div>
       <div class="row" style="justify-content:center"><button class="btn ghost small" id="lglabels">${labels ? "Hide name tags" : "Show name tags (hint)"}</button></div>`;
       $$("[data-clue]", st).forEach(b => b.onclick = () => { const j = +b.dataset.clue; if (shown.has(j)) { struck.has(j) ? struck.delete(j) : struck.add(j); } else { shown.add(j); peeks++; } draw(); });

@@ -16,7 +16,7 @@ A cute Japanese learning game for two adult beginners (a couple). One plays the 
 - Games: Transfer Chain (link two-kanji words from JMdict, `src/compound-data.js`), Radical Builder, Meaning Match, Sushi Belt, Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line. Each has dailies (same seed for both players), endless mode, 10 levels and a rally card.
 - 36 stops are **cities** (`city` column in `route.tsv`): scalloped city stamps, square map markers, an arrival card and a City stamps page.
 - N5/N4 kanji are **grounded**: each stop teaches kanji from its name, its local words (`tools/local_words.tsv`) or station signs within 25 km, plus one local special (名物) per city (`tools/meibutsu.tsv`). Regenerate `src/ground-data.js` with `tools/ground_kanji.py`. Local words must be real and verifiable.
-- Towns are being **curated one by one** (starting with Yokohama): `tools/towns.tsv` hand-picks a stop's kanji and the real local word anchoring each, and `src/scenes.js` holds its little scenes (signs, a short exchange, one choice, a note and a real fact). Scenes are told in English; the only Japanese in them is the kanji that stop teaches.
+- Towns are being **curated one by one** (starting with Yokohama): `tools/towns.tsv` hand-picks a stop's kanji and the real local word anchoring each, and `src/scenes.js` holds its little scenes (signs, a short exchange, one choice, a note and a real fact). Scenes are told in English; the only Japanese in them is the kanji that stop teaches. A scene can carry a real photo as a postcard: free Wikimedia Commons files only, approved by the user on a photo board, with author and licence in `tools/photos.tsv` (`tools/make_photo_data.py` builds `src/photo-data.js`).
 - Grammar will be its own journey on foot along the old Tōkaidō's post towns, not gated by the kanji line (planned).
 - Hidden "secret ticket": tap the train on the map 5× to unlock up to any stop (stamps still earned).
 
@@ -24,5 +24,5 @@ A cute Japanese learning game for two adult beginners (a couple). One plays the 
 - Edit `src/`, then `python3 build.py`. It writes `index.html` (served by GitHub Pages at https://thecosmickitchen.github.io/Oishiii/) and `dist/oishii.html` (the Claude artifact version).
 - `src/kanji-data.js`, `src/compound-data.js`, `src/route-data.js` and `src/ground-data.js` are generated; regenerate with the scripts in `tools/` (see README). Don't edit them by hand.
 - Facts on station cards must be real and verifiable; keep them to one short line.
-- Keep the README credits for KANJIDIC2/RADKFILE/JMdict (EDRDG, CC BY-SA 4.0), Kanji alive, Tanos JLPT lists, ekidata and Global Map Japan.
+- Keep the README credits for KANJIDIC2/RADKFILE/JMdict (EDRDG, CC BY-SA 4.0), Kanji alive, Tanos JLPT lists, ekidata, Global Map Japan and every town photo.
 - Test with a headless browser (Playwright is available) at 400px wide in light and dark before pushing.

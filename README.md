@@ -35,6 +35,7 @@ This writes `index.html` (full standalone page) and `dist/oishii.html` (page bod
 - `src/kanji-data.js` — generated JLPT kanji and radical data (do not edit by hand)
 - `src/kanji.js` — kanji entries, tracks and sub-levels
 - `src/compound-data.js` — generated: common two-kanji words for Transfer Chain (`tools/make_compounds.py`)
+- `src/photo-data.js` — generated: approved town photos with credits (`tools/photos.tsv` + `assets/photos/`, `python3 tools/make_photo_data.py`)
 - `src/ground-data.js` — generated: which stop teaches which N5/N4 kanji and why (`tools/ground_kanji.py`)
 - `src/route-data.js` — generated stations and map outline (edit `tools/route.tsv`, then run `tools/make_route_data.py`)
 - `src/rail.js` — the rail map, station cards and station stamps
@@ -93,6 +94,7 @@ It writes `src/ground-data.js` and prints how many kanji each stop ties to its t
 - Romaji-to-kana typing: [WanaKana](https://github.com/WaniKani/WanaKana) (MIT License), loaded from jsDelivr.
 - Kanji, meanings and readings: [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) via [davidluzgouveia/kanji-data](https://github.com/davidluzgouveia/kanji-data). JLPT levels: Jonathan Waller's lists ([tanos.co.uk](http://www.tanos.co.uk/jlpt/), CC BY).
 - Two-kanji words for Transfer Chain: [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) (EDRDG, CC BY-SA 4.0) via [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified). The generated `src/compound-data.js` is shared under CC BY-SA 4.0.
+- Town photos (resized) from Wikimedia Commons, listed with their authors and licences in `tools/photos.tsv` and credited on each postcard: Zenrin Gate by Suicasmo (CC BY-SA 4.0); Ōsanbashi Pier at night by Matthide127 (CC0); Kanagawa Prefectural Office on Nihon Ōdōri by 663highland (CC BY 2.5); Yokohama Station north-west exit by NEO-NEED (CC0).
 - Radicals: RADKFILE/KRADFILE by Michael Raine, James Breen and the Electronic Dictionary Research and Development Group, via [@johnmorrisdotca/bushu](https://www.npmjs.com/package/@johnmorrisdotca/bushu). Radical names: [Kanji alive](https://kanjialive.com/) (CC BY 4.0).
 - *Radicals and kanji from RADKFILE and KANJIDIC2, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (https://www.edrdg.org/edrdg/licence.html).* The generated `src/kanji-data.js` is shared under CC BY-SA 4.0.
 - Station coordinates: [ekidata](https://www.ekidata.jp/) via [piuccio/open-data-jp-railway-stations](https://github.com/piuccio/open-data-jp-railway-stations). Map of Japan: Global Map Japan, Geospatial Information Authority of Japan (出典: 地球地図日本), via [dataofjapan/land](https://github.com/dataofjapan/land).

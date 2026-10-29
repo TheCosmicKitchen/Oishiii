@@ -38,6 +38,11 @@ const SCENES = {
       fact: "Yokohama Station has been under construction for so long that it is nicknamed Japan's Sagrada Família." },
   ],
 };
+// A real photo of the place (tools/photos.tsv), shown as a postcard with the credit its licence asks for
+function postcardHTML(sc) {
+  const p = typeof SCENE_PHOTOS !== "undefined" && SCENE_PHOTOS[sc.id]; if (!p) return "";
+  return `<figure class="postcard"><img src="${p.src}" alt="${esc(p.caption)}"><figcaption><b>${esc(p.caption)}</b><small>Photo: <a href="${esc(p.page)}" target="_blank" rel="noopener">${esc(p.author)}</a> · ${p.licenceUrl ? `<a href="${esc(p.licenceUrl)}" target="_blank" rel="noopener">${esc(p.licence)}</a>` : esc(p.licence)} · resized</small></figcaption></figure>`;
+}
 // English text with the stop's kanji picked out in color
 const sceneInline = (s, t) => [...t].map(c => isKanjiChar(c) ? `<b class="kj">${esc(c)}</b>` : esc(c)).join("");
 const townScenes = s => (!s.track.kana && SCENES[s.stop.p]) || [];
@@ -56,6 +61,7 @@ function openScene(s, i) {
     let solved = false;
     function draw() {
       st.innerHTML = `<div class="scene" style="--lv:${LINE_INK[s.track.id]}"><div class="scene-head">${IMGW(sc.emoji, 56)}<div><span class="eyebrow">${esc(s.stop.ro)} · scene ${i + 1}</span><h3>${esc(sc.title)}</h3></div></div>
+        ${postcardHTML(sc)}
         <p class="scnarr">${sceneInline(s, sc.narr)}</p>
         ${sc.signs.map(([t, cap, r]) => `<button class="scsign" data-say="${esc(r)}"><span class="glyph">${sceneInline(s, t)}</span><small class="en">${esc(cap)}</small></button>`).join("")}
         ${solved ? `<p class="scnarr scafter">${sceneInline(s, sc.after)}</p><div class="scnote">${sceneInline(s, sc.note)}</div><p class="muted scfact">${IMGW("sparkles", 18)}<span>${esc(sc.fact)}</span></p>

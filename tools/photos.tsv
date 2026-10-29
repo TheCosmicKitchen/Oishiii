@@ -1,0 +1,6 @@
+# Town photos from Wikimedia Commons: shown as postcards on scenes. Licence and author come from each file's Commons record.
+# file (in assets/photos)	scene id	caption	commons page	author	licence	licence url
+yk-chinatown-0.jpg	yk-chinatown	Zenrin Gate, Yokohama Chinatown	https://commons.wikimedia.org/wiki/File:Zenrin_Gate_(Yokohama_Chinatown)_20211212-2.jpg	Suicasmo	CC BY-SA 4.0	https://creativecommons.org/licenses/by-sa/4.0
+yk-pier-2.jpg	yk-park	Ōsanbashi Pier at night	https://commons.wikimedia.org/wiki/File:20250102_Osanbashi_Pier_night_204621.jpg	Matthide127	CC0	http://creativecommons.org/publicdomain/zero/1.0/deed.en
+yk-avenue-1.jpg	yk-avenue	Nihon Ōdōri, with the Kanagawa Prefectural Office	https://commons.wikimedia.org/wiki/File:Kanagawa_prefectural_office02s3200.jpg	663highland	CC BY 2.5	https://creativecommons.org/licenses/by/2.5
+yk-station-2.jpg	yk-station	Yokohama Station, north-west exit	https://commons.wikimedia.org/wiki/File:Yokohama_Station-NWest_exit_2025-01.jpg	NEO-NEED	CC0	http://creativecommons.org/publicdomain/zero/1.0/deed.en

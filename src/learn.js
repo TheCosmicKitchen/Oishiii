@@ -26,7 +26,8 @@ const subItems = s => s.items;
 const isKanaSub = s => !!s.track.kana;
 const itemDone = (s, it) => isKanaSub(s) ? !!S.kana[it] : isStamped(it);
 const subDoneCount = s => s.items.filter(it => itemDone(s, it)).length;
-function nextSub() { return ALL_SUBS.find(s => subUnlocked(s) && !subStars(s)) || ALL_SUBS.filter(subUnlocked).pop(); }
+// the next stop to play: the first open one not cleared yet, skipping kana stops whose kana are all learned already
+function nextSub() { return ALL_SUBS.find(s => subUnlocked(s) && !subStars(s) && !(isKanaSub(s) && s.items.every(k => S.kana[k]))) || ALL_SUBS.filter(subUnlocked).pop(); }
 const trackStars = t => t.subs.reduce((a, s) => a + subStars(s), 0);
 const kanaRo = k => { const x = EXTRAS.find(e => e.k === k); return x ? x.name : k === "を" ? "o (wo)" : KANA_RO[k]; };
 function kunHTML(x) { const [a, b] = x.split("."); return esc(a) + (b ? `<span class="oku">${esc(b)}</span>` : ""); }
@@ -42,7 +43,7 @@ function viewLearn(v) {
   <section class="hello">${IMG(stamped ? "sakura" : "seedling")}<div class="stack" style="gap:6px;flex:1;min-width:0">
     <h2>${greet}</h2><p class="muted" style="font-size:.85rem">${plantedKana().length < 46 && S.role !== "kanji" ? "Start with kana, then climb from N5 to N1. Every kanji you clear gets stamped." : "Clear sub-levels to stamp kanji. Games only quiz what you've stamped."}</p>
     <div class="stats"><div class="stat"><b>${plantedKana().length}</b><span>kana / 46</span></div><div class="stat"><b>${stamped}</b><span>kanji / ${KJ.length.toLocaleString()}</span></div><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}</b><span>levels / ${ALL_SUBS.length}</span></div></div>
-    <div class="row">${nx ? `<button class="btn pink" id="continue">${IMG("sparkles")}${subStars(nx) ? "Replay" : "Continue"} ${esc(nx.title)}</button>` : ""}<button class="btn ghost" id="review" ${stamped || plantedKana().length ? "" : "disabled"}>${IMG("droplet")}Review</button></div></div></section>
+    <div class="row">${nx ? `<button class="btn pink" id="continue">${IMG("sparkles")}${subStars(nx) ? "Replay" : "Continue"} ${esc(nx.title)}</button>` : ""}<button class="btn ghost" id="review" ${stamped || plantedKana().length ? "" : "disabled"}>${IMG("droplet")}Review</button></div>${nx && nx.track.kana ? `<button class="btn ghost small" id="skipkana">Already know hiragana? Skip to N5 and Yokohama</button>` : ""}</div></section>
   <section class="card stack path">
     <header class="row"><button class="trainbtn" id="train" aria-label="Your line">${IMGW("train", 40)}</button><div style="flex:1;min-width:0"><h2>The line</h2><p class="muted" style="font-size:.8rem">Every stop is a real station. Clear its 10 kanji to lay track and ride there, from Tokyo to Wakkanai.</p></div></header>
     ${railMapHTML(cur)}
@@ -59,6 +60,7 @@ function viewLearn(v) {
   $$(".subnode[data-sub]", v).forEach(b => b.onclick = () => openSub(SUB_BY[b.dataset.sub]));
   bindRailMap(v);
   const c = $("#continue", v); if (c) c.onclick = () => openSub(nx);
+  const sk = $("#skipkana", v); if (sk) sk.onclick = skipKana;
   $("#review", v).onclick = startReview;
   // hidden: tap the little station five times to unlock up to any stop
   $("#train", v).onclick = () => { unlockTaps++; clearTimeout(unlockTimer); unlockTimer = setTimeout(() => unlockTaps = 0, 1500); SFX.tap(); if (unlockTaps >= 5) { unlockTaps = 0; openUnlockPicker(); } };
@@ -320,9 +322,12 @@ function viewBook(v) {
   $$("[data-role]").forEach(b => b.onclick = () => { S.role = b.dataset.role; save(); render(); });
   $$("[data-ro]").forEach(b => b.onclick = () => { S.romaji = b.dataset.ro === "1"; save(); render(); });
   $$("[data-snd]").forEach(b => b.onclick = () => { S.sound = b.dataset.snd === "1"; save(); render(); });
-  $("#knowall").onclick = () => { KANA_SUBS.flatMap(s => s.items).forEach(k => { S.kana[k] = S.kana[k] || { pts: 7, last: now() }; }); S.unlockTo = Math.max(S.unlockTo || 0, TRACKS[1].subs[0].idx); S.track = "n5"; save(); toast("All kana learned. N5 is open!"); render(); };
+  $("#knowall").onclick = skipKana;
   $("#reset").onclick = () => { $("#resetconfirm").innerHTML = `<button class="btn small" style="background:var(--bad);box-shadow:none" id="reset2">Yes, erase everything</button>`; $("#reset2").onclick = () => { S = DEFAULT(); save(); TAB = "learn"; render(); toast("A fresh start!"); }; };
 }
 function bindStampClicks(root) {
   $$("[data-word]", root).forEach(b => b.onclick = () => { const w = KJ[+b.dataset.word]; openPlay(w.k, st => { st.innerHTML = `<div class="stampbook" style="display:flex;justify-content:center;padding:24px">${stampHTML(w, 180, "thunk")}</div>${studyCardHTML({ track: {} }, w)}<p class="muted" style="text-align:center;font-size:.8rem">Stamped ${esc(S.words[w.k].stamped || "")}</p>`; say(w.r); }); });
 }
+
+// For players who already read hiragana: mark every kana learned and open the line up to the first N5 stop
+function skipKana() { KANA_SUBS.flatMap(s => s.items).forEach(k => { S.kana[k] = S.kana[k] || { pts: 7, last: now() }; }); S.unlockTo = Math.max(S.unlockTo || 0, TRACKS[1].subs[0].idx); S.track = "n5"; save(); toast("All kana learned. N5 is open!"); render(); }

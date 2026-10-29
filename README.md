@@ -16,6 +16,7 @@ Progress is saved per device in the browser (localStorage).
 - **Radical Builder:** pick the radicals that make up a kanji, and spot a kanji from its parts.
 - **Meaning Match:** pair kanji with their meanings against the clock.
 - **Sushi Belt:** buds order stamped kanji by picture and meaning; drag them the right plate. Look-alike decoys, combos, plate prices, levelling buds.
+- **Transfer Chain:** ride from one kanji to another by linking real two-kanji words (東京 → 京都 → 都市 → …); each word's second kanji is where you change trains. Fewest rides wins, and the destination often comes from your latest stop.
 - **More daily puzzles** (same seed for both players): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Every game has endless mode, 10 levels and a rally stamp card, and every past day stays playable in the archive.
 - **Collection:** a station stamp for every stop, a kanji stamp for every kanji (one page per JLPT level), trophies, route and rally stars, and a completion meter. No streaks, nothing expires.
 - **Two roles:** Kana speller (reading choices with romaji) and Kanji reader (typed readings, WaniKani style, bare kanji). Typing converts romaji to kana like WaniKani.
@@ -33,6 +34,7 @@ This writes `index.html` (full standalone page) and `dist/oishii.html` (page bod
 - `src/data.js` — kana, puzzle content, buds, games
 - `src/kanji-data.js` — generated JLPT kanji and radical data (do not edit by hand)
 - `src/kanji.js` — kanji entries, tracks and sub-levels
+- `src/compound-data.js` — generated: common two-kanji words for Transfer Chain (`tools/make_compounds.py`)
 - `src/ground-data.js` — generated: which stop teaches which N5/N4 kanji and why (`tools/ground_kanji.py`)
 - `src/route-data.js` — generated stations and map outline (edit `tools/route.tsv`, then run `tools/make_route_data.py`)
 - `src/rail.js` — the rail map, station cards and station stamps
@@ -65,6 +67,16 @@ pip install shapely
 python3 tools/make_route_data.py stations.json japan.geojson
 ```
 
+### Regenerating the Transfer Chain words
+
+Transfer Chain uses common two-kanji words from JMdict. Download `jmdict-eng-common-*.json.tgz` from [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases), unpack it, then run:
+
+```
+python3 tools/make_compounds.py jmdict-eng-common-*.json
+```
+
+It writes `src/compound-data.js`: every common word made of two N5–N2 kanji, with a reading and a short meaning.
+
 ### Grounding kanji in places
 
 N5 and N4 kanji are dealt to the stops where they really appear: in the stop's name, in a local word from `tools/local_words.tsv` (landmarks, foods, nicknames), or on a real station sign within 25 km. Each city also teaches one local special kanji from `tools/meibutsu.tsv`. After editing either file, or `route.tsv`, run (with the same `stations.json`):
@@ -80,6 +92,7 @@ It writes `src/ground-data.js` and prints how many kanji each stop ties to its t
 - Emoji art: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT License).
 - Romaji-to-kana typing: [WanaKana](https://github.com/WaniKani/WanaKana) (MIT License), loaded from jsDelivr.
 - Kanji, meanings and readings: [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) via [davidluzgouveia/kanji-data](https://github.com/davidluzgouveia/kanji-data). JLPT levels: Jonathan Waller's lists ([tanos.co.uk](http://www.tanos.co.uk/jlpt/), CC BY).
+- Two-kanji words for Transfer Chain: [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) (EDRDG, CC BY-SA 4.0) via [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified). The generated `src/compound-data.js` is shared under CC BY-SA 4.0.
 - Radicals: RADKFILE/KRADFILE by Michael Raine, James Breen and the Electronic Dictionary Research and Development Group, via [@johnmorrisdotca/bushu](https://www.npmjs.com/package/@johnmorrisdotca/bushu). Radical names: [Kanji alive](https://kanjialive.com/) (CC BY 4.0).
 - *Radicals and kanji from RADKFILE and KANJIDIC2, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (https://www.edrdg.org/edrdg/licence.html).* The generated `src/kanji-data.js` is shared under CC BY-SA 4.0.
 - Station coordinates: [ekidata](https://www.ekidata.jp/) via [piuccio/open-data-jp-railway-stations](https://github.com/piuccio/open-data-jp-railway-stations). Map of Japan: Global Map Japan, Geospatial Information Authority of Japan (出典: 地球地図日本), via [dataofjapan/land](https://github.com/dataofjapan/land).

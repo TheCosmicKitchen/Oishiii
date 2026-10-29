@@ -146,6 +146,7 @@ const BUDS = [
   { id: "kinoko", name: "Kinoko", jp: "きのこ", likes: "big kanji (10+ strokes)", fits: w => w.s >= 10, sprites: ["mushroom", "mushroom", "mushroom"] },
 ];
 const RALLY_GAMES = [
+  { id: "chain", name: "Transfer Chain", icon: "tracks" },
   { id: "petal", name: "Petal Guess", icon: "tulip" },
   { id: "plot", name: "Garden Plot", icon: "carrot" },
   { id: "logic", name: "Garden Logic", icon: "rabbit" },

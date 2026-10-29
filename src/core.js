@@ -323,6 +323,7 @@ const subStars = s => (S.subs[s.id] || {}).stars || 0;
 const petalPool = () => stampedWords().filter(w => isBasic(w.r) && [...w.r].length >= 2 && [...w.r].length <= 4);
 const logicPool = () => LOGIC_ITEMS.filter(it => stampedK(it.k));
 const GATES = {
+  chain: { name: "Transfer Chain", icon: "tracks", need: "Stamp 20 kanji (two N5 stops)", prog: () => [Math.min(20, foundCount()), 20] },
   sushi: { name: "Sushi Belt", icon: "sushi", need: "Stamp 6 kanji (clear your first N5 sub-level)", prog: () => [Math.min(6, foundCount()), 6] },
   radical: { name: "Radical Builder", icon: "bricks", need: "Stamp 6 kanji", prog: () => [Math.min(6, foundCount()), 6] },
   match: { name: "Meaning Match", icon: "heartribbon", need: "Stamp 6 kanji", prog: () => [Math.min(6, foundCount()), 6] },

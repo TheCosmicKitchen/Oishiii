@@ -10,6 +10,7 @@ function pzSetup(id, mode) {
 function startTimer(hud, extra = () => "") { const t0 = now(); const draw = () => { hud.innerHTML = `${extra()}<span class="chip">${IMG("hourglass")}${fmtTime(now() - t0)}</span>`; }; draw(); const iv = setInterval(draw, 1000); return { stop: () => clearInterval(iv), ms: () => now() - t0, redraw: draw }; }
 
 const PUZZLES = [
+  { id: "chain", name: "Transfer Chain", jp: "のりかえ", icon: "tracks", desc: "Ride from one kanji to another by linking real two-kanji words. Fewest rides wins.", play: m => transferChain(m) },
   { id: "radical", name: "Radical Builder", jp: "ぶしゅ", icon: "bricks", desc: "Pick the radicals that build each kanji, then spot kanji from their parts.", play: m => radicalBuilder(m) },
   { id: "match", name: "Meaning Match", jp: "いみ", icon: "heartribbon", desc: "Pair every kanji with its meaning as fast as you can.", play: m => meaningMatch(m) },
   { id: "petal", name: "Petal Guess", jp: "はなびら", icon: "tulip", desc: "Guess the hidden word in 6 tries. Blue petals mean same kana row or vowel.", play: m => petalGuess(m) },
@@ -26,7 +27,7 @@ function viewPuzzles(v) {
   const d = dayDifficulty(); const diffName = d < .35 ? "gentle" : d < .7 ? "medium" : d < .95 ? "tricky" : "brutal";
   v.innerHTML = `
   <section class="card bouquet-card">${IMG("basket")}<div style="flex:1;min-width:0"><h2>Today's bouquet</h2><p class="muted" style="font-size:.85rem">${DAYNAME[new Date().getDay()]} puzzles are <b>${diffName}</b>. Collect a flower for each one.</p>
-    <div class="flowers" style="margin-top:4px">${PUZZLES.map(p => IMG(["cherries", "butterfly", "blossom", "tulip", "sunflower", "hibiscus", "sakura", "clover"][PUZZLES.indexOf(p)]).replace('class="em"', `class="em ${today[p.id] ? "" : "off"}"`)).join("")}</div></div></section>
+    <div class="flowers" style="margin-top:4px">${PUZZLES.map(p => IMG(["maple", "cherries", "butterfly", "blossom", "tulip", "sunflower", "hibiscus", "sakura", "clover"][PUZZLES.indexOf(p)]).replace('class="em"', `class="em ${today[p.id] ? "" : "off"}"`)).join("")}</div></div></section>
   ${doneN ? `<button class="btn pink" id="shareall">${IMG("gift")}Share today's bouquet (${doneN}/${PUZZLES.length})</button>` : ""}
   <div class="bouquet">${PUZZLES.map(p => { const r = today[p.id]; return `<div class="pz ${r ? "done" : ""}">
     <div class="row">${IMG(p.icon).replace('class="em"', 'class="em icon"')}<span class="spacer"></span>${r ? `<span class="pill done">done</span>` : `<span class="pill">today</span>`}</div>
@@ -352,6 +353,78 @@ function numberLine(mode) {
   });
 }
 
+// ---------- 6. TRANSFER CHAIN (乗り換え) ----------
+// Ride from one kanji to another: every train is a real two-kanji word, and its second kanji is where you change.
+// Only words made of stamped kanji count; number-only words (二十, 三百) are left out so chains stay interesting.
+const CHAIN_BLOCK = new Set(["土人", "外人", "国人"]);
+const COMPOUNDS = COMPOUND_TSV.split("\n").map(l => { const [w, r, en] = l.split("\t"); return { w, a: w[0], b: w[1], r, en, get ro() { return romaji(this.r); } }; })
+  .filter(c => !CHAIN_BLOCK.has(c.w) && !(NUM_ON.has(c.a) && NUM_ON.has(c.b)));
+function chainGraph() {
+  const out = {};
+  for (const c of COMPOUNDS) if (stampedK(c.a) && stampedK(c.b)) (out[c.a] || (out[c.a] = [])).push(c);
+  return out;
+}
+function chainDist(out, from) { const dist = { [from]: 0 }, q = [from]; while (q.length) { const x = q.shift(); for (const c of out[x] || []) if (!(c.b in dist)) { dist[c.b] = dist[x] + 1; q.push(c.b); } } return dist; }
+const chainPoolSize = () => { const out = chainGraph(); return Object.values(out).reduce((a, l) => a + l.length, 0); };
+function chainPuzzle(rng, want) {
+  const out = chainGraph(); const starts = Object.keys(out).filter(k => out[k].length >= 2).sort();
+  const here = (typeof lastVisited === "function" && lastVisited()) || null; const local = new Set(here && !here.track.kana ? here.items.map(w => w.k) : []);
+  for (let tries = 0; tries < 80; tries++) {
+    const a = rng.pick(starts); if (!a) break; const dist = chainDist(out, a);
+    for (const L of [want, want - 1, want + 1, want - 2].filter(n => n >= 2)) {
+      const at = Object.keys(dist).filter(k => dist[k] === L).sort(); if (!at.length) continue;
+      const goals = at.filter(k => local.has(k)); const g = rng.pick(goals.length && rng.f() < .7 ? goals : at);
+      return { out, a, g, best: L, town: local.has(g) ? here : null };
+    }
+  }
+  return null;
+}
+function transferChain(mode) {
+  const { daily, rng, d, bump, level } = pzSetup("chain", mode);
+  const want = level ? [2, 2, 2, 3, 3, 3, 4, 4, 4, 5][level - 1] : d < .35 ? 2 : d < .7 ? 3 : d < .95 ? 4 : 5;
+  const P = chainPuzzle(rng, want); if (!P) { toast("Stamp a few more kanji to open more lines!"); return; }
+  const { out, a, g, best, town } = P; const kanaRole = S.role !== "kanji"; const MAXR = best + 6;
+  openPlay("Transfer Chain", (st, hud) => {
+    const rides = []; let undos = 0; const t0 = now();
+    const at = () => rides.length ? rides[rides.length - 1].b : a;
+    const drawHud = () => { hud.innerHTML = `<span class="chip">${IMG("ticket")}${rides.length}/${MAXR}</span><span class="chip">best ${best}</span>`; };
+    const kj = k => `<span class="glyph">${esc(k)}</span>`;
+    function draw() {
+      drawHud(); const cur = at(); const opts = rng.shuffle(out[cur] || []);
+      const dist = chainDist(out, cur); const good = opts.filter(c => (chainDist(out, c.b)[g] ?? 99) < (dist[g] ?? 99));
+      const shown = [...new Set([...good.slice(0, 2), ...opts])].slice(0, 8).sort((x, y) => x.w.localeCompare(y.w));
+      st.innerHTML = `<div class="chain-head"><div class="chain-end"><small>From</small>${kj(a)}</div><div class="chain-rail" aria-hidden="true">${"<i></i>".repeat(Math.max(best, rides.length) + 1)}</div><div class="chain-end goal"><small>To</small>${kj(g)}</div></div>
+        ${town ? `<p class="muted chain-town">${IMGW("station", 18)}<span>Destination kanji from ${esc(town.stop.ro)}, your latest stop</span></p>` : ""}
+        <div class="chain-log">${rides.length ? rides.map(c => `<span class="chain-ride">${kj(c.w)}<small>${esc(c.r)} · ${esc(c.en)}</small></span>`).join(`<span class="chain-arrow">→</span>`) : `<p class="muted" style="font-size:.85rem">Pick a word that starts with ${esc(a)}. Its second kanji is where you change trains. Reach ${esc(g)} in as few rides as you can.</p>`}</div>
+        <div class="eyebrow" style="text-align:center">Trains leaving ${esc(cur)}</div>
+        ${shown.length ? `<div class="chain-opts">${shown.map((c, i) => `<button class="chainopt" data-opt="${i}"><span class="glyph">${esc(c.a)}<b>${esc(c.b)}</b></span>${kanaRole ? `<small>${esc(c.r)} · ${esc(c.ro)}</small><small class="en">${esc(c.en)}</small>` : ""}</button>`).join("")}</div>`
+          : `<div class="card" style="text-align:center"><b>End of the line!</b><p class="muted" style="font-size:.85rem">No stamped words start with ${esc(cur)}. Go back one stop.</p></div>`}
+        <div class="row" style="justify-content:center">${rides.length ? `<button class="btn ghost small" id="undo">← Back one stop</button>` : ""}</div>`;
+      $$("[data-opt]", st).forEach(b => b.onclick = () => ride(shown[+b.dataset.opt]));
+      const u = $("#undo", st); if (u) u.onclick = () => { rides.pop(); undos++; SFX.bad(); draw(); };
+    }
+    function ride(c) {
+      rides.push(c); say(c.r); SFX.good();
+      if (c.b === g) return finish(true);
+      if (rides.length >= MAXR) return finish(false);
+      draw();
+    }
+    function finish(arrived) {
+      const n = rides.length, extra = n - best; const stars = !arrived ? 0 : extra <= 0 && !undos ? 3 : extra <= 2 ? 2 : 1;
+      if (arrived) { SFX.win(); confetti(stars === 3 ? 40 : 20); bump(); addStat("chains"); }
+      rides.forEach(c => [c.a, c.b].forEach(k => { const w = KJ_BY[k]; if (w && isStamped(w)) touchWord(w, true, false); })); save();
+      const label = arrived ? `${n} ride${n === 1 ? "" : "s"} (best ${best})` : "Out of tickets";
+      const line = `🚃 Transfer Chain ${a}→${g} ${label}`;
+      if (daily && arrived) setDaily("chain", { score: `${n}/${best}`, line });
+      const route = `<div class="chain-log done">${rides.map(c => `<span class="chain-ride">${kj(c.w)}<small>${esc(c.r)} · ${esc(c.ro)} · ${esc(c.en)}</small></span>`).join(`<span class="chain-arrow">→</span>`)}</div>`;
+      if (level) { levelResult(st, "chain", level, stars, label); st.insertAdjacentHTML("afterbegin", route); return; }
+      resultScreen(st, { icon: "train", title: !arrived ? "Out of tickets!" : stars === 3 ? "Perfect connection!" : `Arrived at ${g}!`, score: label, lines: [route, `${undos} back-up${undos === 1 ? "" : "s"} · ${fmtTime(now() - t0)}`],
+        share: daily && arrived ? `${APP_NAME} 🚃 Transfer Chain ${playDate()}\n${a} ${"🚃".repeat(n)} ${g}\n${n} rides · best ${best}${undos ? ` · ${undos} back-up${undos === 1 ? "" : "s"}` : ""}` : "", again: () => transferChain("endless"), againLabel: "New route" });
+    }
+    draw();
+  });
+}
+
 // ---------- LEVEL LADDERS + RALLY STAMP CARDS ----------
 const RALLY_INK = { 1: "#A0642D", 2: "#6F7F92", 3: "#C38E12" };
 const rallyGame = id => RALLY_GAMES.find(g => g.id === id);
@@ -406,7 +479,7 @@ function levelResult(st, id, n, stars, label) {
   setTimeout(() => holdCelebrations(false), 400);
 }
 function starHint(id, n) {
-  return ({ petal: "★★★: solve in 3 guesses or fewer without a hint. ★★: 4 or fewer.", plot: "★★★: under 3 minutes. ★★: under 6 minutes.", logic: "★★★: no slips and no peeks. ★★: at most one slip.",
+  return ({ chain: "★★★: the shortest route with no back-ups. ★★: within 2 rides of it.", petal: "★★★: solve in 3 guesses or fewer without a hint. ★★: 4 or fewer.", plot: "★★★: under 3 minutes. ★★: under 6 minutes.", logic: "★★★: no slips and no peeks. ★★: at most one slip.",
     half: "★★★: no slips. ★★: two slips or fewer.", radical: "★★★: no slips. ★★: two slips or fewer.", match: "★★★: no mismatches. ★★: two or fewer.", line: "★★★: no slips. ★★: two slips or fewer.", sushi: `Target ¥${(900 + 250 * (n - 1)).toLocaleString()}: ★★ at 1.5×, ★★★ at 2×.` })[id];
 }
 

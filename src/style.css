@@ -436,12 +436,20 @@ label.lab{font-weight:800;font-size:.85rem}
 .itemcard.mei::before{border-color:var(--sun);background:var(--sun)}
 .localtie{align-self:stretch;border:1.5px dashed var(--lv, var(--sakura));border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;background:color-mix(in srgb,var(--lv, var(--sakura)) 6%,var(--surface))}
 .localtie .glyph{font-size:1.5rem;letter-spacing:.04em}
-.localtie .glyph b{color:var(--lv, var(--sakura));font-weight:600}
+.localtie .glyph b{color:color-mix(in srgb,var(--lv, var(--sakura)) 72%,var(--ink));font-weight:600}
 .localtie .eki{font-size:.85rem;color:var(--ink-soft);margin-left:4px}
 .localtie small{font-weight:800;color:var(--ink-soft)}
 .localtie p{font-size:.82rem;text-align:center;margin:0}
 .localtie.mei{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 12%,var(--surface))}
 .localnote{display:flex;gap:6px;align-items:center;font-size:.8rem;font-weight:700;color:var(--ink-soft);margin:4px 0 0}
+.towncard{border:2px solid color-mix(in srgb,var(--lv) 35%,var(--line))}
+.townwords{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.townword{border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;color:var(--ink);min-width:0}
+.townword .glyph{font-size:1.25rem;line-height:1.25;color:var(--ink-soft)}
+.townword .glyph b{color:color-mix(in srgb,var(--lv) 72%,var(--ink));font-weight:600}
+.townword .glyph .known{color:var(--ink)}
+.townword small{font-size:.68rem;font-weight:800;color:var(--ink-soft);overflow-wrap:anywhere}
+.townword .tw-en{font-size:.76rem;line-height:1.2}
 .kcard-big .glyph.big{font-size:6.5rem;color:var(--lv)}
 .meanings{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;align-items:baseline}
 .meanings b{font-family:var(--f-display);font-weight:400;font-size:1.4rem;color:var(--sakura)}

@@ -84,13 +84,14 @@ function openSub(s) {
   openPlay(s.title, (st, hud) => {
     const stars = subStars(s);
     hud.innerHTML = `<span class="chip">${IMG("star")}${stars}/3</span>`;
-    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(s.stop.p)}.` : `Study the cards, then pass the clear test to lay track to ${esc(s.stop.p)} and stamp all of these kanji. Mistakes come back until you get them.`}</p>${!isKanaSub(s) && tiedHere(s).length ? `<p class="localnote">${IMGW("station", 20)}<span>${tiedHere(s).length} of these ${s.items.length} kanji are on station signs around ${esc(s.stop.p)}${s.items.some(w => TIES[w.k] && TIES[w.k][0] === "mei") ? `, plus its local special` : ""}.</span></p>` : ""}</div></div>
+    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(s.stop.p)}.` : `Study the cards, then pass the clear test to lay track to ${esc(s.stop.p)} and stamp all of these kanji. Mistakes come back until you get them.`}</p>${!isKanaSub(s) && tiedHere(s).length ? `<p class="localnote">${IMGW("station", 20)}<span>${tiedHere(s).length} of these ${s.items.length} kanji are on station signs or local landmarks around ${esc(s.stop.ro)}${s.items.some(w => TIES[w.k] && TIES[w.k][0] === "mei") ? `, plus its local special` : ""}.</span></p>` : ""}</div></div>
       <div class="bigstars">${starRow(stars, 30)}</div>
       <div class="row" style="justify-content:center"><button class="btn ghost" id="study">${IMG("book")}Study cards</button><button class="btn pink" id="clear">${IMG("check")}${stars ? "Retest for stars" : "Clear test"}</button></div></div>
       <div class="itemgrid">${s.items.map((it, i) => isKanaSub(s)
         ? `<button class="itemcard ${S.kana[it] ? "got" : ""}" data-i="${i}"><span class="glyph">${esc(it)}</span><small>${esc(kanaRo(it))}</small></button>`
         : `<button class="itemcard ${isStamped(it) ? "got" : ""} ${TIES[it.k] ? (TIES[it.k][0] === "mei" ? "mei" : "local") : ""}" data-i="${i}" style="--lv:${STAMP_INK[it.t]}"><span class="glyph">${esc(it.k)}</span><small>${esc(it.en)}</small>${isStamped(it) ? `<i class="gotdot"></i>` : ""}</button>`).join("")}</div>
-      <p class="muted" style="font-size:.78rem;text-align:center">★★★ for 0–1 mistakes · ★★ for up to 4 · ★ for finishing.</p>`;
+      <p class="muted" style="font-size:.78rem;text-align:center">★★★ for 0–1 mistakes · ★★ for up to 4 · ★ for finishing.</p>
+      ${townWordsHTML(s)}`;
     $("#study", st).onclick = () => openStudy(s, 0);
     $("#clear", st).onclick = () => startClear(s);
     $$("[data-i]", st).forEach(b => b.onclick = () => openStudy(s, +b.dataset.i));

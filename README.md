@@ -33,6 +33,7 @@ This writes `index.html` (full standalone page) and `dist/oishii.html` (page bod
 - `src/data.js` — kana, puzzle content, buds, games
 - `src/kanji-data.js` — generated JLPT kanji and radical data (do not edit by hand)
 - `src/kanji.js` — kanji entries, tracks and sub-levels
+- `src/ground-data.js` — generated: which stop teaches which N5/N4 kanji and why (`tools/ground_kanji.py`)
 - `src/route-data.js` — generated stations and map outline (edit `tools/route.tsv`, then run `tools/make_route_data.py`)
 - `src/rail.js` — the rail map, station cards and station stamps
 - `src/core.js` — state, helpers, drag and drop, sounds, stamps, kana typing
@@ -63,6 +64,16 @@ curl -O https://raw.githubusercontent.com/dataofjapan/land/master/japan.geojson
 pip install shapely
 python3 tools/make_route_data.py stations.json japan.geojson
 ```
+
+### Grounding kanji in places
+
+N5 and N4 kanji are dealt to the stops where they really appear: in the stop's name, in a local word from `tools/local_words.tsv` (landmarks, foods, nicknames), or on a real station sign within 25 km. Each city also teaches one local special kanji from `tools/meibutsu.tsv`. After editing either file, or `route.tsv`, run (with the same `stations.json`):
+
+```
+python3 tools/ground_kanji.py stations.json
+```
+
+It writes `src/ground-data.js` and prints how many kanji each stop ties to its town.
 
 ## Credits
 

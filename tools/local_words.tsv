@@ -1,0 +1,91 @@
+# Real local words that tie kanji to a town: landmarks, foods, nicknames. Keep each one verifiable.
+# place (as in route.tsv)	word	reading	meaning
+横浜	中華街	ちゅうかがい	Chinatown
+横浜	山下公園	やましたこうえん	Yamashita Park on the harbor
+横浜	赤レンガ倉庫	あかレンガそうこ	the Red Brick Warehouses
+横浜	大さん橋	おおさんばし	Ōsanbashi Pier
+横浜	日本大通り	にほんおおどおり	Nihon Ōdōri avenue
+鎌倉	大仏	だいぶつ	the Great Buddha
+鎌倉	鶴岡八幡宮	つるがおかはちまんぐう	Tsurugaoka Hachimangū shrine
+鎌倉	長谷寺	はせでら	Hase-dera temple
+鎌倉	江ノ電	えのでん	the Enoden seaside tram
+鎌倉	小町通り	こまちどおり	Komachi-dōri shopping street
+小田原	小田原城	おだわらじょう	Odawara Castle
+小田原	小田原駅	おだわらえき	Odawara Station, the gateway to Hakone
+熱海	花火大会	はなびたいかい	fireworks festival over the bay
+熱海	熱海城	あたみじょう	Atami Castle on the hill
+三島	三嶋大社	みしまたいしゃ	Mishima Taisha shrine
+三島	源兵衛川	げんべえがわ	Genbē River, fed by Fuji spring water
+三島	白滝公園	しらたきこうえん	Shirataki Park and its springs
+三島	富士山	ふじさん	Mt Fuji
+静岡	日本平	にほんだいら	Nihondaira hill and its Fuji view
+静岡	駿府城公園	すんぷじょうこうえん	Sunpu Castle Park
+静岡	富士山	ふじさん	Mt Fuji
+浜松	浜名湖	はまなこ	Lake Hamana
+浜松	楽器博物館	がっきはくぶつかん	the Museum of Musical Instruments
+浜松	浜松城	はままつじょう	Hamamatsu Castle
+名古屋	金のしゃちほこ	きんのしゃちほこ	the golden shachihoko on the castle
+名古屋	手羽先	てばさき	fried chicken wings
+名古屋	熱田神宮	あつたじんぐう	Atsuta Jingū shrine
+名古屋	味噌カツ	みそカツ	miso katsu
+岐阜	長良川	ながらがわ	the Nagara River
+岐阜	金華山	きんかざん	Mt Kinka, under Gifu Castle
+岐阜	岐阜城	ぎふじょう	Gifu Castle
+関ケ原	古戦場	こせんじょう	the old battlefield
+関ケ原	関ケ原の戦い	せきがはらのたたかい	the Battle of Sekigahara
+彦根	彦根城	ひこねじょう	Hikone Castle
+彦根	琵琶湖	びわこ	Lake Biwa, Japan's largest lake
+京都	金閣寺	きんかくじ	Kinkaku-ji, the Golden Pavilion
+京都	銀閣寺	ぎんかくじ	Ginkaku-ji, the Silver Pavilion
+京都	清水寺	きよみずでら	Kiyomizu-dera
+京都	京都御所	きょうとごしょ	the Kyoto Imperial Palace
+京都	二条城	にじょうじょう	Nijō Castle
+嵐山	竹林の小道	ちくりんのこみち	the bamboo grove path
+嵐山	渡月橋	とげつきょう	Togetsukyō, the Moon-Crossing Bridge
+嵐山	天龍寺	てんりゅうじ	Tenryū-ji temple
+嵐山	保津川下り	ほづがわくだり	boat trip down the Hozu River
+稲荷	伏見稲荷大社	ふしみいなりたいしゃ	Fushimi Inari Taisha shrine
+稲荷	千本鳥居	せんぼんとりい	the Thousand Torii
+稲荷	稲荷山	いなりやま	Mt Inari behind the shrine
+宇治	宇治茶	うじちゃ	Uji tea
+宇治	平等院	びょうどういん	Byōdō-in temple
+宇治	十円玉	じゅうえんだま	the 10-yen coin, which shows Byōdō-in
+宇治	宇治川	うじがわ	the Uji River
+奈良	東大寺	とうだいじ	Tōdai-ji temple
+奈良	奈良公園	ならこうえん	Nara Park
+奈良	大仏殿	だいぶつでん	the Great Buddha Hall
+奈良	春日大社	かすがたいしゃ	Kasuga Taisha shrine
+奈良	五重塔	ごじゅうのとう	the five-storey pagoda of Kōfuku-ji
+大阪	大阪城	おおさかじょう	Osaka Castle
+大阪	天下の台所	てんかのだいどころ	"the nation's kitchen", old Osaka's nickname
+大阪	食い倒れ	くいだおれ	eating until you drop
+大阪	お好み焼き	おこのみやき	okonomiyaki
+難波	道頓堀	どうとんぼり	Dōtonbori canal
+難波	黒門市場	くろもんいちば	Kuromon Market
+難波	千日前	せんにちまえ	Sennichimae
+天王寺	四天王寺	してんのうじ	Shitennō-ji temple
+天王寺	通天閣	つうてんかく	Tsūtenkaku tower
+天王寺	天王寺動物園	てんのうじどうぶつえん	Tennōji Zoo
+天王寺	新世界	しんせかい	Shinsekai, the "New World" district
+神戸	神戸牛	こうべぎゅう	Kobe beef
+神戸	南京町	なんきんまち	Nankinmachi, Kobe's Chinatown
+神戸	北野異人館	きたのいじんかん	Kitano's old foreign residences
+神戸	六甲山	ろっこうさん	Mt Rokkō
+神戸	神戸港	こうべこう	Kobe Port
+姫路	姫路城	ひめじじょう	Himeji Castle
+姫路	白鷺城	しらさぎじょう	"White Heron Castle", Himeji Castle's nickname
+姫路	世界遺産	せかいいさん	World Heritage Site
+岡山	後楽園	こうらくえん	Kōrakuen garden
+岡山	岡山城	おかやまじょう	Okayama Castle
+岡山	烏城	うじょう	"Crow Castle", Okayama Castle's nickname
+倉敷	美観地区	びかんちく	the Bikan historical quarter
+倉敷	大原美術館	おおはらびじゅつかん	the Ōhara Museum of Art
+倉敷	倉敷川	くらしきがわ	the Kurashiki canal
+尾道	千光寺	せんこうじ	Senkō-ji temple
+尾道	しまなみ海道	しまなみかいどう	the Shimanami Kaidō cycling road
+尾道	尾道ラーメン	おのみちラーメン	Onomichi ramen
+尾道	坂の町	さかのまち	"town of slopes", Onomichi's nickname
+広島	平和記念公園	へいわきねんこうえん	Peace Memorial Park
+広島	お好み焼き	おこのみやき	Hiroshima-style okonomiyaki
+広島	広島城	ひろしまじょう	Hiroshima Castle
+広島	原爆ドーム	げんばくドーム	the Atomic Bomb Dome

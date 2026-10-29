@@ -66,14 +66,26 @@ function stationCardHTML(s, label = "Next stop") {
     <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(nc.stop.p)} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
 }
 
-// Why a kanji is taught at its stop: the stop's own name, a real station sign nearby, or the city's local special (名物)
+// Why a kanji is taught at its stop: the stop's own name, one of its local words, a real station sign nearby, or the
+// city's local special (名物)
 const SUB_OF_K = Object.fromEntries(ALL_SUBS.flatMap(s => s.track.kana ? [] : s.items.map(w => [w.k, s])));
-const tiedHere = s => s.items.filter(w => TIES[w.k] && TIES[w.k][0] === "st");
+const tiedHere = s => s.items.filter(w => TIES[w.k] && TIES[w.k][0] !== "mei");
 function tieHTML(w) {
   const t = TIES[w.k], s = SUB_OF_K[w.k]; if (!t || !s) return "";
   const mark = txt => [...txt].map(c => c === w.k ? `<b>${esc(c)}</b>` : esc(c)).join("");
-  if (t[0] === "mei") return `<div class="localtie mei" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${esc(s.stop.p)}'s local special · 名物</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(t[2]))} · ${esc(t[3])}</small><p>${esc(t[4])}</p></div>`;
-  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.p)} · ${t[2]} km` : `In the name ${esc(s.stop.p)}`}</span><div class="glyph">${mark(t[1])}<span class="eki">駅</span></div></div>`;
+  if (t[0] === "mei") return `<div class="localtie mei" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${esc(s.stop.ro)}'s local special · 名物</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(t[2]))} · ${esc(t[3])}</small><p>${esc(t[4])}</p></div>`;
+  if (t[0] === "word") return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">Around ${esc(s.stop.ro)}</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(kataToHira(t[2])))} · ${esc(t[3])}</small></div>`;
+  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.ro)} · ${t[2]} km` : `In the name ${esc(s.stop.p)}`}</span><div class="glyph">${mark(t[1])}<span class="eki">駅</span></div></div>`;
+}
+
+// Around town: the stop's real local words (tools/local_words.tsv), with this stop's kanji picked out and stamped ones inked
+const kataToHira = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+function townWordsHTML(s) {
+  const ws = LOCAL_WORDS[s.stop.p]; if (!ws || !ws.length || s.track.kana) return "";
+  const here = new Set(s.items.map(w => w.k));
+  const glyph = word => [...word].map(c => here.has(c) ? `<b>${esc(c)}</b>` : KJ_BY[c] && isStamped(KJ_BY[c]) ? `<span class="known">${esc(c)}</span>` : esc(c)).join("");
+  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. This stop's kanji are in color.</p></div></div>
+    <div class="townwords">${ws.map(([w, r, m]) => `<button class="townword" data-say="${esc(r)}" aria-label="Hear ${esc(r)}"><span class="glyph">${glyph(w)}</span><small>${esc(r)} · ${esc(romaji(kataToHira(r)))}</small><span class="tw-en">${esc(m)}</span></button>`).join("")}</div></div>`;
 }
 
 // City stamps: bigger scalloped seals, one for each of the 36 cities on the line

@@ -584,7 +584,7 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .scbubble .sc-jp .glyph{font-size:.95rem}
 .scene b.kj{font-family:var(--f-glyph);font-weight:600;font-size:1.15em;color:color-mix(in srgb,var(--lv) 72%,var(--ink))}
 .scsign b.kj{color:#C8402E;font-size:1em}
-.scopt.kanji{font-family:var(--f-glyph);font-size:1.8rem;min-width:64px}
+.scopt.kanji{font-family:var(--f-glyph);font-size:1.8rem;min-width:64px;white-space:nowrap;padding:8px 16px;flex-direction:row;justify-content:center}
 .scopt.kanji b.kj{font-size:1em}
 .scafter{font-weight:700}
 .townword.en .tw-title{font-weight:800;font-size:.9rem;line-height:1.2}

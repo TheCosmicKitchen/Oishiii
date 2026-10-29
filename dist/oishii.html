@@ -590,7 +590,7 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .scbubble .sc-jp .glyph{font-size:.95rem}
 .scene b.kj{font-family:var(--f-glyph);font-weight:600;font-size:1.15em;color:color-mix(in srgb,var(--lv) 72%,var(--ink))}
 .scsign b.kj{color:#C8402E;font-size:1em}
-.scopt.kanji{font-family:var(--f-glyph);font-size:1.8rem;min-width:64px}
+.scopt.kanji{font-family:var(--f-glyph);font-size:1.8rem;min-width:64px;white-space:nowrap;padding:8px 16px;flex-direction:row;justify-content:center}
 .scopt.kanji b.kj{font-size:1em}
 .scafter{font-weight:700}
 .townword.en .tw-title{font-weight:800;font-size:.9rem;line-height:1.2}
@@ -1713,26 +1713,26 @@ const SCENES = {
       after: "二 (ni) is two. Two buns: 1000 円.",
       note: "一 one, 二 two, 円 yen, 中 middle. You'll see them on prices and platform signs all over Japan.",
       fact: "Yokohama Chinatown is the largest Chinatown in Japan." },
-    { id: "yk-park", title: "To Yamashita Park", emoji: "ship", kanji: "山下大",
-      narr: "You walk down to the harbor. A signpost points two ways.",
-      signs: [["← 山下　　大 →", "Yamashita Park · Ōsanbashi Pier", "やました、おおさんばし"]],
-      q: "Your partner wants the park whose name means \"below the mountain\". 山 is mountain and 下 is below. Which way?",
-      opts: [["←", "ひだり"], ["→", "みぎ"]], a: 0,
-      after: "Yamashita (山下) means below the mountain. The other way, Ōsanbashi starts with 大 (ō): big. It's the Big Pier.",
+    { id: "yk-park", title: "Down by the harbor", emoji: "ship", kanji: "山下大",
+      narr: "You walk down to the harbor at night. Across the water glow the lights of Ōsanbashi, whose name starts with 大 (ō): big. It's the Big Pier. Next you'll stroll to Yamashita Park, a name that means below the mountain.",
+      signs: [],
+      q: "Which of these spells Yamashita, below the mountain?",
+      opts: [["下山", "げざん"], ["山下", "やました"], ["大山", "おおやま"]], a: 1,
+      after: "山下 is 山 (yama) mountain, then 下 (shita) below. Swap them and 下山 (gezan) means coming down a mountain.",
       note: "山 (yama) mountain, 下 (shita) below, 大 (ō or dai) big.",
       fact: "The 1930 ocean liner Hikawa Maru is moored at Yamashita Park as a museum ship." },
     { id: "yk-avenue", title: "The big avenue", emoji: "road", kanji: "日本大",
-      narr: "A wide street runs toward the harbor: Nihon Ōdōri. Its first two kanji spell the name of the country.",
+      narr: "A wide, tree-lined street runs toward the harbor. Its sign starts with two kanji you've met today.",
       signs: [["日本 大", "Nihon Ōdōri", "にほんおおどおり"]],
-      q: "日 is sun and 本 is origin. Together, 日本 (Nihon) is…",
-      opts: [["Japan", "にほん"], ["a big street", "おおどおり"], ["a book", "ほん"]], a: 0,
-      after: "日本 is the land where the sun begins: Japan. With 大 (ō), big, the name means Japan's big street.",
+      q: "The sign says 日本 (Nihon). What does it mean?",
+      opts: [["Japan", "にほん"], ["a sunny day", "はれ"], ["a big book", "おおきいほん"]], a: 0,
+      after: "日本 is Japan: 日 sun and 本 origin, the land where the sun rises. The street is Nihon Ōdōri, Japan's big street.",
       note: "日 (nichi or hi) sun and day, 本 (hon) origin and book, 日本 (Nihon) Japan.",
       fact: "Nihon Ōdōri was laid out after Yokohama's great fire of 1866 as one of Japan's first Western-style avenues." },
     { id: "yk-station", title: "Lost in Yokohama Station", emoji: "station", kanji: "出",
-      narr: "Yokohama Station's corridors go on forever. You need the way out.",
+      narr: "Yokohama Station's corridors go on forever. You need the way out, and the signs overhead each start with a different kanji.",
       signs: [],
-      q: "Exit signs start with 出 (de): go out. Which sign leads out?",
+      q: "Which kanji on the signs means go out?",
       opts: [["出", "で"], ["中", "ちゅう"], ["下", "した"]], a: 0,
       after: "The full word is deguchi: exit. 出 hangs above every station exit in Japan.",
       note: "出 (de or shutsu) go out.",

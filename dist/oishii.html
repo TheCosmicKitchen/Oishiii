@@ -584,6 +584,10 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .scnote{background:color-mix(in srgb,var(--lv) 9%,var(--surface));border-radius:14px;padding:8px 12px;font-size:.86rem;font-weight:700}
 .scfact{display:flex;gap:6px;align-items:flex-start;font-size:.8rem;margin:0}
 .scsign:has(small.ro) .glyph{font-size:1.25rem}
+.scnarr{font-size:1rem;line-height:1.45;margin:0}
+.scbubble .sc-en{font-size:.98rem;font-weight:700;color:var(--ink)}
+.scbubble .sc-jp{display:flex;flex-direction:column;align-items:inherit;opacity:.85}
+.scbubble .sc-jp .glyph{font-size:.95rem}
 
 </style>
 <div id="app" class="app"></div>
@@ -1652,32 +1656,33 @@ function bindStationClicks(root) {
 // ===== Town scenes: little moments in each curated town (tools/towns.tsv), using the kanji you learn there =====
 // Text markup: {漢字|かな} is a word with its reading. The Kanji reader sees it as kanji when every kanji in it is from
 // this stop or already stamped, otherwise with furigana; the Kana speller always sees the reading plus romaji.
-// Lines are [who, text, English]: who is "sign", "clerk", "friend" or "you". Facts must be real and verifiable.
+// Scenes are English-first: narr sets the moment in English, spoken lines show English with the Japanese under it,
+// and signs show the Japanese you would really see. Lines are [who, text, English]: who is "sign", "clerk", "friend" or "you". Facts must be real and verifiable.
 const SCENES = {
   "横浜": [
-    { id: "yk-chinatown", title: "Chinatown gate", emoji: "lantern", kanji: "中一二円",
+    { id: "yk-chinatown", title: "Chinatown gate", emoji: "lantern", kanji: "中一二円", narr: "You reach the red gate of Chinatown. A stall is selling steamed pork buns.",
       lines: [["sign", "{中華街|ちゅうかがい}", "Chinatown"], ["clerk", "いらっしゃいませ！", "Welcome!"],
         ["sign", "{肉|にく}まん　{一|ひと}つ　500{円|えん}", "Steamed pork buns: 500 yen each"], ["clerk", "いくつ ですか？", "How many?"]],
-      task: { q: "You and your partner want one each. What do you say?", opts: ["{一|ひと}つ ください", "{二|ふた}つ ください", "{三|みっ}つ ください"], a: 1 },
+      task: { q: "The sign says 一つ 500円 (one for 500 yen). You and your partner want one each. Which do you ask for?", opts: ["{一|ひと}つ ください", "{二|ふた}つ ください", "{三|みっ}つ ください"], a: 1 },
       after: [["clerk", "{二|ふた}つで 1000{円|えん}です。", "That's 1000 yen for two."], ["friend", "おいしい！", "Delicious!"]],
       note: "一つ (hitotsu) is one thing, 二つ (futatsu) two. 円 (en) is yen, on every price tag.",
       fact: "Yokohama Chinatown is the largest Chinatown in Japan." },
-    { id: "yk-park", title: "To Yamashita Park", emoji: "ship", kanji: "山下大",
+    { id: "yk-park", title: "To Yamashita Park", emoji: "ship", kanji: "山下大", narr: "You wander down to the harbor. Your partner wants to see the park by the water.",
       lines: [["friend", "{山下公園|やましたこうえん}は どっち？", "Which way is Yamashita Park?"],
         ["sign", "← {山下公園|やましたこうえん}　　{大|おお}さん{橋|ばし} →", "← Yamashita Park · Ōsanbashi Pier →"]],
-      task: { q: "Which way to Yamashita Park?", opts: ["←", "→"], a: 0 },
+      task: { q: "山 is mountain and 下 is below. Which way to 山下公園 (Yamashita Park)?", opts: ["←", "→"], a: 0 },
       after: [["you", "こっち！", "This way!"]],
       note: "山下 (yamashita) is 山 mountain + 下 below: \"below the mountain\". 大 (ō) means big.",
       fact: "The 1930 ocean liner Hikawa Maru is moored at Yamashita Park as a museum ship." },
-    { id: "yk-avenue", title: "The big avenue", emoji: "road", kanji: "日本大",
+    { id: "yk-avenue", title: "The big avenue", emoji: "road", kanji: "日本大", narr: "A wide, tree-lined street runs toward the harbor. The street sign has three kanji you know.",
       lines: [["sign", "{日本大通|にほんおおどお}り", "Nihon Ōdōri"], ["friend", "{日本|にほん}って なに？", "What's 日本?"]],
-      task: { q: "What does 日本 (nihon) mean?", opts: ["Japan", "big street", "book"], a: 0 },
+      task: { q: "日 is sun and 本 is origin. What does 日本 mean?", opts: ["Japan", "big street", "book"], a: 0 },
       after: [["you", "{日本|にほん}の {大|おお}きい みち！", "Japan's big road!"]],
       note: "日本 is 日 sun + 本 origin: \"origin of the sun\", Japan. 大通り is a big street.",
       fact: "Nihon Ōdōri was laid out after Yokohama's great fire of 1866 as one of Japan's first Western-style avenues." },
-    { id: "yk-station", title: "Lost in Yokohama Station", emoji: "station", kanji: "出",
+    { id: "yk-station", title: "Lost in Yokohama Station", emoji: "station", kanji: "出", narr: "Back at the station, the corridors go on forever. You need the way out.",
       lines: [["sign", "{横浜駅|よこはまえき}", "Yokohama Station"], ["friend", "{出口|でぐち}は どこ？", "Where's the exit?"]],
-      task: { q: "Find the exit sign.", opts: ["{入口|いりぐち}", "{出口|でぐち}", "{中央|ちゅうおう}"], a: 1 },
+      task: { q: "出 means go out. Which sign is the exit?", opts: ["{入口|いりぐち}", "{出口|でぐち}", "{中央|ちゅうおう}"], a: 1 },
       after: [["you", "あった！", "Found it!"]],
       note: "出口 (deguchi) is 出 go out + 口 mouth: the way out. 入口 (iriguchi) is the way in.",
       fact: "Yokohama Station has been under construction for so long that it is nicknamed Japan's Sagrada Família." },
@@ -1701,7 +1706,7 @@ function sceneTextHTML(s, t, en) {
 function sceneLineHTML(s, [who, t, en]) {
   const say = esc(sceneRead(t));
   return who === "sign" ? `<button class="scsign" data-say="${say}">${sceneTextHTML(s, t, en)}</button>`
-    : `<div class="scline ${who}">${IMGW(SCENE_WHO[who], 34)}<button class="scbubble" data-say="${say}">${sceneTextHTML(s, t, en)}</button></div>`;
+    : `<div class="scline ${who}">${IMGW(SCENE_WHO[who], 34)}<button class="scbubble" data-say="${say}"><span class="sc-en">${esc(en)}</span><span class="sc-jp">${sceneTextHTML(s, t)}</span></button></div>`;
 }
 const townScenes = s => (!s.track.kana && SCENES[s.stop.p]) || [];
 const sceneDone = sc => !!(S.scenes || {})[sc.id];
@@ -1719,7 +1724,7 @@ function openScene(s, i) {
     let solved = false;
     function draw() {
       st.innerHTML = `<div class="scene" style="--lv:${LINE_INK[s.track.id]}"><div class="scene-head">${IMGW(sc.emoji, 56)}<div><span class="eyebrow">${esc(s.stop.ro)} · scene ${i + 1}</span><h3>${esc(sc.title)}</h3></div></div>
-        ${sc.lines.map(l => sceneLineHTML(s, l)).join("")}
+        <p class="scnarr">${esc(sc.narr || "")}</p>${sc.lines.map(l => sceneLineHTML(s, l)).join("")}
         ${solved ? `${sc.after.map(l => sceneLineHTML(s, l)).join("")}<div class="scnote">${esc(sc.note)}</div><p class="muted scfact">${IMGW("sparkles", 18)}<span>${esc(sc.fact)}</span></p>
           <div class="row" style="justify-content:center">${list[i + 1] ? `<button class="btn" id="nextsc">Next scene</button>` : ""}<button class="btn ghost" id="backstop">Back to ${esc(s.stop.ro)}</button></div>`
         : `<div class="sctask"><b>${esc(sc.task.q)}</b><div class="scopts">${sc.task.opts.map((o, j) => `<button class="scopt" data-opt="${j}">${sceneTextHTML(s, o)}</button>`).join("")}</div></div>`}</div>`;

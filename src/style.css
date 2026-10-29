@@ -578,3 +578,7 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .scnote{background:color-mix(in srgb,var(--lv) 9%,var(--surface));border-radius:14px;padding:8px 12px;font-size:.86rem;font-weight:700}
 .scfact{display:flex;gap:6px;align-items:flex-start;font-size:.8rem;margin:0}
 .scsign:has(small.ro) .glyph{font-size:1.25rem}
+.scnarr{font-size:1rem;line-height:1.45;margin:0}
+.scbubble .sc-en{font-size:.98rem;font-weight:700;color:var(--ink)}
+.scbubble .sc-jp{display:flex;flex-direction:column;align-items:inherit;opacity:.85}
+.scbubble .sc-jp .glyph{font-size:.95rem}

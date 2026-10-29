@@ -91,7 +91,8 @@ function openSub(s) {
         ? `<button class="itemcard ${S.kana[it] ? "got" : ""}" data-i="${i}"><span class="glyph">${esc(it)}</span><small>${esc(kanaRo(it))}</small></button>`
         : `<button class="itemcard ${isStamped(it) ? "got" : ""} ${TIES[it.k] ? (TIES[it.k][0] === "mei" ? "mei" : "local") : ""}" data-i="${i}" style="--lv:${STAMP_INK[it.t]}"><span class="glyph">${esc(it.k)}</span><small>${esc(it.en)}</small>${isStamped(it) ? `<i class="gotdot"></i>` : ""}</button>`).join("")}</div>
       <p class="muted" style="font-size:.78rem;text-align:center">★★★ for 0–1 mistakes · ★★ for up to 4 · ★ for finishing.</p>
-      ${townWordsHTML(s)}`;
+      ${scenesHTML(s)}${townWordsHTML(s)}`;
+    bindScenes(st, s);
     $("#study", st).onclick = () => openStudy(s, 0);
     $("#clear", st).onclick = () => startClear(s);
     $$("[data-i]", st).forEach(b => b.onclick = () => openStudy(s, +b.dataset.i));

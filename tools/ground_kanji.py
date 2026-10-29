@@ -2,7 +2,8 @@
 
   python3 tools/ground_kanji.py stations.json
 
-For every stop on a grounded level, a kanji can be tied to it by the stop's own name, by a real local word from
+Towns curated by hand in tools/towns.tsv teach exactly the kanji listed there, each with its local anchor. For every
+other stop on a grounded level, a kanji can be tied to it by the stop's own name, by a real local word from
 tools/local_words.tsv (a landmark, food or nickname), or by the name of a real station within 25 km (ekidata, via
 piuccio/open-data-jp-railway-stations), closer stations first. Kanji stay inside their JLPT level;
 rarest ties are placed first, each at a tied stop no more than WINDOW stops from its old place in the frequency
@@ -25,6 +26,9 @@ MEI_K = {v[0] for v in meis.values()}
 words = {}
 for r in (l.rstrip("\r\n").split("\t") for l in open(os.path.join(ROOT, "tools", "local_words.tsv"), encoding="utf-8") if l.strip() and not l.startswith("#")):
     words.setdefault(r[0], []).append(r[1:4])
+towns = {}  # hand-picked kanji for towns we've curated one by one, each with its real local anchor
+for r in (l.rstrip("\r\n").split("\t") for l in open(os.path.join(ROOT, "tools", "towns.tsv"), encoding="utf-8") if l.strip() and not l.startswith("#")):
+    towns.setdefault(r[0], []).append(r[1:5])
 stations = json.load(open(sys.argv[1], encoding="utf-8"))
 
 pos = {}
@@ -56,15 +60,21 @@ for lv in GROUNDED:
     stops = [r for r in rows if r[0] == lv]
     borrowed = [meis[r[2]][0] for r in stops if r[2] in meis]
     pool = [k for k, *_ in KJ if level[k] == lv and k not in MEI_K]
-    n = len(stops); base, extra = divmod(len(pool), n)
-    cap = [base + (1 if i < extra else 0) for i in range(n)]
-    home = {}; acc = 0  # where each kanji sat in plain frequency order
-    for i, c in enumerate(cap):
-        for k in pool[acc:acc + c]: home[k] = i
-        acc += c
+    n = len(stops); got = [[] for _ in stops]; cap = [0] * n
+    for i, r in enumerate(stops):  # hand-picked towns first (tools/towns.tsv): exactly their kanji, with their anchors
+        for k, word, reading, meaning in towns.get(r[2], []):
+            assert level.get(k) == lv and k in pool, f"{k} at {r[2]} is not an unused {lv} kanji"
+            pool.remove(k); got[i].append(k); TIES[k] = ["word", word, reading, meaning]
+        cap[i] = len(got[i])
+    free_stops = [i for i in range(n) if not got[i]]
+    base, extra = divmod(len(pool), len(free_stops))
+    for j, i in enumerate(free_stops): cap[i] = base + (1 if j < extra else 0)
+    home = {}; acc = 0  # where each kanji would sit in plain frequency order
+    for i in free_stops:
+        for k in pool[acc:acc + cap[i]]: home[k] = i
+        acc += cap[i]
     tie = [ties_for(r) for r in stops]
-    got = [[] for _ in stops]
-    cands = {k: [i for i in range(n) if k in tie[i]] for k in pool}
+    cands = {k: [i for i in free_stops if k in tie[i]] for k in pool}
     for k in sorted(pool, key=lambda k: (len(cands[k]) or 99, order[k])):
         if not cands[k]: continue
         reach = lambda i: max(3, round(n * WINDOW * (2 if tie[i][k][0] >= 3.5 else 1)))  # local words and own names may move further
@@ -74,7 +84,7 @@ for lv in GROUNDED:
         got[i].append(k); TIES[k] = tie[i][k][1]
     for k in pool:  # no tie: fill gaps nearest the kanji's old place
         if k in TIES: continue
-        i = min((i for i in range(n) if len(got[i]) < cap[i]), key=lambda i: (abs(i - home[k]), i)); got[i].append(k)
+        i = min((i for i in free_stops if len(got[i]) < cap[i]), key=lambda i: (abs(i - home[k]), i)); got[i].append(k)
     out = []
     for i, r in enumerate(stops):
         ks = sorted(got[i], key=lambda k: order[k])

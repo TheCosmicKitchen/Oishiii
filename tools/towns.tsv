@@ -1,0 +1,13 @@
+# Towns curated one by one: each stop's kanji, hand-picked, and the real local word that anchors each one.
+# Listed kanji must be from the stop's own JLPT level. Scenes for these towns live in src/scenes.js.
+# place (as in route.tsv)	kanji	word	reading	meaning
+横浜	中	中華街	ちゅうかがい	Chinatown, Japan's biggest
+横浜	山	山下公園	やましたこうえん	Yamashita Park on the harbor
+横浜	下	山下公園	やましたこうえん	Yamashita Park on the harbor
+横浜	日	日本大通り	にほんおおどおり	Nihon Ōdōri avenue
+横浜	本	日本大通り	にほんおおどおり	Nihon Ōdōri avenue
+横浜	大	大さん橋	おおさんばし	Ōsanbashi Pier
+横浜	出	出口	でぐち	exit, in the maze of Yokohama Station
+横浜	一	一つ	ひとつ	"one, please" at a Chinatown stall
+横浜	二	二つ	ふたつ	two of them
+横浜	円	円	えん	yen, on every price tag

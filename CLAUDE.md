@@ -15,6 +15,7 @@ A cute Japanese learning game for two adult beginners (a couple). One plays the 
 - Games: Transfer Chain (link two-kanji words from JMdict, `src/compound-data.js`), Radical Builder, Meaning Match, Sushi Belt, Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line. Each has dailies (same seed for both players), endless mode, 10 levels and a rally card.
 - 36 stops are **cities** (`city` column in `route.tsv`): scalloped city stamps, square map markers, an arrival card and a City stamps page.
 - N5/N4 kanji are **grounded**: each stop teaches kanji from its name, its local words (`tools/local_words.tsv`) or station signs within 25 km, plus one local special (名物) per city (`tools/meibutsu.tsv`). Regenerate `src/ground-data.js` with `tools/ground_kanji.py`. Local words must be real and verifiable.
+- Towns are being **curated one by one** (starting with Yokohama): `tools/towns.tsv` hand-picks a stop's kanji and the real local word anchoring each, and `src/scenes.js` holds its little scenes (signs, a short exchange, one choice, a note and a real fact). Scene text uses `{漢字|かな}` so the Kanji reader gets furigana on kanji they haven't met yet.
 - Grammar will be its own journey on foot along the old Tōkaidō's post towns, not gated by the kanji line (planned).
 - Hidden "secret ticket": tap the train on the map 5× to unlock up to any stop (stamps still earned).
 

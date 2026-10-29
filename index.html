@@ -602,6 +602,19 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .scbubble .sc-en{font-size:.98rem;font-weight:700;color:var(--ink)}
 .scbubble .sc-jp{display:flex;flex-direction:column;align-items:inherit;opacity:.85}
 .scbubble .sc-jp .glyph{font-size:.95rem}
+.scene b.kj{font-family:var(--f-glyph);font-weight:600;font-size:1.15em;color:color-mix(in srgb,var(--lv) 72%,var(--ink))}
+.scsign b.kj{color:#C8402E;font-size:1em}
+.scopt.kanji{font-family:var(--f-glyph);font-size:1.8rem;min-width:64px}
+.scopt.kanji b.kj{font-size:1em}
+.scafter{font-weight:700}
+.townword.en .tw-title{font-weight:800;font-size:.9rem;line-height:1.2}
+.twks{font-size:.7rem;font-weight:700;color:var(--ink-soft);display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.twk{font-family:var(--f-glyph);font-size:1rem;color:var(--ink)}
+.twk.here{color:color-mix(in srgb,var(--lv) 72%,var(--ink));font-weight:600}
+.tie-en b.en{font-size:1rem}
+.localtie p{font-size:.85rem}
+.localtie p b{font-family:var(--f-glyph);color:color-mix(in srgb,var(--lv, var(--sakura)) 72%,var(--ink));font-size:1.2em}
+.localtie small b{font-family:var(--f-glyph);color:color-mix(in srgb,var(--lv, var(--sakura)) 72%,var(--ink));font-size:1.4em}
 
 </style>
 <div id="app" class="app"></div>
@@ -1248,7 +1261,7 @@ function viewLearn(v) {
     <div class="row"><span class="eyebrow">${cur.kana ? "Hiragana" : `JLPT ${cur.name} · ${cur.subs.reduce((a, s) => a + s.items.length, 0)} kanji`}</span><span class="spacer"></span><span class="pill pink">${trackStars(cur)}/${cur.subs.length * 3} ★</span></div>
     <div class="subgrid">${cur.subs.map(s => { const open = subUnlocked(s), st = subStars(s), dn = subDoneCount(s); const prev = s.items.slice(0, 4).map(it => isKanaSub(s) ? it : it.k).join("");
       return `<button class="subnode ${st ? "cleared" : open ? "open" : "locked"} ${s === nx ? "next" : ""} ${isCity(s) ? "city" : ""}" ${open ? `data-sub="${s.id}"` : "disabled"} style="--lv:${STAMP_INK[cur.id] || "var(--leaf-deep)"}" aria-label="${esc(s.title)}${open ? "" : " locked"}">
-        <span class="subnum">${s.num}</span><span class="subplace glyph">${open ? esc(s.stop.p) : IMGW("lock", 22)}</span><span class="subprev glyph">${open ? esc(prev) : ""}</span><span class="lvstars">${starRow(st, 12)}</span><small>${open ? esc(s.stop.ro) : `${dn}/${s.items.length}`}</small></button>`; }).join("")}</div>
+        <span class="subnum">${s.num}</span><span class="subplace glyph">${open ? esc(placeName(s)) : IMGW("lock", 22)}</span><span class="subprev glyph">${open ? esc(prev) : ""}</span><span class="lvstars">${starRow(st, 12)}</span><small>${open ? (canRead(s.stop.p) ? esc(s.stop.ro) : "") : `${dn}/${s.items.length}`}</small></button>`; }).join("")}</div>
   </section>
   ${Object.keys(GATES).some(id => !gateOpen(id)) ? `<section class="card stack" style="gap:8px"><header class="row">${IMGW("station", 34)}<div style="flex:1;min-width:0"><h3>Next unlocks</h3><p class="muted" style="font-size:.8rem">Games only use kana you've learned and kanji you've stamped.</p></div></header>
     ${Object.keys(GATES).filter(id => !gateOpen(id)).slice(0, 3).map(id => `<div class="row" style="gap:8px;flex-wrap:nowrap">${IMGW(GATES[id].icon, 30)}<div style="flex:1;min-width:0"><b style="font-size:.88rem">${GATES[id].name}</b>${lockCard(id)}</div></div>`).join("")}</section>` : ""}`;
@@ -1282,7 +1295,7 @@ function openSub(s) {
   openPlay(s.title, (st, hud) => {
     const stars = subStars(s);
     hud.innerHTML = `<span class="chip">${IMG("star")}${stars}/3</span>`;
-    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(s.stop.p)}.` : `Study the cards, then pass the clear test to lay track to ${esc(s.stop.p)} and stamp all of these kanji. Mistakes come back until you get them.`}</p>${!isKanaSub(s) && tiedHere(s).length ? `<p class="localnote">${IMGW("station", 20)}<span>${tiedHere(s).length} of these ${s.items.length} kanji are on station signs or local landmarks around ${esc(s.stop.ro)}${s.items.some(w => TIES[w.k] && TIES[w.k][0] === "mei") ? `, plus its local special` : ""}.</span></p>` : ""}</div></div>
+    st.innerHTML = `${stationCardHTML(s, subStars(s) ? "Station reached" : "Next stop")}<div class="card stack" style="gap:8px"><div class="row">${IMGW(s.track.icon, 40)}<div style="flex:1;min-width:0"><h3>${esc(s.track.kana ? "Kana · " + s.title : s.title)}</h3><p class="muted" style="font-size:.82rem">${isKanaSub(s) ? `Study the cards, then pass the clear test to ride to ${esc(placeName(s))}.` : `Study the cards, then pass the clear test to lay track to ${esc(placeName(s))} and stamp all of these kanji. Mistakes come back until you get them.`}</p>${!isKanaSub(s) && tiedHere(s).length ? `<p class="localnote">${IMGW("station", 20)}<span>${tiedHere(s).length} of these ${s.items.length} kanji are on station signs or local landmarks around ${esc(s.stop.ro)}${s.items.some(w => TIES[w.k] && TIES[w.k][0] === "mei") ? `, plus its local special` : ""}.</span></p>` : ""}</div></div>
       <div class="bigstars">${starRow(stars, 30)}</div>
       <div class="row" style="justify-content:center"><button class="btn ghost" id="study">${IMG("book")}Study cards</button><button class="btn pink" id="clear">${IMG("check")}${stars ? "Retest for stars" : "Clear test"}</button></div></div>
       <div class="itemgrid">${s.items.map((it, i) => isKanaSub(s)
@@ -1433,7 +1446,7 @@ function startClear(s) {
         const nx = ALL_SUBS[s.idx + 1];
         const arrived = firstVisit && isCity(s);
         SFX.win(); if (stars === 3 || arrived) confetti(arrived ? 70 : 40);
-        st.innerHTML = `<div class="card result pop ${arrived ? "arrival" : ""}"><span class="eyebrow">${esc(s.title)} cleared!</span>${arrived ? `${IMGW("houses", 72)}<h2>Welcome to ${esc(s.stop.p)}!</h2><p class="muted" style="font-size:.85rem">City ${CITY_SUBS.indexOf(s) + 1} of ${CITY_SUBS.length} · ${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : firstVisit ? `<h2>Track laid to ${esc(s.stop.p)}!</h2><p class="muted" style="font-size:.85rem">${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : IMGW(stars === 3 ? "crown" : "sakura", 90)}
+        st.innerHTML = `<div class="card result pop ${arrived ? "arrival" : ""}"><span class="eyebrow">${esc(s.title)} cleared!</span>${arrived ? `${IMGW("houses", 72)}<h2>Welcome to ${esc(placeName(s))}!</h2><p class="muted" style="font-size:.85rem">City ${CITY_SUBS.indexOf(s) + 1} of ${CITY_SUBS.length} · ${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : firstVisit ? `<h2>Track laid to ${esc(placeName(s))}!</h2><p class="muted" style="font-size:.85rem">${esc(s.stop.ro)}, ${esc(prefName(s))} · ${esc(s.stop.f)}</p>` : IMGW(stars === 3 ? "crown" : "sakura", 90)}
           <div class="bigstars">${starRow(stars, 40)}</div><div class="score">${mistakes} mistake${mistakes === 1 ? "" : "s"}</div>
           <p>${stars > prev ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : isKanaSub(s) ? "These kana are learned!" : `${fresh.length} kanji stamped into your book!`) : `Your best here is still ${"★".repeat(prev)}.`}</p>
           ${missed.length ? `<p class="muted" style="font-size:.85rem">Tricky ones: ${[...new Set(missed.map(q => q.w ? q.w.k : q.k))].map(x => `<span class="glyph">${esc(x)}</span>`).join(" ")}</p>` : ""}
@@ -1535,6 +1548,12 @@ const LINE_NAME = { kana: "Tokyo loop", n5: "Tōkaidō line", n4: "Kansai & Sany
 const visited = s => subStars(s) > 0;
 const lastVisited = () => { let v = null; for (const s of ALL_SUBS) if (visited(s)) v = s; return v; };
 const prefName = s => PREF_NAMES[s.stop.pref] || "";
+// What a player can read: kanji they have stamped, plus the kanji a stop teaches on that stop's own screens.
+// Anything else is shown in English and romaji, so nobody meets a kanji far above their level.
+const isKanjiChar = c => /[\u4e00-\u9fff]/.test(c);
+const canRead = (txt, here = []) => [...txt].every(c => !isKanjiChar(c) || here.includes(c) || (KJ_BY[c] && isStamped(KJ_BY[c])));
+const placeName = s => canRead(s.stop.p) ? s.stop.p : s.stop.ro;
+const hereK = s => s.track.kana ? [] : s.items.map(w => w.k);
 // Cities are the big destinations on the line; the stops between them are the track you lay to get there
 const isCity = s => !!(s && s.stop && s.stop.c);
 const CITY_SUBS = ALL_SUBS.filter(isCity);
@@ -1563,7 +1582,7 @@ function railMapHTML(track) {
     const want = all ? city && (visited(s) || isNext) : city || visited(s) || isNext || subUnlocked(s);
     if (!want || (near(s) && !(city && !all))) return;
     labeled.push(s.stop);
-    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""}">${esc(s.stop.p)}</text>`);
+    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""}">${esc(placeName(s))}</text>`);
   });
   const dots = focus.map(s => {
     const v = visited(s), open = subUnlocked(s), isNext = s === nx, city = isCity(s); const r = (isNext ? 7 : city ? 6.5 : v ? 5.5 : 3.6) * k * (all ? .6 : 1);
@@ -1592,8 +1611,8 @@ function stationCardHTML(s, label = "Next stop") {
   if (!s) return "";
   const nc = isCity(s) ? null : nextCityFrom(s); const away = nc ? nc.idx - s.idx : 0;
   return `<div class="stationcard" style="--lv:${LINE_INK[s.track.id]}"><div class="stbar"><span>${esc(label)}</span><span>${esc(LINE_NAME[s.track.id])} · ${esc(s.title)}</span></div>
-    <div class="stbody"><div class="stname"><span class="glyph">${esc(s.stop.p)}</span><small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small></div>
-    <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(nc.stop.p)} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
+    <div class="stbody"><div class="stname"><span class="glyph">${esc(placeName(s))}</span>${canRead(s.stop.p) ? `<small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small>` : ""}</div>
+    <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(placeName(nc))} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
 }
 
 // Why a kanji is taught at its stop: the stop's own name, one of its local words, a real station sign nearby, or the
@@ -1602,20 +1621,31 @@ const SUB_OF_K = Object.fromEntries(ALL_SUBS.flatMap(s => s.track.kana ? [] : s.
 const tiedHere = s => s.items.filter(w => TIES[w.k] && TIES[w.k][0] !== "mei");
 function tieHTML(w) {
   const t = TIES[w.k], s = SUB_OF_K[w.k]; if (!t || !s) return "";
+  const here = hereK(s), kj = `<b>${esc(w.k)}</b>`;
   const mark = txt => [...txt].map(c => c === w.k ? `<b>${esc(c)}</b>` : esc(c)).join("");
-  if (t[0] === "mei") return `<div class="localtie mei" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${esc(s.stop.ro)}'s local special · 名物</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(t[2]))} · ${esc(t[3])}</small><p>${esc(t[4])}</p></div>`;
-  if (t[0] === "word") return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">Around ${esc(s.stop.ro)}</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(kataToHira(t[2])))} · ${esc(t[3])}</small></div>`;
-  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.ro)} · ${t[2]} km` : `In the name ${esc(s.stop.p)}`}</span><div class="glyph">${mark(t[1])}<span class="eki">駅</span></div></div>`;
+  if (t[0] === "mei" || t[0] === "word") {
+    const [kind, word, reading, meaning] = t; const ro = romaji(kataToHira(reading));
+    const head = kind === "mei" ? `${esc(s.stop.ro)}'s local special (meibutsu)` : `Around ${esc(s.stop.ro)}`;
+    const body = canRead(word, here) ? `<div class="glyph">${mark(word)}</div><small>${esc(ro)} · ${esc(meaning)}</small>`
+      : `<div class="tie-en"><b class="en">${esc(meaning)}</b> <small>(${esc(ro)})</small></div><small>is written with ${kj}</small>`;
+    return `<div class="localtie ${kind === "mei" ? "mei" : ""}" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${head}</span>${body}${kind === "mei" ? `<p>${esc(t[4])}</p>` : ""}</div>`;
+  }
+  const body = !t[2] ? `<p>${kj} is in the name ${esc(placeName(s))}.</p>`
+    : canRead(t[1], here) ? `<div class="glyph">${mark(t[1])}<span class="eki">駅</span></div>` : `<p>A station ${t[2]} km away has ${kj} in its name.</p>`;
+  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.ro)}` : "In the town's name"}</span>${body}</div>`;
 }
 
 // Around town: the stop's real local words (tools/local_words.tsv), with this stop's kanji picked out and stamped ones inked
 const kataToHira = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
 function townWordsHTML(s) {
   const ws = LOCAL_WORDS[s.stop.p]; if (!ws || !ws.length || s.track.kana) return "";
-  const here = new Set(s.items.map(w => w.k));
-  const glyph = word => [...word].map(c => here.has(c) ? `<b>${esc(c)}</b>` : KJ_BY[c] && isStamped(KJ_BY[c]) ? `<span class="known">${esc(c)}</span>` : esc(c)).join("");
-  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. This stop's kanji are in color.</p></div></div>
-    <div class="townwords">${ws.map(([w, r, m]) => `<button class="townword" data-say="${esc(r)}" aria-label="Hear ${esc(r)}"><span class="glyph">${glyph(w)}</span><small>${esc(r)} · ${esc(romaji(kataToHira(r)))}</small><span class="tw-en">${esc(m)}</span></button>`).join("")}</div></div>`;
+  const here = hereK(s); const inHere = c => here.includes(c);
+  const glyph = word => [...word].map(c => inHere(c) ? `<b>${esc(c)}</b>` : esc(c)).join("");
+  const chips = word => [...new Set([...word].filter(c => isKanjiChar(c) && canRead(c, here)))].map(c => `<span class="twk ${inHere(c) ? "here" : ""}">${esc(c)}</span>`).join("");
+  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. Kanji you know are shown, with this stop's in color.</p></div></div>
+    <div class="townwords">${ws.map(([w, r, m]) => { const ro = romaji(kataToHira(r)); return canRead(w, here)
+      ? `<button class="townword" data-say="${esc(r)}" aria-label="Hear ${esc(ro)}"><span class="glyph">${glyph(w)}</span><small>${esc(ro)}</small><span class="tw-en">${esc(m)}</span></button>`
+      : `<button class="townword en" data-say="${esc(r)}" aria-label="Hear ${esc(ro)}"><span class="tw-title">${esc(m)}</span><small>${esc(ro)}</small>${chips(w) ? `<span class="twks">written with ${chips(w)}</span>` : ""}</button>`; }).join("")}</div></div>`;
 }
 
 // City stamps: bigger scalloped seals, one for each of the 36 cities on the line
@@ -1669,70 +1699,57 @@ function bindStationStamps(root) {
   bindStationClicks(root);
 }
 function bindStationClicks(root) {
-  $$("[data-station]", root).forEach(b => b.onclick = () => { const s = SUB_BY[b.dataset.station]; openPlay(s.stop.p, st => { st.innerHTML = `<div class="stampbook" style="display:flex;justify-content:center;padding:24px">${stationStampHTML(s, 190, "thunk")}</div>${stationCardHTML(s, "Station")}<div class="row" style="justify-content:center"><button class="btn" id="gosub">Open ${esc(s.title)}</button></div>`; $("#gosub", st).onclick = () => openSub(s); }); });
+  $$("[data-station]", root).forEach(b => b.onclick = () => { const s = SUB_BY[b.dataset.station]; openPlay(placeName(s), st => { st.innerHTML = `<div class="stampbook" style="display:flex;justify-content:center;padding:24px">${stationStampHTML(s, 190, "thunk")}</div>${stationCardHTML(s, "Station")}<div class="row" style="justify-content:center"><button class="btn" id="gosub">Open ${esc(s.title)}</button></div>`; $("#gosub", st).onclick = () => openSub(s); }); });
 }
 
-// ===== Town scenes: little moments in each curated town (tools/towns.tsv), using the kanji you learn there =====
-// Text markup: {漢字|かな} is a word with its reading. The Kanji reader sees it as kanji when every kanji in it is from
-// this stop or already stamped, otherwise with furigana; the Kana speller always sees the reading plus romaji.
-// Scenes are English-first: narr sets the moment in English, spoken lines show English with the Japanese under it,
-// and signs show the Japanese you would really see. Lines are [who, text, English]: who is "sign", "clerk", "friend" or "you". Facts must be real and verifiable.
+// ===== Town scenes: little moments in each curated town (tools/towns.tsv), told in English =====
+// The only Japanese in a scene is the kanji that stop teaches, so a beginner never meets a kanji above them.
+// Text is English with those kanji inline (they're picked out in color). Signs are [text, caption, reading to say];
+// answer options are [shown, reading to say]. Facts must be real and verifiable.
 const SCENES = {
   "横浜": [
-    { id: "yk-chinatown", title: "Chinatown gate", emoji: "lantern", kanji: "中一二円", narr: "You reach the red gate of Chinatown. A stall is selling steamed pork buns.",
-      lines: [["sign", "{中華街|ちゅうかがい}", "Chinatown"], ["clerk", "いらっしゃいませ！", "Welcome!"],
-        ["sign", "{肉|にく}まん　{一|ひと}つ　500{円|えん}", "Steamed pork buns: 500 yen each"], ["clerk", "いくつ ですか？", "How many?"]],
-      task: { q: "The sign says 一つ 500円 (one for 500 yen). You and your partner want one each. Which do you ask for?", opts: ["{一|ひと}つ ください", "{二|ふた}つ ください", "{三|みっ}つ ください"], a: 1 },
-      after: [["clerk", "{二|ふた}つで 1000{円|えん}です。", "That's 1000 yen for two."], ["friend", "おいしい！", "Delicious!"]],
-      note: "一つ (hitotsu) is one thing, 二つ (futatsu) two. 円 (en) is yen, on every price tag.",
+    { id: "yk-chinatown", title: "Chinatown gate", emoji: "lantern", kanji: "中一二円",
+      narr: "You reach the red gate of Chinatown. In Japanese it's Chūkagai, and its name starts with 中 (chū): middle.",
+      signs: [["中", "chū · middle", "ちゅう"], ["一 = 500 円", "one (ichi) = 500 yen (en)", "いち、ごひゃくえん"]],
+      q: "A stall sells steamed pork buns at that price. You and your partner want one each. Which kanji means two?",
+      opts: [["一", "いち"], ["二", "に"], ["中", "ちゅう"]], a: 1,
+      after: "二 (ni) is two. Two buns: 1000 円.",
+      note: "一 one, 二 two, 円 yen, 中 middle. You'll see them on prices and platform signs all over Japan.",
       fact: "Yokohama Chinatown is the largest Chinatown in Japan." },
-    { id: "yk-park", title: "To Yamashita Park", emoji: "ship", kanji: "山下大", narr: "You wander down to the harbor. Your partner wants to see the park by the water.",
-      lines: [["friend", "{山下公園|やましたこうえん}は どっち？", "Which way is Yamashita Park?"],
-        ["sign", "← {山下公園|やましたこうえん}　　{大|おお}さん{橋|ばし} →", "← Yamashita Park · Ōsanbashi Pier →"]],
-      task: { q: "山 is mountain and 下 is below. Which way to 山下公園 (Yamashita Park)?", opts: ["←", "→"], a: 0 },
-      after: [["you", "こっち！", "This way!"]],
-      note: "山下 (yamashita) is 山 mountain + 下 below: \"below the mountain\". 大 (ō) means big.",
+    { id: "yk-park", title: "To Yamashita Park", emoji: "ship", kanji: "山下大",
+      narr: "You walk down to the harbor. A signpost points two ways.",
+      signs: [["← 山下　　大 →", "Yamashita Park · Ōsanbashi Pier", "やました、おおさんばし"]],
+      q: "Your partner wants the park whose name means \"below the mountain\". 山 is mountain and 下 is below. Which way?",
+      opts: [["←", "ひだり"], ["→", "みぎ"]], a: 0,
+      after: "Yamashita (山下) means below the mountain. The other way, Ōsanbashi starts with 大 (ō): big. It's the Big Pier.",
+      note: "山 (yama) mountain, 下 (shita) below, 大 (ō or dai) big.",
       fact: "The 1930 ocean liner Hikawa Maru is moored at Yamashita Park as a museum ship." },
-    { id: "yk-avenue", title: "The big avenue", emoji: "road", kanji: "日本大", narr: "A wide, tree-lined street runs toward the harbor. The street sign has three kanji you know.",
-      lines: [["sign", "{日本大通|にほんおおどお}り", "Nihon Ōdōri"], ["friend", "{日本|にほん}って なに？", "What's 日本?"]],
-      task: { q: "日 is sun and 本 is origin. What does 日本 mean?", opts: ["Japan", "big street", "book"], a: 0 },
-      after: [["you", "{日本|にほん}の {大|おお}きい みち！", "Japan's big road!"]],
-      note: "日本 is 日 sun + 本 origin: \"origin of the sun\", Japan. 大通り is a big street.",
+    { id: "yk-avenue", title: "The big avenue", emoji: "road", kanji: "日本大",
+      narr: "A wide street runs toward the harbor: Nihon Ōdōri. Its first two kanji spell the name of the country.",
+      signs: [["日本 大", "Nihon Ōdōri", "にほんおおどおり"]],
+      q: "日 is sun and 本 is origin. Together, 日本 (Nihon) is…",
+      opts: [["Japan", "にほん"], ["a big street", "おおどおり"], ["a book", "ほん"]], a: 0,
+      after: "日本 is the land where the sun begins: Japan. With 大 (ō), big, the name means Japan's big street.",
+      note: "日 (nichi or hi) sun and day, 本 (hon) origin and book, 日本 (Nihon) Japan.",
       fact: "Nihon Ōdōri was laid out after Yokohama's great fire of 1866 as one of Japan's first Western-style avenues." },
-    { id: "yk-station", title: "Lost in Yokohama Station", emoji: "station", kanji: "出", narr: "Back at the station, the corridors go on forever. You need the way out.",
-      lines: [["sign", "{横浜駅|よこはまえき}", "Yokohama Station"], ["friend", "{出口|でぐち}は どこ？", "Where's the exit?"]],
-      task: { q: "出 means go out. Which sign is the exit?", opts: ["{入口|いりぐち}", "{出口|でぐち}", "{中央|ちゅうおう}"], a: 1 },
-      after: [["you", "あった！", "Found it!"]],
-      note: "出口 (deguchi) is 出 go out + 口 mouth: the way out. 入口 (iriguchi) is the way in.",
+    { id: "yk-station", title: "Lost in Yokohama Station", emoji: "station", kanji: "出",
+      narr: "Yokohama Station's corridors go on forever. You need the way out.",
+      signs: [],
+      q: "Exit signs start with 出 (de): go out. Which sign leads out?",
+      opts: [["出", "で"], ["中", "ちゅう"], ["下", "した"]], a: 0,
+      after: "The full word is deguchi: exit. 出 hangs above every station exit in Japan.",
+      note: "出 (de or shutsu) go out.",
       fact: "Yokohama Station has been under construction for so long that it is nicknamed Japan's Sagrada Família." },
   ],
 };
-const SCENE_WHO = { clerk: "person", friend: "smile", you: "speaking" };
-const sceneRead = t => t.replace(/\{([^|}]+)\|([^}]+)\}/g, "$2");
-const sceneKnown = (s, c) => !/[一-鿿]/.test(c) || s.items.some(w => w.k === c) || (KJ_BY[c] && isStamped(KJ_BY[c]));
-function sceneKanjiHTML(s, t) {
-  return t.split(/(\{[^}]+\})/).map(p => {
-    const m = p.match(/^\{([^|]+)\|([^}]+)\}$/); if (!m) return esc(p);
-    const [, w, r] = m; const here = c => s.items.some(x => x.k === c);
-    return [...w].every(c => sceneKnown(s, c)) ? [...w].map(c => here(c) ? `<b>${esc(c)}</b>` : esc(c)).join("") : `<ruby>${esc(w)}<rt>${esc(r)}</rt></ruby>`;
-  }).join("");
-}
-function sceneTextHTML(s, t, en) {
-  const read = sceneRead(t);
-  const body = S.role === "kanji" ? `<span class="glyph">${sceneKanjiHTML(s, t)}</span>` : `<span class="glyph">${esc(read)}</span><small class="ro">${esc(romaji(kataToHira(read)))}</small>`;
-  return `${body}${en ? `<small class="en">${esc(en)}</small>` : ""}`;
-}
-function sceneLineHTML(s, [who, t, en]) {
-  const say = esc(sceneRead(t));
-  return who === "sign" ? `<button class="scsign" data-say="${say}">${sceneTextHTML(s, t, en)}</button>`
-    : `<div class="scline ${who}">${IMGW(SCENE_WHO[who], 34)}<button class="scbubble" data-say="${say}"><span class="sc-en">${esc(en)}</span><span class="sc-jp">${sceneTextHTML(s, t)}</span></button></div>`;
-}
+// English text with the stop's kanji picked out in color
+const sceneInline = (s, t) => [...t].map(c => isKanjiChar(c) ? `<b class="kj">${esc(c)}</b>` : esc(c)).join("");
 const townScenes = s => (!s.track.kana && SCENES[s.stop.p]) || [];
 const sceneDone = sc => !!(S.scenes || {})[sc.id];
 function scenesHTML(s) {
   const list = townScenes(s); if (!list.length) return "";
   const done = list.filter(sceneDone).length;
-  return `<div class="card scenecard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("book", 28)}<div style="flex:1;min-width:0"><h3>Little scenes in ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Short moments around town that use this stop's kanji. Play them before or after the test.</p></div><span class="pill">${done}/${list.length}</span></div>
+  return `<div class="card scenecard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("book", 28)}<div style="flex:1;min-width:0"><h3>Little scenes in ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Short moments around town, in English, that use this stop's kanji. Play them before or after the test.</p></div><span class="pill">${done}/${list.length}</span></div>
     <div class="scenelist">${list.map((sc, i) => `<button class="scenebtn ${sceneDone(sc) ? "done" : ""}" data-scene="${i}">${IMGW(sc.emoji, 34)}<span><b>${esc(sc.title)}</b><small class="glyph">${esc(sc.kanji)}</small></span>${sceneDone(sc) ? IMGW("check", 20) : ""}</button>`).join("")}</div></div>`;
 }
 function bindScenes(root, s) { $$("[data-scene]", root).forEach(b => b.onclick = () => openScene(s, +b.dataset.scene)); }
@@ -1743,13 +1760,14 @@ function openScene(s, i) {
     let solved = false;
     function draw() {
       st.innerHTML = `<div class="scene" style="--lv:${LINE_INK[s.track.id]}"><div class="scene-head">${IMGW(sc.emoji, 56)}<div><span class="eyebrow">${esc(s.stop.ro)} · scene ${i + 1}</span><h3>${esc(sc.title)}</h3></div></div>
-        <p class="scnarr">${esc(sc.narr || "")}</p>${sc.lines.map(l => sceneLineHTML(s, l)).join("")}
-        ${solved ? `${sc.after.map(l => sceneLineHTML(s, l)).join("")}<div class="scnote">${esc(sc.note)}</div><p class="muted scfact">${IMGW("sparkles", 18)}<span>${esc(sc.fact)}</span></p>
+        <p class="scnarr">${sceneInline(s, sc.narr)}</p>
+        ${sc.signs.map(([t, cap, r]) => `<button class="scsign" data-say="${esc(r)}"><span class="glyph">${sceneInline(s, t)}</span><small class="en">${esc(cap)}</small></button>`).join("")}
+        ${solved ? `<p class="scnarr scafter">${sceneInline(s, sc.after)}</p><div class="scnote">${sceneInline(s, sc.note)}</div><p class="muted scfact">${IMGW("sparkles", 18)}<span>${esc(sc.fact)}</span></p>
           <div class="row" style="justify-content:center">${list[i + 1] ? `<button class="btn" id="nextsc">Next scene</button>` : ""}<button class="btn ghost" id="backstop">Back to ${esc(s.stop.ro)}</button></div>`
-        : `<div class="sctask"><b>${esc(sc.task.q)}</b><div class="scopts">${sc.task.opts.map((o, j) => `<button class="scopt" data-opt="${j}">${sceneTextHTML(s, o)}</button>`).join("")}</div></div>`}</div>`;
+        : `<div class="sctask"><b>${sceneInline(s, sc.q)}</b><div class="scopts">${sc.opts.map(([o], j) => `<button class="scopt ${[...o].some(isKanjiChar) ? "kanji" : ""}" data-opt="${j}">${sceneInline(s, o)}</button>`).join("")}</div></div>`}</div>`;
       $$("[data-opt]", st).forEach(b => b.onclick = () => {
-        if (+b.dataset.opt !== sc.task.a) { SFX.bad(); b.classList.add("shake", "no"); setTimeout(() => b.classList.remove("shake"), 400); return; }
-        SFX.good(); say(sceneRead(sc.task.opts[sc.task.a])); solved = true;
+        if (+b.dataset.opt !== sc.a) { SFX.bad(); b.classList.add("shake", "no"); setTimeout(() => b.classList.remove("shake"), 400); return; }
+        SFX.good(); say(sc.opts[sc.a][1]); solved = true;
         const first = !sceneDone(sc); (S.scenes || (S.scenes = {}))[sc.id] = todayKey(); save();
         if (first && list.every(sceneDone)) { confetti(30); toast(`Every scene in ${s.stop.ro} done!`); }
         draw();

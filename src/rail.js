@@ -5,6 +5,12 @@ const LINE_NAME = { kana: "Tokyo loop", n5: "Tōkaidō line", n4: "Kansai & Sany
 const visited = s => subStars(s) > 0;
 const lastVisited = () => { let v = null; for (const s of ALL_SUBS) if (visited(s)) v = s; return v; };
 const prefName = s => PREF_NAMES[s.stop.pref] || "";
+// What a player can read: kanji they have stamped, plus the kanji a stop teaches on that stop's own screens.
+// Anything else is shown in English and romaji, so nobody meets a kanji far above their level.
+const isKanjiChar = c => /[\u4e00-\u9fff]/.test(c);
+const canRead = (txt, here = []) => [...txt].every(c => !isKanjiChar(c) || here.includes(c) || (KJ_BY[c] && isStamped(KJ_BY[c])));
+const placeName = s => canRead(s.stop.p) ? s.stop.p : s.stop.ro;
+const hereK = s => s.track.kana ? [] : s.items.map(w => w.k);
 // Cities are the big destinations on the line; the stops between them are the track you lay to get there
 const isCity = s => !!(s && s.stop && s.stop.c);
 const CITY_SUBS = ALL_SUBS.filter(isCity);
@@ -33,7 +39,7 @@ function railMapHTML(track) {
     const want = all ? city && (visited(s) || isNext) : city || visited(s) || isNext || subUnlocked(s);
     if (!want || (near(s) && !(city && !all))) return;
     labeled.push(s.stop);
-    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""}">${esc(s.stop.p)}</text>`);
+    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""}">${esc(placeName(s))}</text>`);
   });
   const dots = focus.map(s => {
     const v = visited(s), open = subUnlocked(s), isNext = s === nx, city = isCity(s); const r = (isNext ? 7 : city ? 6.5 : v ? 5.5 : 3.6) * k * (all ? .6 : 1);
@@ -62,8 +68,8 @@ function stationCardHTML(s, label = "Next stop") {
   if (!s) return "";
   const nc = isCity(s) ? null : nextCityFrom(s); const away = nc ? nc.idx - s.idx : 0;
   return `<div class="stationcard" style="--lv:${LINE_INK[s.track.id]}"><div class="stbar"><span>${esc(label)}</span><span>${esc(LINE_NAME[s.track.id])} · ${esc(s.title)}</span></div>
-    <div class="stbody"><div class="stname"><span class="glyph">${esc(s.stop.p)}</span><small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small></div>
-    <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(nc.stop.p)} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
+    <div class="stbody"><div class="stname"><span class="glyph">${esc(placeName(s))}</span>${canRead(s.stop.p) ? `<small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small>` : ""}</div>
+    <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(placeName(nc))} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
 }
 
 // Why a kanji is taught at its stop: the stop's own name, one of its local words, a real station sign nearby, or the
@@ -72,20 +78,31 @@ const SUB_OF_K = Object.fromEntries(ALL_SUBS.flatMap(s => s.track.kana ? [] : s.
 const tiedHere = s => s.items.filter(w => TIES[w.k] && TIES[w.k][0] !== "mei");
 function tieHTML(w) {
   const t = TIES[w.k], s = SUB_OF_K[w.k]; if (!t || !s) return "";
+  const here = hereK(s), kj = `<b>${esc(w.k)}</b>`;
   const mark = txt => [...txt].map(c => c === w.k ? `<b>${esc(c)}</b>` : esc(c)).join("");
-  if (t[0] === "mei") return `<div class="localtie mei" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${esc(s.stop.ro)}'s local special · 名物</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(t[2]))} · ${esc(t[3])}</small><p>${esc(t[4])}</p></div>`;
-  if (t[0] === "word") return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">Around ${esc(s.stop.ro)}</span><div class="glyph">${mark(t[1])}</div><small>${esc(t[2])} · ${esc(romaji(kataToHira(t[2])))} · ${esc(t[3])}</small></div>`;
-  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.ro)} · ${t[2]} km` : `In the name ${esc(s.stop.p)}`}</span><div class="glyph">${mark(t[1])}<span class="eki">駅</span></div></div>`;
+  if (t[0] === "mei" || t[0] === "word") {
+    const [kind, word, reading, meaning] = t; const ro = romaji(kataToHira(reading));
+    const head = kind === "mei" ? `${esc(s.stop.ro)}'s local special (meibutsu)` : `Around ${esc(s.stop.ro)}`;
+    const body = canRead(word, here) ? `<div class="glyph">${mark(word)}</div><small>${esc(ro)} · ${esc(meaning)}</small>`
+      : `<div class="tie-en"><b class="en">${esc(meaning)}</b> <small>(${esc(ro)})</small></div><small>is written with ${kj}</small>`;
+    return `<div class="localtie ${kind === "mei" ? "mei" : ""}" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${head}</span>${body}${kind === "mei" ? `<p>${esc(t[4])}</p>` : ""}</div>`;
+  }
+  const body = !t[2] ? `<p>${kj} is in the name ${esc(placeName(s))}.</p>`
+    : canRead(t[1], here) ? `<div class="glyph">${mark(t[1])}<span class="eki">駅</span></div>` : `<p>A station ${t[2]} km away has ${kj} in its name.</p>`;
+  return `<div class="localtie" style="--lv:${LINE_INK[s.track.id]}"><span class="eyebrow">${t[2] ? `On a station sign near ${esc(s.stop.ro)}` : "In the town's name"}</span>${body}</div>`;
 }
 
 // Around town: the stop's real local words (tools/local_words.tsv), with this stop's kanji picked out and stamped ones inked
 const kataToHira = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
 function townWordsHTML(s) {
   const ws = LOCAL_WORDS[s.stop.p]; if (!ws || !ws.length || s.track.kana) return "";
-  const here = new Set(s.items.map(w => w.k));
-  const glyph = word => [...word].map(c => here.has(c) ? `<b>${esc(c)}</b>` : KJ_BY[c] && isStamped(KJ_BY[c]) ? `<span class="known">${esc(c)}</span>` : esc(c)).join("");
-  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. This stop's kanji are in color.</p></div></div>
-    <div class="townwords">${ws.map(([w, r, m]) => `<button class="townword" data-say="${esc(r)}" aria-label="Hear ${esc(r)}"><span class="glyph">${glyph(w)}</span><small>${esc(r)} · ${esc(romaji(kataToHira(r)))}</small><span class="tw-en">${esc(m)}</span></button>`).join("")}</div></div>`;
+  const here = hereK(s); const inHere = c => here.includes(c);
+  const glyph = word => [...word].map(c => inHere(c) ? `<b>${esc(c)}</b>` : esc(c)).join("");
+  const chips = word => [...new Set([...word].filter(c => isKanjiChar(c) && canRead(c, here)))].map(c => `<span class="twk ${inHere(c) ? "here" : ""}">${esc(c)}</span>`).join("");
+  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. Kanji you know are shown, with this stop's in color.</p></div></div>
+    <div class="townwords">${ws.map(([w, r, m]) => { const ro = romaji(kataToHira(r)); return canRead(w, here)
+      ? `<button class="townword" data-say="${esc(r)}" aria-label="Hear ${esc(ro)}"><span class="glyph">${glyph(w)}</span><small>${esc(ro)}</small><span class="tw-en">${esc(m)}</span></button>`
+      : `<button class="townword en" data-say="${esc(r)}" aria-label="Hear ${esc(ro)}"><span class="tw-title">${esc(m)}</span><small>${esc(ro)}</small>${chips(w) ? `<span class="twks">written with ${chips(w)}</span>` : ""}</button>`; }).join("")}</div></div>`;
 }
 
 // City stamps: bigger scalloped seals, one for each of the 36 cities on the line
@@ -139,5 +156,5 @@ function bindStationStamps(root) {
   bindStationClicks(root);
 }
 function bindStationClicks(root) {
-  $$("[data-station]", root).forEach(b => b.onclick = () => { const s = SUB_BY[b.dataset.station]; openPlay(s.stop.p, st => { st.innerHTML = `<div class="stampbook" style="display:flex;justify-content:center;padding:24px">${stationStampHTML(s, 190, "thunk")}</div>${stationCardHTML(s, "Station")}<div class="row" style="justify-content:center"><button class="btn" id="gosub">Open ${esc(s.title)}</button></div>`; $("#gosub", st).onclick = () => openSub(s); }); });
+  $$("[data-station]", root).forEach(b => b.onclick = () => { const s = SUB_BY[b.dataset.station]; openPlay(placeName(s), st => { st.innerHTML = `<div class="stampbook" style="display:flex;justify-content:center;padding:24px">${stationStampHTML(s, 190, "thunk")}</div>${stationCardHTML(s, "Station")}<div class="row" style="justify-content:center"><button class="btn" id="gosub">Open ${esc(s.title)}</button></div>`; $("#gosub", st).onclick = () => openSub(s); }); });
 }

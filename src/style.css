@@ -582,3 +582,16 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .scbubble .sc-en{font-size:.98rem;font-weight:700;color:var(--ink)}
 .scbubble .sc-jp{display:flex;flex-direction:column;align-items:inherit;opacity:.85}
 .scbubble .sc-jp .glyph{font-size:.95rem}
+.scene b.kj{font-family:var(--f-glyph);font-weight:600;font-size:1.15em;color:color-mix(in srgb,var(--lv) 72%,var(--ink))}
+.scsign b.kj{color:#C8402E;font-size:1em}
+.scopt.kanji{font-family:var(--f-glyph);font-size:1.8rem;min-width:64px}
+.scopt.kanji b.kj{font-size:1em}
+.scafter{font-weight:700}
+.townword.en .tw-title{font-weight:800;font-size:.9rem;line-height:1.2}
+.twks{font-size:.7rem;font-weight:700;color:var(--ink-soft);display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.twk{font-family:var(--f-glyph);font-size:1rem;color:var(--ink)}
+.twk.here{color:color-mix(in srgb,var(--lv) 72%,var(--ink));font-weight:600}
+.tie-en b.en{font-size:1rem}
+.localtie p{font-size:.85rem}
+.localtie p b{font-family:var(--f-glyph);color:color-mix(in srgb,var(--lv, var(--sakura)) 72%,var(--ink));font-size:1.2em}
+.localtie small b{font-family:var(--f-glyph);color:color-mix(in srgb,var(--lv, var(--sakura)) 72%,var(--ink));font-size:1.4em}

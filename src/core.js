@@ -129,9 +129,9 @@ const pageWords = pg => UNIQUE_WORDS.filter(w => pg.themes.includes(w.t));
 const pageDone = pg => pageWords(pg).every(w => wordState(w)?.found);
 const TROPHIES = [
   // learn
-  { id: "sprout", group: "Learn", name: "First Kana", icon: "seedling", desc: "Clear your first kana sub-level.", test: () => plantedKana().length >= 1 },
-  { id: "gardener", group: "Learn", name: "Hiragana Complete", icon: "sunflower", desc: "Learn all 46 hiragana.", test: () => plantedKana().length >= 46 },
-  { id: "extras", group: "Learn", name: "Buzzy Sounds", icon: "sparkles", desc: "Clear the kana extras (゛ ゃ ゅ ょ っ).", test: () => EXTRAS.every(x => S.kana[x.k]) },
+  { id: "sprout", group: "Learn", name: "First Kana", icon: "seedling", desc: "Clear your first kana sub-level.", test: () => TRACKS[0].subs.some(s => subStars(s)) },
+  { id: "gardener", group: "Learn", name: "Hiragana Complete", icon: "sunflower", desc: "Clear every hiragana stop.", test: () => TRACKS[0].subs.slice(0, 5).every(s => subStars(s)) },
+  { id: "extras", group: "Learn", name: "Buzzy Sounds", icon: "sparkles", desc: "Clear the kana extras (゛ ゃ ゅ ょ っ).", test: () => subStars(TRACKS[0].subs[5]) > 0 },
   { id: "firstclear", group: "Learn", name: "First Kanji Clear", icon: "pencil", desc: "Clear an N5 sub-level.", test: () => ALL_SUBS.some(s => !s.track.kana && subStars(s) > 0) },
   { id: "perfectsub", group: "Learn", name: "Perfect Ten", icon: "star", desc: "Get ★★★ on a sub-level.", test: () => ALL_SUBS.some(s => subStars(s) === 3) },
   ...TRACKS.filter(t => !t.kana).map(t => ({ id: "path_" + t.id, group: "Learn", name: `${t.name} Path`, icon: t.icon, desc: `Clear every ${t.name} sub-level.`, test: () => t.subs.every(s => subStars(s) > 0) })),
@@ -277,7 +277,7 @@ function openPlay(title, mount, opts = {}) {
   const wrap = document.createElement("div"); wrap.className = "play"; wrap.setAttribute("role", "dialog"); wrap.setAttribute("aria-label", title);
   wrap.innerHTML = `<div class="inner"><div class="playhead"><button class="iconbtn" data-close aria-label="Back">←</button><h2>${title}</h2><div class="hud" id="hud"></div></div><div id="stage" class="stack"></div></div>`;
   document.body.appendChild(wrap); document.body.style.overflow = "hidden";
-  wrap.querySelector("[data-close]").onclick = () => closePlay();
+  wrap.querySelector("[data-close]").onclick = () => opts.onBack ? opts.onBack() : closePlay();
   dndReset(wrap);
   PLAY = { wrap, destroy: null, onClose: opts.onClose }; holdCelebrations(true);
   PLAY.destroy = mount($("#stage", wrap), $("#hud", wrap)) || null;

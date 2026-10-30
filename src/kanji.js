@@ -8,6 +8,10 @@ const KJ = KANJI_TSV.split("\n").map((line, id) => {
   const primary = (!NUM_ON.has(k) && kuns.length ? kuns[0] : ons[0] || kuns[0] || "").replace(/[.\-]/g, "");
   return { id, k, n: +n, s: +s, ens: ms, en: ms[0], on: ons, kun: kuns, rad: [...r], e: e || "", t: "n" + n, r: primary, get ro() { return romaji(this.r); } };
 });
+// One meaning per kanji everywhere (cards, tests, scenes): where KANJIDIC2's first sense isn't the one a beginner
+// meets first, lead with the everyday one. The other senses stay listed on the card.
+const MEANING_FIRST = { "中": "middle", "円": "yen", "下": "below", "上": "above", "日": "sun", "本": "origin", "大": "big", "出": "exit" };
+KJ.forEach(w => { const m = MEANING_FIRST[w.k]; if (m) { w.ens = [m, ...w.ens.filter(x => x !== m)]; w.en = m; } });
 const UNIQUE_WORDS = KJ;
 const KJ_BY = Object.fromEntries(KJ.map(w => [w.k, w]));
 // every reading a learner might type (on, kun with and without okurigana)
@@ -27,11 +31,11 @@ const STAMP_PAGES = [
 
 // Learning tracks: kana first, then N5 → N1, each split into sub-levels of 10
 const KANA_SUBS = [
-  { title: "あ・か rows", items: ["あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ"] },
-  { title: "さ・た rows", items: ["さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と"] },
-  { title: "な・は rows", items: ["な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ"] },
-  { title: "ま・や rows", items: ["ま", "み", "む", "め", "も", "や", "ゆ", "よ"] },
-  { title: "ら・わ rows", items: ["ら", "り", "る", "れ", "ろ", "わ", "を", "ん"] },
+  { title: "a & ka rows", items: ["あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ"] },
+  { title: "sa & ta rows", items: ["さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と"] },
+  { title: "na & ha rows", items: ["な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ"] },
+  { title: "ma & ya rows", items: ["ま", "み", "む", "め", "も", "や", "ゆ", "よ"] },
+  { title: "ra & wa rows", items: ["ら", "り", "る", "れ", "ろ", "わ", "を", "ん"] },
   { title: "Extras", items: ["゛", "ゃ", "ゅ", "ょ", "っ"] },
 ];
 // Grounded levels (GROUND, from tools/ground_kanji.py) teach each stop the kanji found around it; the rest keep

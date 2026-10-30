@@ -10,6 +10,8 @@ const prefName = s => PREF_NAMES[s.stop.pref] || "";
 const isKanjiChar = c => /[\u4e00-\u9fff]/.test(c);
 const canRead = (txt, here = []) => [...txt].every(c => !isKanjiChar(c) || here.includes(c) || (KJ_BY[c] && isStamped(KJ_BY[c])));
 const placeName = s => canRead(s.stop.p) ? s.stop.p : s.stop.ro;
+// the same, as HTML for big glyph spots: romaji gets the body font, since the kanji face draws macrons (ō) badly
+const placeHTML = s => canRead(s.stop.p) ? esc(s.stop.p) : `<span class="latin">${esc(s.stop.ro)}</span>`;
 const hereK = s => s.track.kana ? [] : s.items.map(w => w.k);
 // Cities are the big destinations on the line; the stops between them are the track you lay to get there
 const isCity = s => !!(s && s.stop && s.stop.c);
@@ -39,7 +41,7 @@ function railMapHTML(track) {
     const want = all ? city && (visited(s) || isNext) : city || visited(s) || isNext || subUnlocked(s);
     if (!want || (near(s) && !(city && !all))) return;
     labeled.push(s.stop);
-    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""}">${esc(placeName(s))}</text>`);
+    labels.set(s, `<text x="${s.stop.x + (city ? 10 : 8) * k * (all ? .6 : 1)}" y="${s.stop.y + 4 * k * (all ? .6 : 1)}" font-size="${(all ? 8 : isNext || city ? 13 : 11) * k}" class="ml ${isNext ? "mlnext" : ""} ${city ? "mlcity" : ""} ${canRead(s.stop.p) ? "" : "latin"}">${esc(placeName(s))}</text>`);
   });
   const dots = focus.map(s => {
     const v = visited(s), open = subUnlocked(s), isNext = s === nx, city = isCity(s); const r = (isNext ? 7 : city ? 6.5 : v ? 5.5 : 3.6) * k * (all ? .6 : 1);
@@ -68,7 +70,7 @@ function stationCardHTML(s, label = "Next stop") {
   if (!s) return "";
   const nc = isCity(s) ? null : nextCityFrom(s); const away = nc ? nc.idx - s.idx : 0;
   return `<div class="stationcard" style="--lv:${LINE_INK[s.track.id]}"><div class="stbar"><span>${esc(label)}</span><span>${esc(LINE_NAME[s.track.id])} · ${esc(s.title)}</span></div>
-    <div class="stbody"><div class="stname"><span class="glyph">${esc(placeName(s))}</span>${canRead(s.stop.p) ? `<small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small>` : ""}</div>
+    <div class="stbody"><div class="stname"><span class="glyph">${placeHTML(s)}</span>${canRead(s.stop.p) ? `<small>${esc(s.stop.r)} · ${esc(s.stop.ro)}</small>` : ""}</div>
     <p>${esc(s.stop.f)}</p><div class="row" style="gap:6px;flex-wrap:wrap">${isCity(s) ? `<span class="pill citypill">${IMGW("houses", 16)}City</span>` : ""}<span class="pill">${esc(prefName(s))}</span>${nc ? `<span class="pill nextcity">Next city: ${esc(placeName(nc))} · ${away} stop${away === 1 ? "" : "s"}</span>` : ""}</div></div></div>`;
 }
 
@@ -98,8 +100,9 @@ function townWordsHTML(s) {
   const ws = LOCAL_WORDS[s.stop.p]; if (!ws || !ws.length || s.track.kana) return "";
   const here = hereK(s); const inHere = c => here.includes(c);
   const glyph = word => [...word].map(c => inHere(c) ? `<b>${esc(c)}</b>` : esc(c)).join("");
-  const chips = word => [...new Set([...word].filter(c => isKanjiChar(c) && canRead(c, here)))].map(c => `<span class="twk ${inHere(c) ? "here" : ""}">${esc(c)}</span>`).join("");
-  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. Kanji you know are shown, with this stop's in color.</p></div></div>
+  const chipsHere = visited(s) ? here : [];
+  const chips = word => [...new Set([...word].filter(c => isKanjiChar(c) && canRead(c, chipsHere)))].map(c => `<span class="twk ${inHere(c) ? "here" : ""}">${esc(c)}</span>`).join("");
+  return `<div class="card towncard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("map", 28)}<div><h3>Around ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Real places and foods here. Once you can read a kanji, it shows up in these names.</p></div></div>
     <div class="townwords">${ws.map(([w, r, m]) => { const ro = romaji(kataToHira(r)); return canRead(w, here)
       ? `<button class="townword" data-say="${esc(r)}" aria-label="Hear ${esc(ro)}"><span class="glyph">${glyph(w)}</span><small>${esc(ro)}</small><span class="tw-en">${esc(m)}</span></button>`
       : `<button class="townword en" data-say="${esc(r)}" aria-label="Hear ${esc(ro)}"><span class="tw-title">${esc(m)}</span><small>${esc(ro)}</small>${chips(w) ? `<span class="twks">written with ${chips(w)}</span>` : ""}</button>`; }).join("")}</div></div>`;

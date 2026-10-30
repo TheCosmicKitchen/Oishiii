@@ -21,7 +21,7 @@ const SCENES = {
       note: "山 (yama) mountain, 下 (shita) below, 大 (ō or dai) big.",
       fact: "The 1930 ocean liner Hikawa Maru is moored at Yamashita Park as a museum ship." },
     { id: "yk-avenue", title: "The big avenue", emoji: "road", kanji: "日本大",
-      narr: "A wide, tree-lined street runs toward the harbor. Its sign starts with two kanji you've met today.",
+      narr: "A wide, tree-lined street runs toward the harbor. Its sign is written with kanji you've met today.",
       signs: [["日本 大", "Nihon Ōdōri", "にほんおおどおり"]],
       q: "The sign says 日本 (Nihon). What does it mean?",
       opts: [["Japan", "にほん"], ["a sunny day", "はれ"], ["a big book", "おおきいほん"]], a: 0,
@@ -51,7 +51,7 @@ function scenesHTML(s) {
   const list = townScenes(s); if (!list.length) return "";
   const done = list.filter(sceneDone).length;
   return `<div class="card scenecard" style="--lv:${LINE_INK[s.track.id]}"><div class="row" style="gap:8px">${IMGW("book", 28)}<div style="flex:1;min-width:0"><h3>Little scenes in ${esc(s.stop.ro)}</h3><p class="muted" style="font-size:.78rem">Short moments around town, in English, that use this stop's kanji. Play them before or after the test.</p></div><span class="pill">${done}/${list.length}</span></div>
-    <div class="scenelist">${list.map((sc, i) => `<button class="scenebtn ${sceneDone(sc) ? "done" : ""}" data-scene="${i}">${IMGW(sc.emoji, 34)}<span><b>${esc(sc.title)}</b><small class="glyph">${esc(sc.kanji)}</small></span>${sceneDone(sc) ? IMGW("check", 20) : ""}</button>`).join("")}</div></div>`;
+    <div class="scenelist">${list.map((sc, i) => `<button class="scenebtn ${sceneDone(sc) ? "done" : ""}" data-scene="${i}">${IMGW(sc.emoji, 34)}<span><b>${esc(sc.title)}</b><small class="glyph">${sceneDone(sc) ? esc(sc.kanji) : `${[...sc.kanji].length} kanji`}</small></span>${sceneDone(sc) ? IMGW("check", 20) : ""}</button>`).join("")}</div></div>`;
 }
 function bindScenes(root, s) { $$("[data-scene]", root).forEach(b => b.onclick = () => openScene(s, +b.dataset.scene)); }
 function openScene(s, i) {
@@ -78,5 +78,5 @@ function openScene(s, i) {
       const bk = $("#backstop", st); if (bk) bk.onclick = () => openSub(s);
     }
     draw();
-  });
+  }, { onBack: () => openSub(s) });
 }

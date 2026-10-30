@@ -12,7 +12,7 @@ function render() {
   const app = $("#app");
   app.innerHTML = `<header class="top"><div class="logo">${IMGW("blossom", 34)}<div><h1>${APP_NAME}</h1><small>おいしい</small></div></div>
     <span class="chip" title="Stamps collected">${IMG("lantern")}${foundCount()}</span><span class="chip" title="Trophies">${IMG("trophy")}${trophyCount()}</span>
-    <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "漢字" : "かな"}</span></header>
+    <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "Kanji reader" : "Kana speller"}</span></header>
     <main id="view" class="stack"></main>`;
   const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span></button>`).join("")}</nav>`;
   $$("[data-tab]", tb).forEach(b => b.onclick = () => { TAB = b.dataset.tab; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); });
@@ -37,22 +37,22 @@ let unlockTaps = 0, unlockTimer = 0;
 function viewLearn(v) {
   const cur = TRACKS.find(t => t.id === S.track) || TRACKS[0];
   const nx = nextSub();
-  const greet = S.name ? `おかえり、${esc(S.name)}！` : "ようこそ！";
+  const greet = S.name ? `Welcome back, ${esc(S.name)}!` : "Welcome!";
   const stamped = foundCount();
   v.innerHTML = `
   <section class="hello">${IMG(stamped ? "sakura" : "seedling")}<div class="stack" style="gap:6px;flex:1;min-width:0">
     <h2>${greet}</h2><p class="muted" style="font-size:.85rem">${plantedKana().length < 46 && S.role !== "kanji" ? "Start with kana, then climb from N5 to N1. Every kanji you clear gets stamped." : "Clear sub-levels to stamp kanji. Games only quiz what you've stamped."}</p>
     <div class="stats"><div class="stat"><b>${plantedKana().length}</b><span>kana / 46</span></div><div class="stat"><b>${stamped}</b><span>kanji / ${KJ.length.toLocaleString()}</span></div><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}</b><span>levels / ${ALL_SUBS.length}</span></div></div>
-    <div class="row">${nx ? `<button class="btn pink" id="continue">${IMG("sparkles")}${subStars(nx) ? "Replay" : "Continue"} ${esc(nx.title)}</button>` : ""}<button class="btn ghost" id="review" ${stamped || plantedKana().length ? "" : "disabled"}>${IMG("droplet")}Review</button></div>${nx && nx.track.kana ? `<button class="btn ghost small" id="skipkana">Already know hiragana? Skip to N5 and Yokohama</button>` : ""}</div></section>
+    <div class="row">${nx ? `<button class="btn pink" id="continue">${IMG("sparkles")}${subStars(nx) ? "Replay" : "Continue"} ${esc(nx.title)}</button>` : ""}<button class="btn ghost" id="review" ${stamped || plantedKana().length ? "" : "disabled"}>${IMG("droplet")}Review</button></div>${nx && nx.track.kana ? `<button class="btn ghost small" id="skipkana">Already know hiragana? Take a quick check to skip ahead</button>` : ""}</div></section>
   <section class="card stack path">
     <header class="row"><button class="trainbtn" id="train" aria-label="Your line">${IMGW("train", 40)}</button><div style="flex:1;min-width:0"><h2>The line</h2><p class="muted" style="font-size:.8rem">Every stop is a real station. Clear its 10 kanji to lay track and ride there, from Tokyo to Wakkanai.</p></div></header>
     ${railMapHTML(cur)}
     ${nx ? stationCardHTML(nx, subStars(nx) ? "Revisit" : "Next stop") : ""}
     <div class="tracks" role="tablist">${TRACKS.map(t => { const done = t.subs.filter(s => subStars(s)).length; return `<button class="trk ${t === cur ? "on" : ""}" data-track="${t.id}" role="tab" aria-selected="${t === cur}">${IMGW(t.icon, 26)}<b>${t.jp}</b><small>${done}/${t.subs.length}</small></button>`; }).join("")}</div>
-    <div class="row"><span class="eyebrow">${cur.kana ? "Hiragana" : `JLPT ${cur.name} · ${cur.subs.reduce((a, s) => a + s.items.length, 0)} kanji`}</span><span class="spacer"></span><span class="pill pink">${trackStars(cur)}/${cur.subs.length * 3} ★</span></div>
+    <div class="row"><span class="eyebrow">${cur.kana ? "Hiragana" : `JLPT ${cur.name} · ${cur.subs.reduce((a, s) => a + s.items.length, 0)} kanji`}</span><span class="help">${cur.kana ? "" : "The JLPT is Japan's standard language test. N5 is the easiest level, N1 the hardest."}</span><span class="spacer"></span><span class="pill pink">${trackStars(cur)}/${cur.subs.length * 3} ★</span></div>
     <div class="subgrid">${cur.subs.map(s => { const open = subUnlocked(s), st = subStars(s), dn = subDoneCount(s); const prev = s.items.slice(0, 4).map(it => isKanaSub(s) ? it : it.k).join("");
       return `<button class="subnode ${st ? "cleared" : open ? "open" : "locked"} ${s === nx ? "next" : ""} ${isCity(s) ? "city" : ""}" ${open ? `data-sub="${s.id}"` : "disabled"} style="--lv:${STAMP_INK[cur.id] || "var(--leaf-deep)"}" aria-label="${esc(s.title)}${open ? "" : " locked"}">
-        <span class="subnum">${s.num}</span><span class="subplace glyph">${open ? esc(placeName(s)) : IMGW("lock", 22)}</span><span class="subprev glyph">${open ? esc(prev) : ""}</span><span class="lvstars">${starRow(st, 12)}</span><small>${open ? (canRead(s.stop.p) ? esc(s.stop.ro) : "") : `${dn}/${s.items.length}`}</small></button>`; }).join("")}</div>
+        <span class="subnum">${s.num}</span><span class="subplace glyph">${open ? placeHTML(s) : IMGW("lock", 22)}</span><span class="subprev glyph">${open ? esc(prev) : ""}</span><span class="lvstars">${starRow(st, 12)}</span><small>${open ? (canRead(s.stop.p) ? esc(s.stop.ro) : "") : `${dn}/${s.items.length}`}</small></button>`; }).join("")}</div>
   </section>
   ${Object.keys(GATES).some(id => !gateOpen(id)) ? `<section class="card stack" style="gap:8px"><header class="row">${IMGW("station", 34)}<div style="flex:1;min-width:0"><h3>Next unlocks</h3><p class="muted" style="font-size:.8rem">Games only use kana you've learned and kanji you've stamped.</p></div></header>
     ${Object.keys(GATES).filter(id => !gateOpen(id)).slice(0, 3).map(id => `<div class="row" style="gap:8px;flex-wrap:nowrap">${IMGW(GATES[id].icon, 30)}<div style="flex:1;min-width:0"><b style="font-size:.88rem">${GATES[id].name}</b>${lockCard(id)}</div></div>`).join("")}</section>` : ""}`;
@@ -116,9 +116,9 @@ function studyCardHTML(s, it) {
     <div class="row" style="justify-content:center;gap:14px">${IMGW(w.e, 54)}<div class="glyph big pop">${esc(w.k)}</div></div>
     <div class="meanings"><b>${esc(w.ens[0])}</b>${w.ens.slice(1).map(m => `<span>${esc(m)}</span>`).join("")}</div>
     ${tieHTML(w)}
-    <div class="radrow"><span class="eyebrow">Radicals</span><div class="radchips">${radsOf(w).map((r, i) => `<span class="radpair">${i ? `<span class="plus">+</span>` : ""}<span class="radchip"><span class="glyph">${esc(radGlyph(r))}</span><small>${esc(radMean(r))}</small></span></span>`).join("")}</div></div>
-    <div class="readings">${w.on.length ? `<div><span class="eyebrow">On'yomi</span><div class="rlist">${w.on.map(x => `<button class="rd" data-say="${esc(x)}"><span class="glyph">${esc(x)}</span>${showRo() ? `<small>${esc(romaji(x))}</small>` : ""}</button>`).join("")}</div></div>` : ""}
-      ${w.kun.length ? `<div><span class="eyebrow">Kun'yomi</span><div class="rlist">${w.kun.map(x => `<button class="rd" data-say="${esc(x.replace(".", ""))}"><span class="glyph">${kunHTML(x)}</span>${showRo() ? `<small>${esc(romaji(x.replace(".", "")))}</small>` : ""}</button>`).join("")}</div></div>` : ""}</div></div>`;
+    <div class="radrow"><span class="eyebrow">Radicals</span><span class="help">The parts this kanji is built from</span><div class="radchips">${radsOf(w).map((r, i) => `<span class="radpair">${i ? `<span class="plus">+</span>` : ""}<span class="radchip"><span class="glyph">${esc(radGlyph(r))}</span><small>${esc(radMean(r))}</small></span></span>`).join("")}</div></div>
+    <div class="readings">${w.on.length ? `<div><span class="eyebrow">On'yomi</span><span class="help">Chinese-style reading, mostly in two-kanji words</span><div class="rlist">${w.on.map(x => `<button class="rd" data-say="${esc(x)}"><span class="glyph">${esc(x)}</span>${showRo() ? `<small>${esc(romaji(x))}</small>` : ""}</button>`).join("")}</div></div>` : ""}
+      ${w.kun.length ? `<div><span class="eyebrow">Kun'yomi</span><span class="help">Japanese reading, when the kanji stands alone</span><div class="rlist">${w.kun.map(x => `<button class="rd" data-say="${esc(x.replace(".", ""))}"><span class="glyph">${kunHTML(x)}</span>${showRo() ? `<small>${esc(romaji(x.replace(".", "")))}</small>` : ""}</button>`).join("")}</div></div>` : ""}</div></div>`;
 }
 function openStudy(s, i0) {
   openPlay(`${s.title} · cards`, (st, hud) => {
@@ -134,16 +134,22 @@ function openStudy(s, i0) {
       const g = $("#go", st); if (g) g.onclick = () => startClear(s);
     };
     draw();
-  });
+  }, { onBack: () => openSub(s) });
 }
 
 // ---------- QUIZ ENGINE ----------
 // q types: mean (kanji → meaning), read (kanji → reading, choices), type (kanji → typed reading), rad (pick the radicals),
 //          which (radicals → kanji), k2r (kana → romaji), r2k (romaji → kana)
 function pickDistinct(pool, n, avoid, keyFn = x => x) { const out = [], seen = new Set(avoid.map(keyFn)); for (const x of RND.shuffle(pool)) { const k = keyFn(x); if (seen.has(k)) continue; seen.add(k); out.push(x); if (out.length >= n) break; } return out; }
+// wrong answers for "what does it mean?": kanji you've stamped or are learning at this stop, so you can't win by
+// ruling out meanings you've never seen; falls back to the whole JLPT level early on
+function meaningPool(w) {
+  const stop = typeof SUB_OF_K !== "undefined" && SUB_OF_K[w.k]; const met = KJ.filter(x => x !== w && (isStamped(x) || (stop && stop.items.includes(x))));
+  return met.length >= 6 ? met : kanjiPool(w);
+}
 function kanjiPool(w) { const t = KJ.filter(x => x.n === w.n); return t.length > 8 ? t : KJ; }
 function buildQ(q) {
-  if (q.t === "mean") { const w = q.w; const d = pickDistinct(kanjiPool(w).filter(x => x !== w && !x.ens.some(m => w.ens.includes(m))), 3, [w.en], x => x.en); return { ...q, opts: RND.shuffle([w.en, ...d.map(x => x.en)]), ans: w.en }; }
+  if (q.t === "mean") { const w = q.w; const d = pickDistinct(meaningPool(w).filter(x => x !== w && !x.ens.some(m => w.ens.includes(m))), 3, [w.en], x => x.en); return { ...q, opts: RND.shuffle([w.en, ...d.map(x => x.en)]), ans: w.en }; }
   if (q.t === "read") { const w = q.w; const rs = readingsOf(w); const d = pickDistinct(kanjiPool(w).filter(x => x !== w && !rs.includes(x.r)), 3, [w.r], x => x.r); return { ...q, opts: RND.shuffle([w.r, ...d.map(x => x.r)]), ans: w.r }; }
   if (q.t === "rad") { const w = q.w; const C = radsOf(w); const pool = [...new Set(kanjiPool(w).flatMap(x => x.rad))].filter(r => !C.includes(r) && !C.some(c => radGlyph(c) === radGlyph(r))); const total = Math.min(9, Math.max(6, C.length + 4)); return { ...q, C, tray: RND.shuffle([...C, ...RND.shuffle(pool).slice(0, total - C.length)]) }; }
   if (q.t === "which") { const w = q.w; const C = radsOf(w); const pool = q.pool || kanjiPool(w); const near = pool.filter(x => x !== w && x.rad.some(r => C.includes(r)) && x.rad.join() !== w.rad.join()); const d = pickDistinct(near.length >= 3 ? near : pool.filter(x => x !== w), 3, [w.k], x => x.k); return { ...q, C, opts: RND.shuffle([w.k, ...d.map(x => x.k)]), ans: w.k }; }
@@ -223,7 +229,7 @@ function startClear(s) {
   openPlay(`${s.title} · test`, (st, hud) => {
     let qs;
     if (isKanaSub(s)) { const pool = [...new Set([...s.items, ...KANA_SUBS.flatMap(x => x.items).filter(k => S.kana[k])])]; qs = RND.shuffle(s.items.flatMap(k => [{ t: "k2r", k, pool }, { t: "r2k", k, pool }])); }
-    else { const readQ = S.role === "kanji" ? "type" : "read"; qs = RND.shuffle(s.items.flatMap((w, i) => [{ t: "mean", w }, { t: "rad", w }, ...(i % 2 === 0 || S.role === "kanji" ? [{ t: readQ, w }] : [])])); }
+    else { const readQ = S.role === "kanji" ? "type" : "read"; qs = RND.shuffle(s.items.flatMap((w, i) => [{ t: "mean", w }, ...(radsOf(w).length > 1 ? [{ t: "rad", w }] : []), ...(i % 2 === 0 || S.role === "kanji" ? [{ t: readQ, w }] : [])])); }
     runQuiz(st, hud, qs, {
       requeue: true,
       onAnswer: (q, ok) => { if (q.w && isStamped(q.w)) touchWord(q.w, ok, false); },
@@ -330,4 +336,16 @@ function bindStampClicks(root) {
 }
 
 // For players who already read hiragana: mark every kana learned and open the line up to the first N5 stop
-function skipKana() { KANA_SUBS.flatMap(s => s.items).forEach(k => { S.kana[k] = S.kana[k] || { pts: 7, last: now() }; }); S.unlockTo = Math.max(S.unlockTo || 0, TRACKS[1].subs[0].idx); S.track = "n5"; save(); toast("All kana learned. N5 is open!"); render(); }
+function skipKana() {
+  // a 12-kana check: 10 or more right skips to N5. Kana trophies still need their stops cleared.
+  const pool = ALL_KANA.map(x => x.k); const qs = RND.shuffle(pool).slice(0, 12).map(k => ({ t: "k2r", k, pool }));
+  openPlay("Hiragana check", (st, hud) => runQuiz(st, hud, qs, { requeue: false, onFinish: ({ mistakes }) => {
+    const pass = mistakes <= 2;
+    st.innerHTML = `<div class="card result pop"><span class="eyebrow">Hiragana check</span>${IMGW(pass ? "party" : "seedling", 80)}<h2>${pass ? "You know your kana!" : "Let's learn kana first"}</h2>
+      <p>${12 - mistakes} of 12 right. ${pass ? "N5 and Yokohama are open." : "You need 10 of 12 to skip. The Tokyo stops teach every kana, a few at a time."}</p>
+      <div class="row" style="justify-content:center"><button class="btn pink" id="kcgo">${pass ? "Go to Yokohama" : "Start with Tokyo"}</button></div></div>`;
+    if (pass) applyKanaSkip();
+    $("#kcgo", st).onclick = () => { closePlay(); if (pass) openSub(TRACKS[1].subs[0]); else openSub(ALL_SUBS[0]); };
+  } }));
+}
+function applyKanaSkip() { KANA_SUBS.flatMap(s => s.items).forEach(k => { S.kana[k] = S.kana[k] || { pts: 7, last: now() }; }); S.unlockTo = Math.max(S.unlockTo || 0, TRACKS[1].subs[0].idx); S.track = "n5"; save(); }

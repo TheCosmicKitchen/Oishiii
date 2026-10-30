@@ -139,7 +139,7 @@ const KONBINI = [
 // Buds who sit at the sushi counter (defined below with RALLY_GAMES)
 
 
-// Games with 10-level ladders and rally stamp cards
+// Games with 10-level ladders (stars per level)
 const BUDS = [
   { id: "mame", name: "Mame", jp: "まめ", likes: "little kanji (1–5 strokes)", fits: w => w.s <= 5, sprites: ["seedling", "tulip", "sakura"] },
   { id: "piyo", name: "Piyo", jp: "ぴよ", likes: "medium kanji (6–9 strokes)", fits: w => w.s >= 6 && w.s <= 9, sprites: ["hatching", "babychick", "bird"] },

@@ -17,8 +17,8 @@ Progress is saved per device in the browser (localStorage).
 - **Meaning Match:** pair kanji with their meanings against the clock.
 - **Sushi Belt:** buds order stamped kanji by picture and meaning; drag them the right plate. Look-alike decoys, combos, plate prices, levelling buds.
 - **Transfer Chain:** ride from one kanji to another by linking real two-kanji words (東京 → 京都 → 都市 → …); each word's second kanji is where you change trains. Fewest rides wins, and the destination often comes from your latest stop.
-- **More daily puzzles** (same seed for both players): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Every game has endless mode, 10 levels and a rally stamp card, and every past day stays playable in the archive.
-- **Collection:** a station stamp for every stop, a kanji stamp for every kanji (one page per JLPT level), trophies, route and rally stars, and a completion meter. No streaks, nothing expires.
+- **More daily puzzles** (same seed for both players): Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line, Chef's Special. Every game has endless mode and 10 levels with stars, and every past day stays playable in the archive.
+- **Collection:** a station stamp for every stop, a kanji stamp for every kanji (one page per JLPT level), trophies, route and puzzle stars, and a completion meter. No streaks, nothing expires.
 - **Two roles:** Kana speller (reading choices with romaji) and Kanji reader (typed readings, WaniKani style, bare kanji). Typing converts romaji to kana like WaniKani.
 
 ## Develop

@@ -173,14 +173,14 @@ const TROPHIES = [
   { id: "radclean", group: "Puzzles", name: "Radical Detective", icon: "bricks", desc: "A flawless Radical Builder.", test: () => stat("radFlawless") >= 1 },
   { id: "matchclean", group: "Puzzles", name: "Match Maker", icon: "heartribbon", desc: "A flawless Meaning Match.", test: () => stat("matchFlawless") >= 1 },
   { id: "dailies30", group: "Puzzles", name: "Puzzle Lover", icon: "gift", desc: "Finish 30 daily puzzles.", test: () => stat("dailies") >= 30 },
-  // rally cards
+  // puzzle levels
   ...RALLY_GAMES.flatMap(g => [
-    { id: "card_" + g.id, group: "Rally cards", name: `${g.name} Card`, icon: g.icon, desc: `Stamp all ${LEVELS_N} levels of ${g.name}.`, test: () => lvCleared(g.id) >= LEVELS_N },
-    { id: "perfect_" + g.id, group: "Rally cards", name: `Golden ${g.name}`, icon: g.icon, gold: true, desc: `Three stars on every ${g.name} level.`, test: () => lvTotal(g.id) >= LEVELS_N * 3 },
+    { id: "card_" + g.id, group: "Puzzle levels", name: `${g.name} Complete`, icon: g.icon, desc: `Clear all ${LEVELS_N} levels of ${g.name}.`, test: () => lvCleared(g.id) >= LEVELS_N },
+    { id: "perfect_" + g.id, group: "Puzzle levels", name: `Golden ${g.name}`, icon: g.icon, gold: true, desc: `Three stars on every ${g.name} level.`, test: () => lvTotal(g.id) >= LEVELS_N * 3 },
   ]),
-  { id: "firststar3", group: "Rally cards", name: "Triple Star", icon: "star", desc: "Get ★★★ on any level.", test: () => RALLY_GAMES.some(g => { for (let n = 1; n <= LEVELS_N; n++) if (lvStars(g.id, n) === 3) return true; return false; }) },
-  { id: "stars100", group: "Rally cards", name: "Star Gazer", icon: "sparkles", desc: "Collect 100 stars.", test: () => allStars() >= 100 },
-  { id: "champion", group: "Rally cards", name: "Rally Champion", icon: "party", desc: "Every rally card all gold.", test: () => allStars() >= RALLY_GAMES.length * LEVELS_N * 3 },
+  { id: "firststar3", group: "Puzzle levels", name: "Triple Star", icon: "star", desc: "Get ★★★ on any level.", test: () => RALLY_GAMES.some(g => { for (let n = 1; n <= LEVELS_N; n++) if (lvStars(g.id, n) === 3) return true; return false; }) },
+  { id: "stars100", group: "Puzzle levels", name: "Star Gazer", icon: "sparkles", desc: "Collect 100 stars.", test: () => allStars() >= 100 },
+  { id: "champion", group: "Puzzle levels", name: "Puzzle Champion", icon: "party", desc: "Three stars on every puzzle level.", test: () => allStars() >= RALLY_GAMES.length * LEVELS_N * 3 },
 ];
 let trophyChecking = false;
 function checkTrophies() {

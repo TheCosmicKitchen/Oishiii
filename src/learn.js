@@ -277,7 +277,7 @@ function startReview() {
   }));
 }
 
-// ---------- BOOK (collection, trophies, rally cards, stamp book, settings) ----------
+// ---------- BOOK (collection, trophies, stamp book, settings) ----------
 function completionPct() {
   const parts = [foundCount() / UNIQUE_WORDS.length, plantedKana().length / 46, trophyCount() / TROPHIES.length, allStars() / (RALLY_GAMES.length * LEVELS_N * 3), ALL_SUBS.reduce((a, s) => a + subStars(s), 0) / (ALL_SUBS.length * 3)];
   return Math.floor(parts.reduce((a, b) => a + b, 0) / parts.length * 1000) / 10;
@@ -295,17 +295,12 @@ function viewBook(v) {
     <div class="stats"><div class="stat"><b>${found}/${UNIQUE_WORDS.length}</b><span>kanji stamps</span></div><div class="stat"><b>${plantedKana().length}/46</b><span>kana learned</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div>
     <div class="stats"><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}/${ALL_SUBS.length}</b><span>stations</span></div><div class="stat"><b>${ALL_SUBS.reduce((a, s) => a + subStars(s), 0)}/${ALL_SUBS.length * 3}</b><span>route stars</span></div><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
-    ${["Learn", "Stamps", "Sushi", "Puzzles", "Rally cards"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+    ${["Learn", "Stamps", "Sushi", "Puzzles", "Puzzle levels"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
   </section>
   ${stationStampsHTML()}
   <section class="stampbook"><header class="row"><h2>Kanji stamps</h2><span class="spacer"></span><span class="pill pink">${found}/${UNIQUE_WORDS.length} stamps</span></header>
     <p class="muted" style="font-size:.85rem">Like the 駅スタンプ (eki sutanpu, station stamps) at Japanese train stations: every kanji you clear gets stamped here, one page per JLPT level.</p>
     ${STAMP_PAGES.map(pg => { const ws = pageWords(pg); const got = ws.filter(isStamped).length; return `<details class="stamppage" data-page="${pg.id}" ${BOOK_OPEN[pg.id] ? "open" : ""}><summary class="stamppage-h">${IMGW(pg.icon, 24)}<h3>${pg.name}</h3><span class="spacer"></span>${got === ws.length ? `<span class="kanseal" title="Page complete">完</span>` : `<small>${got}/${ws.length}</small>`}</summary><div class="pagebody">${BOOK_OPEN[pg.id] ? stampGridHTML(pg) : ""}</div></details>`; }).join("")}
-  </section>
-  <section class="stampbook"><header class="row"><h2>Rally cards</h2><span class="spacer"></span><span class="pill pink">${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3} ★</span></header>
-    <p class="muted" style="font-size:.85rem">One card per game. Clear a level to stamp it: bronze ★, silver ★★, gold ★★★.</p>
-    ${RALLY_GAMES.map(rg => { const tot = lvTotal(rg.id); return `<div class="stamppage-h">${IMGW(rg.icon, 26)}<h3>${rg.name}</h3><span class="spacer"></span>${tot >= LEVELS_N * 3 ? `<span class="kanseal" title="All gold">金</span>` : lvCleared(rg.id) >= LEVELS_N ? `<span class="kanseal" title="Card complete">完</span>` : `<small>${tot}/${LEVELS_N * 3} ★</small>`}</div>
-    <div class="rallyrow">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(rg.id, n); return s ? `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}, ${s} stars">${rallyStampHTML(rg.id, n, s, 58)}</button>` : `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}"><div class="empty small">${n}</div></button>`; }).join("")}</div>`; }).join("")}
   </section>
   <section class="card stack"><h2>Kana chart</h2><div class="chart">${ROWS.flatMap(r => { const cells = r.kana.map(([k, ro]) => `<div class="${S.kana[k] ? "s3" : "none"}"><div class="glyph">${k}</div><span class="ro">${ro}</span></div>`); while (cells.length < 5) cells.push(`<div class="none" aria-hidden="true"></div>`); return cells; }).join("")}</div>
     <p class="muted" style="font-size:.78rem">Pink outline = learned.</p></section>

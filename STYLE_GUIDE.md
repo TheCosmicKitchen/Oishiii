@@ -6,7 +6,7 @@
 - Always show romaji alongside kana for the kana role. Typing works like WaniKani: romaji converts to kana live (WanaKana 5.3.1 from jsDelivr, with a built-in fallback).
 
 ## Design rule: completion, never engagement
-She hates engagement mechanics. No streaks, no wilting or decay, no "come back tomorrow" pressure, no expiring content. Everything is permanent and collectable: stamps, trophies, rally-card stars, and a puzzle archive that keeps every past day playable forever. Grind should always be available (endless modes, levels, archive).
+She hates engagement mechanics. No streaks, no wilting or decay, no "come back tomorrow" pressure, no expiring content. Everything is permanent and collectable: stamps, trophies, puzzle-level stars, and a puzzle archive that keeps every past day playable forever. Grind should always be available (endless modes, levels, archive).
 
 ## Progression rule: start from kana, then the JLPT route; quiz only what you've stamped
 The garden/planting metaphor tested poorly and was removed. Learning is a **route**: kana (6 sub-levels) → N5 → N4 → N3 → N2 → N1, each split into sub-levels of 10 kanji (KANJIDIC2 + Tanos JLPT lists, ordered by grade then frequency). Each stop: study cards (meanings, on/kun readings with romaji, radicals) and a clear test (meaning, radicals, reading; WaniKani-style requeue of misses; ★★★ for 0–1 mistakes). Clearing a stop stamps its kanji. Games only use learned kana and stamped kanji. Hidden "secret ticket": tap the route's station icon 5 times to unlock up to any stop (stamps still earned).
@@ -24,7 +24,8 @@ Each sub-level is a real station (tools/route.tsv, 228 stops in order): Tokyo ne
 - **Station stamps:** circular ink stamps on cream paper (`#FBF6EA`), ink color by JLPT level (N5 red, N4 indigo, N3 green, N2 orange, N1 purple), slightly rotated, reading arched on top and meaning arched on the bottom. A "thunk" animation plays for every new kanji.
 - **Sushi plates:** porcelain `#FBF7EE`, rim color sets the price (blue ¥100, pink ¥150, green ¥200, gold ¥500).
 - **Trophies:** gold medallions with a Fluent Emoji inside; locked ones are grey silhouettes with a hint. A completed stamp page gets a red 完 (kan, complete) seal. Progress is about collecting and completion — no streaks.
-- **Rally cards & levels:** every game has a 10-level ladder (same seed for both players, so stars are comparable). Clearing a level stamps that game's rally card; ink is bronze (★), silver (★★) or gold (★★★). Full card = 完 seal and trophy; all gold = 金 seal and a golden trophy.
+- **Levels:** every game has a 10-level ladder (same seed for both players, so stars are comparable). Clearing a level earns ★ to ★★★; clearing all 10 earns a trophy, and three stars on all 10 a golden one.
+- **Only two kinds of stamp:** station stamps (city stamps are the scalloped kind) and kanji stamps. Playtesters found other stamps (like puzzle rally cards) cringey, so don't add new stamp types.
 - Rounded pill buttons with a 3px bottom shadow; bottom tab bar: Learn / Sushi / Puzzles / Stamps.
 
 ## Roadmap

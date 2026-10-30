@@ -774,7 +774,7 @@ const KONBINI = [
 // Buds who sit at the sushi counter (defined below with RALLY_GAMES)
 
 
-// Games with 10-level ladders and rally stamp cards
+// Games with 10-level ladders (stars per level)
 const BUDS = [
   { id: "mame", name: "Mame", jp: "まめ", likes: "little kanji (1–5 strokes)", fits: w => w.s <= 5, sprites: ["seedling", "tulip", "sakura"] },
   { id: "piyo", name: "Piyo", jp: "ぴよ", likes: "medium kanji (6–9 strokes)", fits: w => w.s >= 6 && w.s <= 9, sprites: ["hatching", "babychick", "bird"] },
@@ -1063,14 +1063,14 @@ const TROPHIES = [
   { id: "radclean", group: "Puzzles", name: "Radical Detective", icon: "bricks", desc: "A flawless Radical Builder.", test: () => stat("radFlawless") >= 1 },
   { id: "matchclean", group: "Puzzles", name: "Match Maker", icon: "heartribbon", desc: "A flawless Meaning Match.", test: () => stat("matchFlawless") >= 1 },
   { id: "dailies30", group: "Puzzles", name: "Puzzle Lover", icon: "gift", desc: "Finish 30 daily puzzles.", test: () => stat("dailies") >= 30 },
-  // rally cards
+  // puzzle levels
   ...RALLY_GAMES.flatMap(g => [
-    { id: "card_" + g.id, group: "Rally cards", name: `${g.name} Card`, icon: g.icon, desc: `Stamp all ${LEVELS_N} levels of ${g.name}.`, test: () => lvCleared(g.id) >= LEVELS_N },
-    { id: "perfect_" + g.id, group: "Rally cards", name: `Golden ${g.name}`, icon: g.icon, gold: true, desc: `Three stars on every ${g.name} level.`, test: () => lvTotal(g.id) >= LEVELS_N * 3 },
+    { id: "card_" + g.id, group: "Puzzle levels", name: `${g.name} Complete`, icon: g.icon, desc: `Clear all ${LEVELS_N} levels of ${g.name}.`, test: () => lvCleared(g.id) >= LEVELS_N },
+    { id: "perfect_" + g.id, group: "Puzzle levels", name: `Golden ${g.name}`, icon: g.icon, gold: true, desc: `Three stars on every ${g.name} level.`, test: () => lvTotal(g.id) >= LEVELS_N * 3 },
   ]),
-  { id: "firststar3", group: "Rally cards", name: "Triple Star", icon: "star", desc: "Get ★★★ on any level.", test: () => RALLY_GAMES.some(g => { for (let n = 1; n <= LEVELS_N; n++) if (lvStars(g.id, n) === 3) return true; return false; }) },
-  { id: "stars100", group: "Rally cards", name: "Star Gazer", icon: "sparkles", desc: "Collect 100 stars.", test: () => allStars() >= 100 },
-  { id: "champion", group: "Rally cards", name: "Rally Champion", icon: "party", desc: "Every rally card all gold.", test: () => allStars() >= RALLY_GAMES.length * LEVELS_N * 3 },
+  { id: "firststar3", group: "Puzzle levels", name: "Triple Star", icon: "star", desc: "Get ★★★ on any level.", test: () => RALLY_GAMES.some(g => { for (let n = 1; n <= LEVELS_N; n++) if (lvStars(g.id, n) === 3) return true; return false; }) },
+  { id: "stars100", group: "Puzzle levels", name: "Star Gazer", icon: "sparkles", desc: "Collect 100 stars.", test: () => allStars() >= 100 },
+  { id: "champion", group: "Puzzle levels", name: "Puzzle Champion", icon: "party", desc: "Three stars on every puzzle level.", test: () => allStars() >= RALLY_GAMES.length * LEVELS_N * 3 },
 ];
 let trophyChecking = false;
 function checkTrophies() {
@@ -1505,7 +1505,7 @@ function startReview() {
   }));
 }
 
-// ---------- BOOK (collection, trophies, rally cards, stamp book, settings) ----------
+// ---------- BOOK (collection, trophies, stamp book, settings) ----------
 function completionPct() {
   const parts = [foundCount() / UNIQUE_WORDS.length, plantedKana().length / 46, trophyCount() / TROPHIES.length, allStars() / (RALLY_GAMES.length * LEVELS_N * 3), ALL_SUBS.reduce((a, s) => a + subStars(s), 0) / (ALL_SUBS.length * 3)];
   return Math.floor(parts.reduce((a, b) => a + b, 0) / parts.length * 1000) / 10;
@@ -1523,17 +1523,12 @@ function viewBook(v) {
     <div class="stats"><div class="stat"><b>${found}/${UNIQUE_WORDS.length}</b><span>kanji stamps</span></div><div class="stat"><b>${plantedKana().length}/46</b><span>kana learned</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div>
     <div class="stats"><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}/${ALL_SUBS.length}</b><span>stations</span></div><div class="stat"><b>${ALL_SUBS.reduce((a, s) => a + subStars(s), 0)}/${ALL_SUBS.length * 3}</b><span>route stars</span></div><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
-    ${["Learn", "Stamps", "Sushi", "Puzzles", "Rally cards"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+    ${["Learn", "Stamps", "Sushi", "Puzzles", "Puzzle levels"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
   </section>
   ${stationStampsHTML()}
   <section class="stampbook"><header class="row"><h2>Kanji stamps</h2><span class="spacer"></span><span class="pill pink">${found}/${UNIQUE_WORDS.length} stamps</span></header>
     <p class="muted" style="font-size:.85rem">Like the 駅スタンプ (eki sutanpu, station stamps) at Japanese train stations: every kanji you clear gets stamped here, one page per JLPT level.</p>
     ${STAMP_PAGES.map(pg => { const ws = pageWords(pg); const got = ws.filter(isStamped).length; return `<details class="stamppage" data-page="${pg.id}" ${BOOK_OPEN[pg.id] ? "open" : ""}><summary class="stamppage-h">${IMGW(pg.icon, 24)}<h3>${pg.name}</h3><span class="spacer"></span>${got === ws.length ? `<span class="kanseal" title="Page complete">完</span>` : `<small>${got}/${ws.length}</small>`}</summary><div class="pagebody">${BOOK_OPEN[pg.id] ? stampGridHTML(pg) : ""}</div></details>`; }).join("")}
-  </section>
-  <section class="stampbook"><header class="row"><h2>Rally cards</h2><span class="spacer"></span><span class="pill pink">${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3} ★</span></header>
-    <p class="muted" style="font-size:.85rem">One card per game. Clear a level to stamp it: bronze ★, silver ★★, gold ★★★.</p>
-    ${RALLY_GAMES.map(rg => { const tot = lvTotal(rg.id); return `<div class="stamppage-h">${IMGW(rg.icon, 26)}<h3>${rg.name}</h3><span class="spacer"></span>${tot >= LEVELS_N * 3 ? `<span class="kanseal" title="All gold">金</span>` : lvCleared(rg.id) >= LEVELS_N ? `<span class="kanseal" title="Card complete">完</span>` : `<small>${tot}/${LEVELS_N * 3} ★</small>`}</div>
-    <div class="rallyrow">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(rg.id, n); return s ? `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}, ${s} stars">${rallyStampHTML(rg.id, n, s, 58)}</button>` : `<button class="stampslot" data-rally="${rg.id}" aria-label="Level ${n}"><div class="empty small">${n}</div></button>`; }).join("")}</div>`; }).join("")}
   </section>
   <section class="card stack"><h2>Kana chart</h2><div class="chart">${ROWS.flatMap(r => { const cells = r.kana.map(([k, ro]) => `<div class="${S.kana[k] ? "s3" : "none"}"><div class="glyph">${k}</div><span class="ro">${ro}</span></div>`); while (cells.length < 5) cells.push(`<div class="none" aria-hidden="true"></div>`); return cells; }).join("")}</div>
     <p class="muted" style="font-size:.78rem">Pink outline = learned.</p></section>
@@ -2397,23 +2392,15 @@ function lvTotal(id) { let t = 0; for (let n = 1; n <= LEVELS_N; n++) t += lvSta
 function lvCleared(id) { let c = 0; for (let n = 1; n <= LEVELS_N; n++) if (lvStars(id, n)) c++; return c; }
 const allStars = () => RALLY_GAMES.reduce((a, g) => a + lvTotal(g.id), 0);
 const starRow = (n, size = 18) => [1, 2, 3].map(i => `<img class="em ${i <= n ? "" : "staroff"}" src="${EMO.star}" alt="" style="width:${size}px;height:${size}px">`).join("");
-function rallyStampHTML(id, n, stars, size = 76, extra = "") {
-  const g = rallyGame(id); const ink = RALLY_INK[stars] || RALLY_INK[1]; const rot = (hashStr(id + n) % 15) - 7; const uid = id + n + size;
-  return `<div class="stamp rally ${extra}" style="--ink:${ink};--rot:${rot}deg;--sz:${size}px;width:${size}px;height:${size}px"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="ra${uid}" d="M 15 50 A 35 35 0 0 1 85 50"/></defs>
-  <circle cx="50" cy="50" r="46" fill="none" stroke="var(--ink)" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
-  <text font-size="9.5" font-weight="800" fill="var(--ink)" letter-spacing="1.2"><textPath href="#ra${uid}" startOffset="50%" text-anchor="middle">${esc(g.name.toUpperCase())}</textPath></text>
-  <text x="50" y="84" font-size="11" fill="var(--ink)" text-anchor="middle" letter-spacing="1">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</text></svg>
-  <span class="rally-n">${n}</span></div>`;
-}
 function openLevels(id) {
   if (!gateOpen(id)) { toast(GATES[id].need + " to unlock " + GATES[id].name); return; }
   const g = rallyGame(id); const P = PUZZLES.find(p => p.id === id);
   openPlay(`${g.name} levels`, (st, hud) => {
     hud.innerHTML = `<span class="chip">${IMG("star")}${lvTotal(id)}/${LEVELS_N * 3}</span>`;
-    st.innerHTML = `<div class="card stack" style="gap:6px"><div class="row">${IMGW(g.icon, 44)}<div style="flex:1;min-width:0"><h3>${g.name} rally card</h3><p class="muted" style="font-size:.82rem">Clear a level to stamp your card. Bronze for ★, silver for ★★, gold for ★★★. Each level is the same for both of you.</p></div></div>
+    st.innerHTML = `<div class="card stack" style="gap:6px"><div class="row">${IMGW(g.icon, 44)}<div style="flex:1;min-width:0"><h3>${g.name} levels</h3><p class="muted" style="font-size:.82rem">Clear a level to earn up to three stars. Each level is the same for both of you.</p></div></div>
       <div class="bar"><i style="width:${lvTotal(id) / (LEVELS_N * 3) * 100}%"></i></div></div>
       <div class="ladder">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(id, n), open = lvUnlocked(id, n), rec = lvRec(id)[n];
-        return `<button class="lvnode ${s ? "cleared" : open ? "open" : "locked"}" ${open ? `data-lv="${n}"` : "disabled"} aria-label="Level ${n}${open ? "" : " locked"}">${s ? rallyStampHTML(id, n, s, 70) : `<span class="lvnum">${open ? n : IMGW("lock", 26)}</span>`}<span class="lvstars">${open ? starRow(s, 14) : ""}</span>${rec && rec.best ? `<small>${esc(rec.best)}</small>` : ""}</button>`; }).join("")}</div>
+        return `<button class="lvnode ${s ? "cleared" : open ? "open" : "locked"}" ${open ? `data-lv="${n}"` : "disabled"} aria-label="Level ${n}${open ? "" : " locked"}"><span class="lvnum">${open ? n : IMGW("lock", 26)}</span><span class="lvstars">${open ? starRow(s, 14) : ""}</span>${rec && rec.best ? `<small>${esc(rec.best)}</small>` : ""}</button>`; }).join("")}</div>
       <p class="muted" style="font-size:.78rem;text-align:center">${id === "sushi" ? "Earn the target yen in 90 seconds: ★ at the target, ★★ at 1.5×, ★★★ at 2×. The target and belt speed rise each level." : "Levels get harder as you go. Replay any level to raise your stars."}</p>`;
     $$("[data-lv]", st).forEach(b => b.onclick = () => playPz(id, "L" + b.dataset.lv));
   });
@@ -2426,9 +2413,9 @@ function levelResult(st, id, n, stars, label) {
   const next = n < LEVELS_N && (stars > 0 || prev > 0);
   const share = `${APP_NAME} ${g.name} Lv ${n} ${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ${label}`;
   st.innerHTML = `<div class="card result pop"><span class="eyebrow">${esc(g.name)} · Level ${n}</span>
-    ${stars ? rallyStampHTML(id, n, stars, 150, "thunk") : IMGW("wilted", 96)}
+    ${IMGW(stars === 3 ? "crown" : stars ? "star" : "wilted", 96)}
     <div class="bigstars">${starRow(stars, 40)}</div><div class="score">${esc(label)}</div>
-    <p>${stars === 0 ? "Not quite! Give it another go." : improved ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : "Stamped onto your rally card!") : `Your best here is still ${"★".repeat(prev)}.`}</p>
+    <p>${stars === 0 ? "Not quite! Give it another go." : improved ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : "Level cleared!") : `Your best here is still ${"★".repeat(prev)}.`}</p>
     ${stars < 3 ? `<p class="muted" style="font-size:.8rem">${starHint(id, n)}</p>` : `<p class="muted" style="font-size:.8rem">Perfect! Dare your partner to match it.</p>`}
     <div class="sharebox">${esc(share)}</div><button class="btn pink" id="sharebtn">Copy result</button>
     <div class="row" style="justify-content:center"><button class="btn ghost" id="retry">Retry</button>${next ? `<button class="btn" id="nextlv">Level ${n + 1}</button>` : ""}<button class="btn ghost" id="map">Level map</button></div></div>`;

@@ -437,23 +437,15 @@ function lvTotal(id) { let t = 0; for (let n = 1; n <= LEVELS_N; n++) t += lvSta
 function lvCleared(id) { let c = 0; for (let n = 1; n <= LEVELS_N; n++) if (lvStars(id, n)) c++; return c; }
 const allStars = () => RALLY_GAMES.reduce((a, g) => a + lvTotal(g.id), 0);
 const starRow = (n, size = 18) => [1, 2, 3].map(i => `<img class="em ${i <= n ? "" : "staroff"}" src="${EMO.star}" alt="" style="width:${size}px;height:${size}px">`).join("");
-function rallyStampHTML(id, n, stars, size = 76, extra = "") {
-  const g = rallyGame(id); const ink = RALLY_INK[stars] || RALLY_INK[1]; const rot = (hashStr(id + n) % 15) - 7; const uid = id + n + size;
-  return `<div class="stamp rally ${extra}" style="--ink:${ink};--rot:${rot}deg;--sz:${size}px;width:${size}px;height:${size}px"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><path id="ra${uid}" d="M 15 50 A 35 35 0 0 1 85 50"/></defs>
-  <circle cx="50" cy="50" r="46" fill="none" stroke="var(--ink)" stroke-width="4"/><circle cx="50" cy="50" r="39" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
-  <text font-size="9.5" font-weight="800" fill="var(--ink)" letter-spacing="1.2"><textPath href="#ra${uid}" startOffset="50%" text-anchor="middle">${esc(g.name.toUpperCase())}</textPath></text>
-  <text x="50" y="84" font-size="11" fill="var(--ink)" text-anchor="middle" letter-spacing="1">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</text></svg>
-  <span class="rally-n">${n}</span></div>`;
-}
 function openLevels(id) {
   if (!gateOpen(id)) { toast(GATES[id].need + " to unlock " + GATES[id].name); return; }
   const g = rallyGame(id); const P = PUZZLES.find(p => p.id === id);
   openPlay(`${g.name} levels`, (st, hud) => {
     hud.innerHTML = `<span class="chip">${IMG("star")}${lvTotal(id)}/${LEVELS_N * 3}</span>`;
-    st.innerHTML = `<div class="card stack" style="gap:6px"><div class="row">${IMGW(g.icon, 44)}<div style="flex:1;min-width:0"><h3>${g.name} rally card</h3><p class="muted" style="font-size:.82rem">Clear a level to stamp your card. Bronze for ★, silver for ★★, gold for ★★★. Each level is the same for both of you.</p></div></div>
+    st.innerHTML = `<div class="card stack" style="gap:6px"><div class="row">${IMGW(g.icon, 44)}<div style="flex:1;min-width:0"><h3>${g.name} levels</h3><p class="muted" style="font-size:.82rem">Clear a level to earn up to three stars. Each level is the same for both of you.</p></div></div>
       <div class="bar"><i style="width:${lvTotal(id) / (LEVELS_N * 3) * 100}%"></i></div></div>
       <div class="ladder">${Array.from({ length: LEVELS_N }, (_, i) => { const n = i + 1, s = lvStars(id, n), open = lvUnlocked(id, n), rec = lvRec(id)[n];
-        return `<button class="lvnode ${s ? "cleared" : open ? "open" : "locked"}" ${open ? `data-lv="${n}"` : "disabled"} aria-label="Level ${n}${open ? "" : " locked"}">${s ? rallyStampHTML(id, n, s, 70) : `<span class="lvnum">${open ? n : IMGW("lock", 26)}</span>`}<span class="lvstars">${open ? starRow(s, 14) : ""}</span>${rec && rec.best ? `<small>${esc(rec.best)}</small>` : ""}</button>`; }).join("")}</div>
+        return `<button class="lvnode ${s ? "cleared" : open ? "open" : "locked"}" ${open ? `data-lv="${n}"` : "disabled"} aria-label="Level ${n}${open ? "" : " locked"}"><span class="lvnum">${open ? n : IMGW("lock", 26)}</span><span class="lvstars">${open ? starRow(s, 14) : ""}</span>${rec && rec.best ? `<small>${esc(rec.best)}</small>` : ""}</button>`; }).join("")}</div>
       <p class="muted" style="font-size:.78rem;text-align:center">${id === "sushi" ? "Earn the target yen in 90 seconds: ★ at the target, ★★ at 1.5×, ★★★ at 2×. The target and belt speed rise each level." : "Levels get harder as you go. Replay any level to raise your stars."}</p>`;
     $$("[data-lv]", st).forEach(b => b.onclick = () => playPz(id, "L" + b.dataset.lv));
   });
@@ -466,9 +458,9 @@ function levelResult(st, id, n, stars, label) {
   const next = n < LEVELS_N && (stars > 0 || prev > 0);
   const share = `${APP_NAME} ${g.name} Lv ${n} ${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ${label}`;
   st.innerHTML = `<div class="card result pop"><span class="eyebrow">${esc(g.name)} · Level ${n}</span>
-    ${stars ? rallyStampHTML(id, n, stars, 150, "thunk") : IMGW("wilted", 96)}
+    ${IMGW(stars === 3 ? "crown" : stars ? "star" : "wilted", 96)}
     <div class="bigstars">${starRow(stars, 40)}</div><div class="score">${esc(label)}</div>
-    <p>${stars === 0 ? "Not quite! Give it another go." : improved ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : "Stamped onto your rally card!") : `Your best here is still ${"★".repeat(prev)}.`}</p>
+    <p>${stars === 0 ? "Not quite! Give it another go." : improved ? (prev ? `New best! Up from ${"★".repeat(prev)}.` : "Level cleared!") : `Your best here is still ${"★".repeat(prev)}.`}</p>
     ${stars < 3 ? `<p class="muted" style="font-size:.8rem">${starHint(id, n)}</p>` : `<p class="muted" style="font-size:.8rem">Perfect! Dare your partner to match it.</p>`}
     <div class="sharebox">${esc(share)}</div><button class="btn pink" id="sharebtn">Copy result</button>
     <div class="row" style="justify-content:center"><button class="btn ghost" id="retry">Retry</button>${next ? `<button class="btn" id="nextlv">Level ${n + 1}</button>` : ""}<button class="btn ghost" id="map">Level map</button></div></div>`;

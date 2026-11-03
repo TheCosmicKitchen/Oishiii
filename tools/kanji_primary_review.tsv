@@ -1,0 +1,45 @@
+# Hand-checked decisions for kanji where the open evidence alone wasn't conclusive (tools/kanji_deck.py asks for them).
+# use = the reading to lead with, or "keep" for the current one. Each note gives the common words behind the decision.
+# kanji	use	note
+宮	keep	みや is everyday (お宮, 宮崎); きゅう only wins through 宮殿 and 子宮
+素	そ	要素, 素材, 素直; す only comes from 素晴らしい and 素敵
+納	のう	収納, 納税, 納入; なっ is the sound change in 納得 and 納豆
+緩	keep	ゆるい is the everyday word (緩い, 緩やか)
+駆	keep	かける (駆ける) is the word on its own; く only in 駆使, 駆除
+弥	keep	や; み only comes from 阿弥陀
+堪	keep	たえる (堪える) is the word on its own; たん only in 堪能
+漸	keep	ようやく (漸く) is the word on its own
+嚇	かく	only common word is 威嚇 (いかく)
+愁	しゅう	哀愁, 郷愁
+楼	ろう	摩天楼, 楼閣
+賜	し	恩賜, 賜杯
+繕	ぜん	修繕, 営繕
+斥	せき	排斥
+頒	はん	頒布
+旺	おう	旺盛
+附	ふ	附属
+倣	ほう	模倣
+丙	へい	丙 (third in a series) is read へい
+伎	き	歌舞伎 (かぶき)
+塑	そ	彫塑
+墾	こん	開墾
+濫	らん	氾濫
+楊	よう	爪楊枝
+琢	たく	琢磨
+苑	えん	御苑, 外苑
+杜	keep	もり is the reading in place names (杜の都); ず only comes from 杜撰
+禄	ろく	元禄
+暢	ちょう	流暢
+惣	そう	惣菜
+彗	すい	彗星
+私	わたし	わたし is the everyday "I"; わたくし is formal. Word counts can't tell them apart (same spelling)
+度	ど	一度, もう一度, 今度; たび is far rarer
+有	ゆう	有名, 有料; 有る is usually written ある in kana
+者	しゃ	医者, 学者; もの alone is rarer
+飯	はん	ご飯, 夕飯; めし is rough, casual speech
+居	い	居酒屋, 居間; 居る is usually written いる in kana
+御	ご	ご飯, 御主人; おん is old-fashioned
+差	さ	時差, 差別; 差す is rarer
+等	とう	平等, 等しい, 一等; ら is the plural suffix (彼等), usually written in kana
+敷	keep	しく (敷く) is the word on its own; しき only in 敷地 and 屋敷
+夜	よる	夜 on its own is よる (夜, 今夜は); よ only in compounds like 夜中. Word counts can't tell 夜 よる from 夜 よ (same spelling)

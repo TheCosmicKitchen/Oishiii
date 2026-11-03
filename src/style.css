@@ -649,3 +649,13 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .shedseed{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px var(--shadow);display:grid;place-items:center}
 .shedi .shedseed .em{width:16px;height:16px}
 .gjp{font-family:var(--f-glyph);font-weight:600}
+
+/* ---------- example words on kanji cards ---------- */
+.kwords{display:flex;flex-direction:column;gap:6px;text-align:left}
+.kword{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"w r" "w e";column-gap:12px;align-items:center;background:var(--surface-2);border:0;border-radius:var(--r-md);padding:8px 12px;text-align:left}
+.kword .glyph{grid-area:w;font-size:1.35rem;font-weight:600}
+.kword .glyph .kj{font-weight:600;color:var(--lv,var(--ink))}
+.kword .glyph .kn{color:var(--ink-soft)}
+.kwrd{grid-area:r;font-family:var(--f-glyph);font-weight:600;font-size:.9rem}
+.kwrd small{font-family:var(--f-body);color:var(--ink-soft);font-weight:700}
+.kwen{grid-area:e;font-size:.8rem;color:var(--ink-soft);line-height:1.3}

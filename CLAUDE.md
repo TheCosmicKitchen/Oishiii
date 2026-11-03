@@ -23,7 +23,8 @@ A cute Japanese learning game for two adult beginners (a couple). One plays the 
 
 ## Working on it
 - Edit `src/`, then `python3 build.py`. It writes `index.html` (served by GitHub Pages at https://thecosmickitchen.github.io/Oishiii/) and `dist/oishii.html` (the Claude artifact version).
-- `src/kanji-data.js`, `src/compound-data.js`, `src/route-data.js` and `src/ground-data.js` are generated; regenerate with the scripts in `tools/` (see README). Don't edit them by hand.
+- `src/kanji-data.js`, `src/deck-data.js`, `src/compound-data.js`, `src/route-data.js` and `src/ground-data.js` are generated; regenerate with the scripts in `tools/` (see README). Don't edit them by hand.
+- **The user is a learner and can't check Japanese.** Every reading, meaning, word or sentence must come from an openly licensed, well-known source (KANJIDIC2, JMdict, JmdictFurigana, Waller's lists, Tatoeba) and pass at least two independent checks before it ships. Don't use WaniKani data (its content belongs to WaniKani) or small unvetted datasets. Judgment calls go in a reviewed file with a reason (e.g. `tools/kanji_primary_review.tsv`). Main readings come from `tools/kanji_deck.py`, never hand edits.
 - Facts on station cards must be real and verifiable; keep them to one short line.
 - Keep the README credits for KANJIDIC2/RADKFILE/JMdict (EDRDG, CC BY-SA 4.0), Kanji alive, Tanos JLPT lists, ekidata, Global Map Japan and every town photo.
 - Test with a headless browser (Playwright is available) at 400px wide in light and dark before pushing.

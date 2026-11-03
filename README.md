@@ -36,6 +36,7 @@ This writes `index.html` (full standalone page) and `dist/oishii.html` (page bod
 - `src/kanji-data.js` — generated JLPT kanji and radical data (do not edit by hand)
 - `src/kanji.js` — kanji entries, tracks and sub-levels
 - `src/compound-data.js` — generated: common two-kanji words for Transfer Chain (`tools/make_compounds.py`)
+- `src/deck-data.js` — generated: each kanji's checked main reading and meaning, and its example words (`tools/kanji_deck.py`)
 - `src/photo-data.js` — generated: approved town photos with credits (`tools/photos.tsv` + `assets/photos/`, `python3 tools/make_photo_data.py`)
 - `src/ground-data.js` — generated: which stop teaches which N5/N4 kanji and why (`tools/ground_kanji.py`)
 - `src/route-data.js` — generated stations and map outline (edit `tools/route.tsv`, then run `tools/make_route_data.py`)
@@ -70,6 +71,18 @@ pip install shapely
 python3 tools/make_route_data.py stations.json japan.geojson
 ```
 
+### Regenerating the kanji deck (main readings, meanings, example words)
+
+KANJIDIC2 lists a kanji's readings in no useful order, so the cards used to lead with rare ones (食 くう, 午 うま, 天 あまつ). `tools/kanji_deck.py` checks every kanji against open data only: which reading the common JMdict words use, weighted by how often each word appears, with per-kanji furigana; and if the kanji is a word on its own in Jonathan Waller's JLPT lists (本 ほん, 食べる たべる), that word leads. Judgment calls are hand-checked with a reason in `tools/kanji_primary_review.tsv`, and every change is listed with its evidence in `tools/kanji_deck_report.tsv`.
+
+Waller's lists are in `tools/waller_vocab.tsv`, fetched verbatim by `tools/fetch_waller.py` from the Internet Archive's copies of tanos.co.uk (the site is offline). Other downloads: `jmdict-eng-common-*.json` (as below) and `JmdictFurigana.txt` from [Doublevil/JmdictFurigana](https://github.com/Doublevil/JmdictFurigana/releases). Then:
+
+```
+pip install wordfreq
+python3 tools/kanji_deck.py jmdict-eng-common-*.json JmdictFurigana.txt
+python3 tools/kanji_deck.py jmdict-eng-common-*.json JmdictFurigana.txt --doubtful   # kept readings far less used than another
+```
+
 ### Regenerating the Transfer Chain words
 
 Transfer Chain uses common two-kanji words from JMdict. Download `jmdict-eng-common-*.json.tgz` from [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases), unpack it, then run:
@@ -96,6 +109,7 @@ It writes `src/ground-data.js` and prints how many kanji each stop ties to its t
 - Romaji-to-kana typing: [WanaKana](https://github.com/WaniKani/WanaKana) (MIT License), loaded from jsDelivr.
 - Kanji, meanings and readings: [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) via [davidluzgouveia/kanji-data](https://github.com/davidluzgouveia/kanji-data). JLPT levels: Jonathan Waller's lists ([tanos.co.uk](http://www.tanos.co.uk/jlpt/), CC BY).
 - Two-kanji words for Transfer Chain: [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) (EDRDG, CC BY-SA 4.0) via [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified). The generated `src/compound-data.js` is shared under CC BY-SA 4.0.
+- Kanji deck: example words from Jonathan Waller's JLPT word lists (tanos.co.uk, CC BY; `tools/waller_vocab.tsv`), with each word and meaning checked against JMdict; per-kanji furigana from [JmdictFurigana](https://github.com/Doublevil/JmdictFurigana) (CC BY-SA 4.0); word frequencies from [wordfreq](https://github.com/rspeer/wordfreq) (CC BY-SA 4.0), used only for ranking. The generated `src/deck-data.js` is shared under CC BY-SA 4.0.
 - Town photos (resized) from Wikimedia Commons, listed with their authors and licences in `tools/photos.tsv` and credited on each postcard: Zenrin Gate by Suicasmo (CC BY-SA 4.0); Ōsanbashi Pier at night by Matthide127 (CC0); Kanagawa Prefectural Office on Nihon Ōdōri by 663highland (CC BY 2.5); Yokohama Station north-west exit by NEO-NEED (CC0).
 - Radicals: RADKFILE/KRADFILE by Michael Raine, James Breen and the Electronic Dictionary Research and Development Group, via [@johnmorrisdotca/bushu](https://www.npmjs.com/package/@johnmorrisdotca/bushu). Radical names: [Kanji alive](https://kanjialive.com/) (CC BY 4.0).
 - *Radicals and kanji from RADKFILE and KANJIDIC2, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (https://www.edrdg.org/edrdg/licence.html).* The generated `src/kanji-data.js` is shared under CC BY-SA 4.0.

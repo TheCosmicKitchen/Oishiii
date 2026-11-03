@@ -101,6 +101,13 @@ function openSub(s) {
   });
 }
 
+// A word with each kanji run shown only if every kanji in it is stamped (or is one of `here`), else in kana:
+// segs are [start, end, kana] per kanji run, from JmdictFurigana
+function mixedHTML(word, segs, here = []) {
+  let out = "", i = 0;
+  for (const [a, b, kana] of segs) { out += esc(word.slice(i, a)); const run = word.slice(a, b + 1); out += canRead(run, here) ? `<b class="kj">${esc(run)}</b>` : `<span class="kn">${esc(kana)}</span>`; i = b + 1; }
+  return out + esc(word.slice(i));
+}
 function studyCardHTML(s, it) {
   if (isKanaSub(s)) {
     const x = EXTRAS.find(e => e.k === it);
@@ -116,6 +123,7 @@ function studyCardHTML(s, it) {
     <div class="row" style="justify-content:center;gap:14px">${IMGW(w.e, 54)}<div class="glyph big pop">${esc(w.k)}</div></div>
     <div class="meanings"><b>${esc(w.ens[0])}</b>${w.ens.slice(1).map(m => `<span>${esc(m)}</span>`).join("")}</div>
     ${tieHTML(w)}
+    ${w.words.length ? `<div class="kwords"><span class="eyebrow">Words</span><span class="help">Common words with this kanji. Kanji you haven't stamped yet show in kana.</span>${w.words.map(x => `<button class="kword" data-say="${esc(x.rd)}"><span class="glyph">${mixedHTML(x.w, x.segs, [w.k])}</span><span class="kwrd">${esc(x.rd)}${showRo() ? ` <small>${esc(romaji(x.rd))}</small>` : ""}</span><span class="kwen">${esc(x.en)}</span></button>`).join("")}</div>` : ""}
     <div class="radrow"><span class="eyebrow">Radicals</span><span class="help">The parts this kanji is built from</span><div class="radchips">${radsOf(w).map((r, i) => `<span class="radpair">${i ? `<span class="plus">+</span>` : ""}<span class="radchip"><span class="glyph">${esc(radGlyph(r))}</span><small>${esc(radMean(r))}</small></span></span>`).join("")}</div></div>
     <div class="readings">${w.on.length ? `<div><span class="eyebrow">On'yomi</span><span class="help">Chinese-style reading, mostly in two-kanji words</span><div class="rlist">${w.on.map(x => `<button class="rd" data-say="${esc(x)}"><span class="glyph">${esc(x)}</span>${showRo() ? `<small>${esc(romaji(x))}</small>` : ""}</button>`).join("")}</div></div>` : ""}
       ${w.kun.length ? `<div><span class="eyebrow">Kun'yomi</span><span class="help">Japanese reading, when the kanji stands alone</span><div class="rlist">${w.kun.map(x => `<button class="rd" data-say="${esc(x.replace(".", ""))}"><span class="glyph">${kunHTML(x)}</span>${showRo() ? `<small>${esc(romaji(x.replace(".", "")))}</small>` : ""}</button>`).join("")}</div></div>` : ""}</div></div>`;
@@ -313,7 +321,7 @@ function viewBook(v) {
     <div class="row"><span class="lab">Sound effects</span><span class="spacer"></span><div class="seg"><button data-snd="1" aria-pressed="${S.sound}">On</button><button data-snd="0" aria-pressed="${!S.sound}">Off</button></div></div>
     <div class="row"><button class="btn ghost small" id="knowall">I already know hiragana: skip to N5</button></div>
     <div class="row"><button class="btn ghost small" id="reset">Start over</button><span id="resetconfirm"></span></div>
-    <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT). Kanji, readings and meanings from KANJIDIC2; radicals from RADKFILE, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (CC BY-SA 4.0). Radical names from Kanji alive (CC BY 4.0). JLPT levels from Jonathan Waller's lists (CC BY).</p>
+    <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT). Kanji, readings and meanings from KANJIDIC2; radicals from RADKFILE, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (CC BY-SA 4.0). Radical names from Kanji alive (CC BY 4.0). JLPT levels and example words from Jonathan Waller's lists (tanos.co.uk, CC BY); word meanings from JMdict (EDRDG, CC BY-SA 4.0); furigana from JmdictFurigana (CC BY-SA 4.0); word frequencies from wordfreq (CC BY-SA 4.0).</p>
   </section>`;
   $$("details.stamppage[data-page]", v).forEach(d => d.addEventListener("toggle", () => { const pg = STAMP_PAGES.find(p => p.id === d.dataset.page); BOOK_OPEN[pg.id] = d.open; const body = $(".pagebody", d); if (d.open && !body.innerHTML) { body.innerHTML = stampGridHTML(pg); bindStampClicks(body); } }));
   bindStampClicks(v); bindStationStamps(v);

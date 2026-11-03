@@ -6,11 +6,18 @@ const KJ = KANJI_TSV.split("\n").map((line, id) => {
   const ons = on ? on.split(",") : [], kuns = kun ? kun.split(",") : [];
   const ms = m.split(";");
   const primary = (!NUM_ON.has(k) && kuns.length ? kuns[0] : ons[0] || kuns[0] || "").replace(/[.\-]/g, "");
-  return { id, k, n: +n, s: +s, ens: ms, en: ms[0], on: ons, kun: kuns, rad: [...r], e: e || "", t: "n" + n, r: primary, get ro() { return romaji(this.r); } };
+  return { id, k, n: +n, s: +s, ens: ms, en: ms[0], on: ons, kun: kuns, rad: [...r], e: e || "", t: "n" + n, r: primary, words: [], get ro() { return romaji(this.r); } };
 });
-// One meaning per kanji everywhere (cards, tests, scenes): where KANJIDIC2's first sense isn't the one a beginner
-// meets first, lead with the everyday one. The other senses stay listed on the card.
-const MEANING_FIRST = { "中": "middle", "円": "yen", "下": "below", "上": "above", "日": "sun", "本": "origin", "大": "big", "出": "exit" };
+// Checked main readings and meanings, missing readings and example words, from tools/kanji_deck.py: KANJIDIC2 lists
+// readings in no useful order, so cards used to lead with rare ones (食 くう, 午 うま)
+const DECK = Object.fromEntries(DECK_TSV.split("\n").map(line => {
+  const [k, r, m, extra, ...ex] = line.split("\t");
+  return [k, { r, m, extra, words: ex.map(x => { const [w, rd, segs, en] = x.split("|"); return { w, rd, en, segs: segs.split(";").map(sg => { const [pos, kana] = sg.split(":"); const [a, b = a] = pos.split("-").map(Number); return [a, b, kana]; }) }; }) }];
+}));
+KJ.forEach(w => { const d = DECK[w.k]; if (!d) return; if (d.extra) w.kun.push(...d.extra.split(",")); if (d.r) w.r = d.r; if (d.m) { w.ens = [d.m, ...w.ens.filter(x => x !== d.m)]; w.en = d.m; } w.words = d.words; });
+// One meaning per kanji everywhere (cards, tests, scenes): where the first sense isn't the one a beginner meets first,
+// lead with the everyday one. The other senses stay listed on the card.
+const MEANING_FIRST = { "中": "middle", "円": "yen", "下": "below", "上": "above", "日": "sun", "大": "big", "出": "exit" };
 KJ.forEach(w => { const m = MEANING_FIRST[w.k]; if (m) { w.ens = [m, ...w.ens.filter(x => x !== m)]; w.en = m; } });
 const UNIQUE_WORDS = KJ;
 const KJ_BY = Object.fromEntries(KJ.map(w => [w.k, w]));

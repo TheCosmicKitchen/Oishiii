@@ -1,0 +1,301 @@
+native ja+en: 106638
+native English translation: 90418
+human furigana, short: 61437
+grammar all taught: 4580
+words all N5/N4: 1619
+readings agree: 2586
+words N3 at most: 1093
+verbs N5 verbs: 99
+verbs kept: 95
+verbs dropped: parser disagrees: 4
+
+== 0 Nihonbashi (12 reading sentences)
+  wa_desu: 10
+    3456487  私は猫です。  |  I am a cat.  |  wa_desu
+    108833  彼は学生です。  |  He is a student.  |  wa_desu
+    155469  私は先生です。  |  I am a teacher.  |  wa_desu
+    157040  私は今暇です。  |  I'm free now.  |  wa_desu
+    157261  私は元気です。  |  I'm well.  |  wa_desu
+    157843  私は学生です。  |  I am a student.  |  wa_desu
+    158511  私は医者です。  |  I'm a doctor.  |  wa_desu
+    171122  今夜は暇です。  |  I'm free tonight.  |  wa_desu
+    171563  今日は雪です。  |  It's snowing today.  |  wa_desu
+    467658  私は医師です。  |  I'm a doctor.  |  wa_desu
+  ja_nai: 4
+    8692872  アメリカ人じゃないです。  |  I'm not an American.  |  ja_nai wa_desu
+    9958554  私は学生じゃありません。  |  I'm not a student.  |  ja_nai wa_desu
+    166625  私たちはアメリカ人ではありません。  |  We are not Americans.  |  ja_nai wa_desu
+    10801974  ワインはお好みじゃないですか？  |  Don't you like wine?  |  ja_nai ka_q wa_desu
+  ka_q: 10
+    187850  何ですか。  |  What's that?  |  ka_q wa_desu
+    5059  何時ですか。  |  What time is it now?  |  ka_q wa_desu
+    175038  元気ですか。  |  How are you doing?  |  ka_q wa_desu
+    187378  何人ですか。  |  How many people?  |  ka_q wa_desu
+    191216  以上ですか？  |  Is that all?  |  ka_q wa_desu
+    5804556  何時ですか？  |  What time is it now?  |  ka_q wa_desu
+    122297  日本人ですか。  |  Are you a Japanese citizen?  |  ka_q wa_desu
+    400933  お元気ですか。  |  How are you doing?  |  ka_q wa_desu
+    80778  名前は何ですか。  |  What is your name?  |  ka_q wa_desu
+    87976  彼女は誰ですか。  |  Who is she?  |  ka_q wa_desu
+
+== 1 Shinagawa (12 reading sentences)
+  no_pos: 10
+    79715  夜の八時です。  |  It's eight o'clock at night.  |  no_pos wa_desu
+    138737  誰の番ですか。  |  Whose turn is it?  |  ka_q no_pos wa_desu
+    2774232  何の話ですか？  |  What are you talking about?  |  ka_q no_pos wa_desu
+    10763900  私の祖父です。  |  This is my grandfather.  |  no_pos wa_desu
+    13507688  私の部屋です。  |  It's my room.  |  no_pos wa_desu
+    79043  夕方の五時です。  |  It's five in the evening.  |  no_pos wa_desu
+    150205  次は私の番です。  |  My turn comes next.  |  no_pos wa_desu
+    187704  何の病気ですか。  |  What do I have?  |  ka_q no_pos wa_desu
+    187725  何のご用ですか。  |  What do you want?  |  ka_q no_pos wa_desu
+    511851  彼は私の弟です。  |  He is my brother.  |  no_pos wa_desu
+  kore: 10
+    218088  これは本です。  |  This is a book.  |  kore wa_desu
+    218428  これは犬です。  |  This is a dog.  |  kore wa_desu
+    2213091  これは娘です。  |  This is my daughter.  |  kore wa_desu
+    3191806  それは鳥です。  |  It is a bird.  |  kore wa_desu
+    3363883  これは猫です。  |  This is a cat.  |  kore wa_desu
+    4443589  それは犬です。  |  That is a dog.  |  kore wa_desu
+    188894  駅はどこですか。  |  Where is the railroad station?  |  ka_q kore wa_desu
+    205604  それは何ですか。  |  What's that?  |  ka_q kore wa_desu
+    218488  これは鉛筆です。  |  This is a pencil.  |  kore wa_desu
+    229723  あれは何ですか。  |  What's that?  |  ka_q kore wa_desu
+  kono: 10
+    219783  この本です。  |  It's this book.  |  kono wa_desu
+    10982415  この話は本当です。  |  This story is true.  |  kono wa_desu
+    219609  この本は私の本です。  |  This book is mine.  |  kono no_pos wa_desu
+    219610  この本は私の物です。  |  This book is mine.  |  kono no_pos wa_desu
+    2213085  この子は私の娘です。  |  This is my daughter.  |  kono no_pos wa_desu
+    4817734  この傘いくらですか？  |  How much is this umbrella?  |  ka_q kono wa_desu
+    2852688  この時計いくらですか？  |  How much is this watch?  |  ka_q kono wa_desu
+    2975859  その必要はありません。  |  That isn't necessary.  |  kono wa_desu
+    4052861  この靴はいくらですか？  |  How much are these shoes?  |  ka_q kono wa_desu
+    4817726  この帽子いくらですか？  |  How much is this hat?  |  ka_q kono wa_desu
+
+== 2 Kawasaki (12 reading sentences)
+  wo_obj: 10
+    187607  何をしますか？  |  What do you do?  |  ka_q masu wo_obj
+    11041804  気をつけます。  |  I'll be careful.  |  masu wo_obj
+    159709  それを使います。  |  I use it.  |  kore masu wo_obj
+    187577  何を飲みますか。  |  What'll you drink?  |  ka_q masu wo_obj
+    188262  音楽を聴きます。  |  I listen to music.  |  masu wo_obj
+    217615  これを買います。  |  I'll take it.  |  kore masu wo_obj
+    10129180  兄を紹介します。  |  I'll introduce you to my brother.  |  masu wo_obj
+    10911432  学校を休みます。  |  I won't be going to school today.  |  masu wo_obj
+    182264  牛乳を飲みますか。  |  Do you drink milk?  |  ka_q masu wo_obj
+    182988  英語を話しますか。  |  Do you speak English?  |  ka_q masu wo_obj
+  masu: 10
+    2465467  遅れます。  |  I'll be late.  |  masu
+    146185  乗りますか。  |  Do you want a ride?  |  ka_q masu
+    194055  もう寝ます。  |  I will hit the sack.  |  masu
+    3492798  また来ます。  |  I'll be back.  |  masu
+    3496743  違いますか？  |  Isn't that so?  |  ka_q masu
+    6619665  入りますか？  |  Are you going in?  |  ka_q masu
+    11444603  立てますか？  |  Can you stand up?  |  ka_q masu
+    83624  聞こえますか。  |  Can you hear me?  |  ka_q masu
+    85476  必ずやります。  |  I'll do it by all means.  |  masu
+    187607  何をしますか？  |  What do you do?  |  ka_q masu wo_obj
+  masen: 10
+    9082872  歌いません。  |  I don't sing.  |  masen
+    2242275  今はできません。  |  I can't do that now.  |  masen wa_desu
+    11792771  心は折れません。  |  My heart is unbreakable.  |  masen wa_desu
+    146866  少しくれませんか。  |  Will you give me some?  |  ka_q masen
+    159688  それは知りません。  |  I don't know that.  |  kore masen wa_desu
+    195394  まだ分かりません。  |  I don't know yet.  |  masen
+    213776  そう思いませんか。  |  Don't you think so?  |  ka_q masen
+    218413  これは合いません。  |  This doesn't fit.  |  kore masen wa_desu
+    3875295  パンは食べません。  |  I don't eat bread.  |  masen wa_desu
+    12474109  名前は知りません。  |  I don't know his name.  |  masen wa_desu
+
+== 3 Kanagawa (12 reading sentences)
+  ni_dest: 10
+    5320  どこに行きますか？  |  Where are you going to?  |  ka_q kore masu ni_dest
+    200933  どこに行きますか。  |  Where are you going to?  |  ka_q kore masu ni_dest
+    152388  来年外国へ行きます。  |  I will go abroad next year.  |  masu ni_dest
+    12593298  毎年、ここに来ます。  |  We come here every year.  |  kore masu ni_dest
+    80265  明日買い物に行きます。  |  I'm going shopping tomorrow.  |  masu ni_dest
+    80405  明日は買い物に行きます。  |  I'm going shopping tomorrow.  |  masu ni_dest wa_desu
+    152412  私は来週シカゴに行きます。  |  I'm leaving for Chicago next week.  |  masu ni_dest wa_desu
+    223370  このバス、駅に行きますか？  |  Does this bus go to the train station?  |  ka_q kono masu ni_dest
+    8576154  トムは来週そこへ行きます。  |  Tom is going there next week.  |  kore masu ni_dest wa_desu
+    9041979  来年の夏はどこに行きますか？  |  Where will you go next summer?  |  ka_q kore masu ni_dest no_pos wa_desu
+  mo_also: 9
+    152190  私も先生です。  |  I am a teacher, too.  |  mo_also wa_desu
+    152214  私もそうです。  |  Me, too.  |  mo_also wa_desu
+    9530179  私も学生です。  |  I'm a student, too.  |  mo_also wa_desu
+    152225  私も１７歳です。  |  I am seventeen years old, too.  |  mo_also wa_desu
+    11467631  魚も動物ですか？  |  Are fish also animals?  |  ka_q mo_also wa_desu
+    11508268  今は、私も医者です。  |  Now I'm a doctor, too.  |  mo_also wa_desu
+    152218  私もこの辺は初めてです。  |  I'm a stranger here myself.  |  kono mo_also wa_desu
+    11858043  こちらの方も、彼女の先生です。  |  This is one of her teachers.  |  mo_also no_pos wa_desu
+    2744682  トムはフランス語も英語も話します。  |  Tom speaks both French and English.  |  masu mo_also wa_desu
+
+== 4 Hodogaya (12 reading sentences)
+  de_place: 8
+    11065671  家でやります。  |  I'll do it at home.  |  de_place masu
+    150316  次の駅で降ります。  |  I get off at the next station.  |  de_place masu no_pos
+    2786084  私は庭で遊びます。  |  I'm playing in the garden.  |  de_place masu wa_desu
+    165981  私たちは学校で英語を習います。  |  We learn English at school.  |  de_place masu wa_desu wo_obj
+    764094  あなたの国では米を食べますか？  |  Do you eat rice in your country?  |  de_place ka_q masu no_pos wo_obj
+    1318564  彼女は家では日本語を話しません。  |  She doesn't speak Japanese at home.  |  de_place masen wa_desu wo_obj
+    168710  子供たちは毎日この公園で遊びます。  |  Children play in this park every day.  |  de_place kono masu wa_desu
+    10296446  この頃の子は、学校で水泳を習います。  |  Children learn to swim in school today.  |  de_place masu no_pos wa_desu wo_obj
+  de_means: 4
+    10558803  彼は車で来ます。  |  He'll come here by car.  |  de_means masu wa_desu
+    13115757  電車で行きます。  |  I'll come by train.  |  de_means masu
+    12018728  バスで1時間かかります。  |  It takes an hour by bus.  |  de_means masu
+    10918358  ラジオでニュースを聞きます。  |  I listen to the news on the radio.  |  de_means masu wo_obj
+  to_with: 1
+    10917202  明日誰と会いますか。  |  Who are you meeting tomorrow?  |  ka_q masu to_with
+
+== 5 Totsuka (12 reading sentences)
+  mashita: 10
+    5175  決めました。  |  I've decided.  |  mashita
+    8405192  払いました。  |  I paid.  |  mashita
+    9032787  直しました。  |  I've fixed it.  |  mashita
+    2312024  間違えました。  |  I made a mistake.  |  mashita
+    3495036  分かりました。  |  I understood.  |  mashita
+    168244  指を切りました。  |  I just cut my finger.  |  mashita wo_obj
+    169469  傘をさしました。  |  I put up my umbrella.  |  mashita wo_obj
+    169840  昨日買いました。  |  I bought it yesterday.  |  mashita
+    4757719  私も受けました。  |  I also got it.  |  mashita mo_also
+    9821326  私も疲れました。  |  I'm tired, too.  |  mashita mo_also
+  masendeshita: 6
+    11005182  あまり疲れませんでした。  |  I wasn't very tired.  |  masendeshita
+    229435  いいえ、行きませんでした。  |  No, I didn't go.  |  masendeshita
+    229430  いいえ、手伝いませんでした。  |  No, I didn't help.  |  masendeshita
+    2519008  すみません、聞こえませんでした。  |  Sorry, I didn't hear you.  |  masen masendeshita
+    11005081  今日は朝ごはんを食べませんでした。  |  I didn't eat breakfast today.  |  masendeshita wa_desu wo_obj
+    10032558  今日、トムは仕事に行きませんでした。  |  Tom didn't go to work today.  |  masendeshita ni_dest wa_desu
+
+== 6 Fujisawa (12 reading sentences)
+  aru_iru: 10
+    137831  台所にいます。  |  They are in the kitchen.  |  aru_iru masu ni_exist
+    149535  質問があります。  |  I have a question.  |  aru_iru masu
+    158047  私は家にいます。  |  I am at home.  |  aru_iru masu ni_exist wa_desu
+    591675  必要ありません。  |  I don't need it.  |  aru_iru masen
+    724659  僕は車にいます。  |  I'm in the car.  |  aru_iru masu ni_exist wa_desu
+    8534731  兄弟はいますか？  |  Do you have any brothers?  |  aru_iru ka_q masu wa_desu
+    4715  私は山にいました。  |  I was in the mountains.  |  aru_iru mashita ni_exist wa_desu
+    99854  彼は妹がいません。  |  He doesn't have a sister.  |  aru_iru masen wa_desu
+    142339  石鹸がありません。  |  There's no soap.  |  aru_iru masen
+    150639  時間がありますか。  |  Do you have some time?  |  aru_iru ka_q masu
+  ni_exist: 10
+    137831  台所にいます。  |  They are in the kitchen.  |  aru_iru masu ni_exist
+    158047  私は家にいます。  |  I am at home.  |  aru_iru masu ni_exist wa_desu
+    724659  僕は車にいます。  |  I'm in the car.  |  aru_iru masu ni_exist wa_desu
+    4715  私は山にいました。  |  I was in the mountains.  |  aru_iru mashita ni_exist wa_desu
+    152657  私には娘がいます。  |  I have a daughter.  |  aru_iru masu ni_exist wa_desu
+    2301436  彼は家にいますか。  |  Is he at home?  |  aru_iru ka_q masu ni_exist wa_desu
+    3555511  毎晩ここにいます。  |  I'm here every night.  |  aru_iru kore masu ni_exist
+    9867138  私に娘はいません。  |  I don't have a daughter.  |  aru_iru masen ni_exist wa_desu
+    11571575  外に車があります。  |  There's a car outside.  |  aru_iru masu ni_exist
+    11753284  今日は家にいます。  |  I'm at home today.  |  aru_iru masu ni_exist wa_desu
+
+== 7 Hiratsuka (12 reading sentences)
+  i_adj: 10
+    81007  眠いですか？  |  Are you sleepy?  |  i_adj ka_q wa_desu
+    85970  悲しいです。  |  I'm sad.  |  i_adj wa_desu
+    121438  白いですか。  |  Is it white?  |  i_adj ka_q wa_desu
+    229344  いい人です。  |  He's a good person.  |  i_adj wa_desu
+    1683211  忙しいです。  |  I'm busy.  |  i_adj wa_desu
+    2173966  いい天気です。  |  It's a nice day.  |  i_adj wa_desu
+    9444135  目はいいです。  |  I have good eyesight.  |  i_adj wa_desu
+    10917051  痛くないです。  |  I'm not in pain.  |  i_adj wa_desu
+    12462055  まだ痛いです。  |  I'm still in pain.  |  i_adj wa_desu
+    12890061  美味しいです。  |  It's delicious.  |  i_adj wa_desu
+  na_adj: 10
+    2304911  大丈夫です。  |  I'll be fine.  |  na_adj wa_desu
+    137493  大丈夫ですか？  |  Are you all right?  |  ka_q na_adj wa_desu
+    155194  私は大丈夫です。  |  It's all right with me.  |  na_adj wa_desu
+    229316  いえ、結構です。  |  No, thank you.  |  na_adj wa_desu
+    869110  これは簡単です。  |  This is easy.  |  kore na_adj wa_desu
+    4897935  もう大丈夫です。  |  I'm fine now.  |  na_adj wa_desu
+    9378984  今は、静かです。  |  It's quiet now.  |  na_adj wa_desu
+    11041806  それは残念です。  |  That's too bad.  |  kore na_adj wa_desu
+    81065  味はいかがですか。  |  How about the taste?  |  ka_q na_adj wa_desu
+    169097  仕事は大変ですか。  |  Is it difficult work?  |  ka_q na_adj wa_desu
+
+== 8 Ōiso (12 reading sentences)
+  masenka: 10
+    140285  走りませんか。  |  How about running?  |  ka_q masenka
+    170842  座りませんか。  |  Won't you sit down?  |  ka_q masenka
+    9964555  座りませんか？  |  Why don't we sit?  |  ka_q masenka
+    10659320  行きませんか？  |  Won't you go?  |  ka_q masenka
+    4856  家に来ませんか。  |  Would you like to come to my house?  |  ka_q masenka ni_dest
+    8649693  散歩しませんか？  |  Do you want to take a walk?  |  ka_q masenka
+    190509  一緒に来ませんか。  |  Won't you come with me?  |  ka_q masenka to_with
+    9777059  一緒にしませんか？  |  How about doing that together?  |  ka_q masenka to_with
+    169340  散歩に行きませんか。  |  How about a walk?  |  ka_q masenka ni_dest
+    189335  映画に行きませんか。  |  How about going to the movies?  |  ka_q masenka ni_dest
+  mashou: 10
+    79198  遊びましょう。  |  Let's play.  |  mashou
+    442923  始めましょう。  |  Let's begin.  |  mashou
+    9101667  食べましょう。  |  Let's eat.  |  mashou
+    10330109  座りましょう。  |  Let's sit down.  |  mashou
+    10631584  戻りましょう。  |  Let's go back.  |  mashou
+    10644041  忘れましょう！  |  Let's forget it!  |  mashou
+    83208  歩きましょうか。  |  Shall we walk?  |  ka_q mashou
+    169327  散歩しましょう。  |  Let's take a walk.  |  mashou
+    173392  行きましょうか。  |  Shall we go?  |  ka_q mashou
+    175768  結婚しましょう。  |  Let's get married.  |  mashou
+
+== 9 Odawara (12 reading sentences)
+  ga_suki: 10
+    11910301  秋が好きです。  |  I like autumn.  |  ga_suki wa_desu
+    182104  魚は好きですか。  |  Do you like fish?  |  ga_suki ka_q wa_desu
+    10224941  仕事が好きです。  |  I like to work.  |  ga_suki wa_desu
+    10901729  ええ、好きです。  |  Yes, I like it.  |  ga_suki wa_desu
+    162269  私は犬が好きです。  |  I like dogs.  |  ga_suki wa_desu
+    162290  私は夏が嫌いです。  |  I don't like summer.  |  ga_suki wa_desu
+    188131  何がお好きですか。  |  What do you like?  |  ga_suki ka_q wa_desu
+    188276  音楽は好きですか。  |  Do you love music?  |  ga_suki ka_q wa_desu
+    189305  映画は好きですか。  |  Do you like movies?  |  ga_suki ka_q wa_desu
+    234083  あなたが好きです。  |  I'm in love with you.  |  ga_suki wa_desu
+  ne_yo: 10
+    83391  変ですね。  |  That's strange.  |  ne_yo wa_desu
+    186822  暇ですよ。  |  I'm free.  |  ne_yo wa_desu
+    10724051  秋ですね。  |  Autumn is here.  |  ne_yo wa_desu
+    81564  本当ですよ。  |  It's true.  |  ne_yo wa_desu
+    226829  お昼ですよ。  |  Lunch is on.  |  ne_yo wa_desu
+    8971861  暑いですね。  |  It's hot, isn't it?  |  i_adj ne_yo wa_desu
+    11041816  寒いですね。  |  It's cold, isn't it?  |  i_adj ne_yo wa_desu
+    11041829  冷えますね？  |  It's cold, isn't it?  |  masu ne_yo
+    80191  面白いですね。  |  It's interesting.  |  i_adj ne_yo wa_desu
+    137492  大丈夫ですよ。  |  It's OK.  |  na_adj ne_yo wa_desu
+
+== 10 Hakone (12 reading sentences)
+  te_kudasai: 10
+    127389  探してください。  |  Could you help me to find it?  |  te_kudasai
+    146189  乗ってください。  |  Please get in.  |  te_kudasai
+    199325  なおして下さい。  |  Can you get it repaired?  |  te_kudasai
+    1213083  歌ってください。  |  Please sing.  |  te_kudasai
+    8576118  聞いてください。  |  Please listen.  |  te_kudasai
+    9101656  入ってください！  |  Please come in!  |  te_kudasai
+    9928606  直してください。  |  Please fix it.  |  te_kudasai
+    10901608  立ってください。  |  Please stand up.  |  te_kudasai
+    140331  窓を閉めて下さい。  |  Please close the window.  |  te_kudasai wo_obj
+    146794  少し待って下さい。  |  Hold on, please.  |  te_kudasai
+  te_mo_ii: 10
+    145675  寝てもいいですか。  |  May I go to bed?  |  ka_q te_mo_ii wa_desu
+    2040852  座ってもいいですか。  |  Can I sit down?  |  ka_q te_mo_ii wa_desu
+    4147428  入ってもいいですか？  |  Can I come in?  |  ka_q te_mo_ii wa_desu
+    121349  箱を開けてもいいですか。  |  May I open the box?  |  ka_q te_mo_ii wa_desu wo_obj
+    140377  窓をあけてもいいですか。  |  Do you mind if I open the window?  |  ka_q te_mo_ii wa_desu wo_obj
+    149509  質問をしてもいいですか。  |  May I ask you a question?  |  ka_q te_mo_ii wa_desu wo_obj
+    194236  もう帰ってもいいですよ。  |  You can go home now.  |  ne_yo te_mo_ii wa_desu
+    3561927  ここ座ってもいいですか？  |  May I sit here?  |  ka_q kore te_mo_ii wa_desu
+    3711691  これ触ってもいいですか？  |  May I touch this?  |  ka_q kore te_mo_ii wa_desu
+    4260722  窓を開けてもいいですか。  |  May I open the windows?  |  ka_q te_mo_ii wa_desu wo_obj
+  te_wa_ikenai: 10
+    80888  無理してはいけませんね。  |  You should take it easy.  |  masen ne_yo te_wa_ikenai
+    84122  部屋を出てはいけません。  |  You are not to leave your room.  |  masen te_wa_ikenai wo_obj
+    224260  ここへ来てはいけません。  |  Don't come here.  |  kore masen ni_dest te_wa_ikenai
+    201775  ドアを閉めてはいけません。  |  Don't close the door.  |  masen te_wa_ikenai wo_obj
+    201956  テレビを見てはいけません。  |  Don't watch TV.  |  masen te_wa_ikenai wo_obj
+    213581  そこへ行ってはいけません。  |  You should not go there.  |  kore masen ni_dest te_wa_ikenai
+    211701  その階段を上ってはいけません。  |  You must not go up the stairs.  |  kono masen te_wa_ikenai wo_obj
+    220057  この部屋で騒いではいけません。  |  Don't be noisy in this room.  |  de_place kono masen te_wa_ikenai
+    10990151  そこの戸を開けてはいけません。  |  Don't open that door.  |  kore masen no_pos te_wa_ikenai wo_obj
+    988065  ここでタバコを吸ってはいけません。  |  You shouldn't smoke here.  |  de_place kore masen te_wa_ikenai wo_obj

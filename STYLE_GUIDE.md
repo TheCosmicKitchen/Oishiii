@@ -26,12 +26,15 @@ Each sub-level is a real station (tools/route.tsv, 228 stops in order): Tokyo ne
 - **Trophies:** gold medallions with a Fluent Emoji inside; locked ones are grey silhouettes with a hint. A completed stamp page gets a red 完 (kan, complete) seal. Progress is about collecting and completion — no streaks.
 - **Levels:** every game has a 10-level ladder (same seed for both players, so stars are comparable). Clearing a level earns ★ to ★★★; clearing all 10 earns a trophy, and three stars on all 10 a golden one.
 - **Only two kinds of stamp:** station stamps (city stamps are the scalloped kind) and kanji stamps. Playtesters found other stamps (like puzzle rally cards) cringey, so don't add new stamp types.
-- Rounded pill buttons with a 3px bottom shadow; bottom tab bar: Learn / Garden / Sushi / Puzzles / Stamps.
+- Rounded pill buttons with a 3px bottom shadow; a floating rounded tab bar: Today / Kanji / Grammar / Play / Garden; the header's book chip opens the Collection.
+- **Page heads:** every tab opens with a round emoji badge, a Mochiy Pop One title with its Japanese in sakura, and one plain line saying what the tab is for.
+- **Cards:** one soft look everywhere: 26px corners, a 1.5px line border, a 2px line shadow and a soft drop shadow (`--lift`). The page has a faint sakura dot pattern.
+- **Grammar road:** post towns as numbered stops on a list (起 for Nihonbashi); grammar cards with a sakura top edge; sentences where particles are sakura, words are tappable with a dotted underline, and kanji you haven't stamped are soft grey kana.
 - **Garden:** a grassy lawn (`--grass`, `--grass-deep`) with a 6-wide grid of plots; plants sit in soil patches, decor sits on the grass. A plant starts as a seedling and scales up each stage, then sways gently when fully grown. Friends hop around the plots. Seeds are the only currency, earned by trading in stamps; stamps are never used up.
 
 ## Roadmap
 1. **Rail trip across Japan:** the game becomes a train line; each station unlocks its own games, kanji, and a stamp page. A hidden "unlock up to a stop" picker (tap the train five times) opens every station up to the chosen one; stamps are still earned.
 2. **Scenes:** konbini (orders, prices, 温めますか), ramen ticket machine (食券機), pet store sorting, station exits, shrine fortunes.
 3. **More dailies:** Vine Trace (Strands-style), Bee Sort (Connections-style), Shiritori Chain, Trellis mini-crossword, Seed Storm speed round, kanji sudoku, sign fixer.
-4. **Grammar:** particle train, N5 grammar recipes, vocab seeds for scene words.
+4. **Grammar:** chapter 1 (Nihonbashi to Hakone, 27 N5 points) is built; next, the rest of the Tōkaidō to Kyoto for the remaining N5 points, then N4 on the Nakasendō.
 5. Progress stays per device (decided).

@@ -1,0 +1,367 @@
+"""Build src/grammar-data.js: the grammar road (Tōkaidō post towns), with native example sentences and verb drills.
+
+  pip install fugashi unidic-lite wordfreq
+  python3 tools/grammar_build.py tatoeba/ jmdict-eng-common.json JmdictFurigana.txt
+
+Grammar points and their explanations are in tools/grammar_points.json. No example sentence is written by hand: every
+sentence is a Tatoeba sentence (CC BY 2.0 FR) that passes all of these checks:
+  - written by a contributor who lists Japanese as their native language, with an English translation by a native
+    English speaker;
+  - its kanji readings come from a human-checked Tatoeba transcription, and the parser (UniDic, via fugashi) reads every
+    word the same way: two independent sources must agree, or the sentence is dropped;
+  - every word is in Jonathan Waller's N5 or N4 lists (tools/waller_vocab.tsv), or is a number or a person's name;
+  - every bit of grammar in it is one the player has met by that stop, found by the detectors below; anything the
+    detectors don't recognise drops the sentence;
+  - it is polite (ends in です or a ます form), short, and has no quotes or brackets.
+Word meanings come from JMdict. Verb drills are built by rule and kept only if the parser reads every form back as that
+verb in that form. Writes tools/grammar_report.txt with counts and every point's sentences, for review.
+"""
+import collections, csv, json, os, re, sys
+from fugashi import Tagger
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+tdir, jm_path, furi_path = sys.argv[1:4]
+csv.field_size_limit(10 ** 9)
+P = json.load(open(os.path.join(ROOT, "tools", "grammar_points.json"), encoding="utf-8"))
+STOPS = P["stops"]
+STOP_OF = {pt: i for i, s in enumerate(STOPS) for pt in s["points"]}
+TAG = Tagger()
+
+def hira(s): return "".join(chr(ord(c) - 0x60) if "ァ" <= c <= "ヶ" else c for c in s)
+isk = lambda c: "一" <= c <= "鿿" or c == "々"
+def rows(name, delim="\t"): return csv.reader(open(os.path.join(tdir, name), encoding="utf-8"), delimiter=delim, quoting=csv.QUOTE_NONE)
+
+# ---- vocabulary: Waller N5 + N4, and N3 for topping up points that have few examples; by spelling and by kana
+VOCAB, VOCAB3 = set(), set()
+for line in open(os.path.join(ROOT, "tools", "waller_vocab.tsv"), encoding="utf-8"):
+    if line.startswith("#"): continue
+    lv, words, kana, en = line.rstrip("\n").split("\t")
+    if lv not in ("N5", "N4", "N3"): continue
+    for w in re.split(r"[\s/、・]+", words) + re.split(r"[\s/、・]+", kana): (VOCAB if lv != "N3" else VOCAB3).add(hira(w))
+VOCAB3 |= VOCAB
+
+# ---- JMdict glosses by (spelling, reading) and by spelling
+JM = json.load(open(jm_path, encoding="utf-8"))["words"]
+GLOSS, GLOSS1 = {}, {}
+def tidy(g):
+    while True:
+        t = re.sub(r"\s*\([^()]*\)", "", g)
+        if t == g: break
+        g = t
+    g = g.strip(" ,;") or g
+    return g if len(g) <= 28 else g[:28].rsplit(" ", 1)[0].rstrip(",;(") + "…"
+JMPAIRS = {(k["text"], r["text"]) for e in JM for k in e["kanji"] for r in e["kana"] if "*" in r["appliesToKanji"] or k["text"] in r["appliesToKanji"]}
+for e in JM:
+    if not e["sense"] or not e["sense"][0]["gloss"]: continue
+    g = tidy(e["sense"][0]["gloss"][0]["text"])
+    for k in [x["text"] for x in e["kanji"]] + [x["text"] for x in e["kana"]]:
+        GLOSS1.setdefault(k, g)
+        for r in e["kana"]: GLOSS.setdefault((k, r["text"]), g)
+furi = collections.defaultdict(dict)
+for line in open(furi_path, encoding="utf-8-sig"):
+    p = line.rstrip("\n").split("|")
+    if len(p) == 3: furi[p[0]][p[1]] = p[2]
+
+# ---- Tatoeba: native Japanese sentences with native English translations and human-checked furigana
+native = collections.defaultdict(set)
+for r in rows("user_languages.csv"):
+    if len(r) > 2 and r[1] == "5": native[r[0]].add(r[2])
+links = collections.defaultdict(list)
+for r in rows("jpn-eng_links.tsv"): links[r[0]].append(r[1])
+jpn = {r[0]: r[2] for r in rows("jpn_sentences_detailed.tsv") if r[3] in native["jpn"] and links.get(r[0])}
+need = {e for s in jpn for e in links[s]}
+eng = {r[0]: r[2] for r in rows("eng_sentences_detailed.tsv") if r[0] in need and r[3] in native["eng"]}
+trans = {r[0]: r[4] for r in rows("transcriptions.csv") if r[1] == "jpn" and r[3] and r[0] in jpn}
+
+def parse_trans(t):
+    """[漢字|か|ん] → plain text and [(start, end, kana)] per kanji run (per character where it gives one reading each)."""
+    out, segs = "", []
+    for m in re.finditer(r"\[([^|\]]+)\|([^\]]+)\]|([^\[]+)", t):
+        if m.group(3): out += m.group(3); continue
+        k, rs = m.group(1), m.group(2).split("|")
+        if len(rs) == len(k):
+            for i, (c, r) in enumerate(zip(k, rs)): segs.append((len(out) + i, len(out) + i, r))
+        else: segs.append((len(out), len(out) + len(k) - 1, "".join(rs)))
+        out += k
+    return out, segs
+
+# ---- particles and forms: what a tap shows
+PART = {"は": "topic marker (said wa)", "が": "marks the subject", "を": "marks the object (said o)", "に": "to, at, in",
+        "へ": "toward (said e)", "で": "at, by, with", "と": "with", "も": "also, too", "の": "'s, of", "か": "question marker",
+        "ね": "right? isn't it?", "よ": "you know", "て": "joins to the next part"}
+PLACE = set("家 学校 図書館 駅 店 公園 部屋 教室 会社 台所 庭 海 山 川 町 東京 日本 銀行 病院 食堂 レストラン 喫茶店 デパート 大学 プール 外 中 ここ そこ あそこ どこ 道 外国 京都 大阪 アメリカ 国 ホテル 映画館 本屋 郵便局 交番 空港 うち お風呂 机 店 前".split())
+MEANS = set("バス 電車 車 自転車 飛行機 タクシー 地下鉄 船 箸 ペン 鉛筆 日本語 英語 手 足 電話 ナイフ フォーク 紙 ボールペン 万年筆 歩き 漢字 ひらがな カタカナ 言葉 声 テレビ ラジオ メール".split())  # not 一人で "alone": another use
+PERSON = set("私 僕 あなた 彼 彼女 友達 母 父 お母さん お父さん 兄 姉 弟 妹 お兄さん お姉さん 先生 家族 子供 両親 犬 猫 皆 みんな 誰 友人 学生 奥さん 主人 妻 夫".split())
+GO = {"行く", "来る", "帰る"}
+LIKE = {"好き", "嫌い", "上手", "下手", "大好き"}
+# に after a time (二時半に来ます "comes at 2:30") is a different に, not taught yet
+TIME = set("朝 昼 夜 晩 今日 明日 昨日 毎日 毎朝 毎晩 今週 来週 先週 今年 来年 去年 毎年 週末 午前 午後 夏 冬 春 秋 今 後 前 日曜日 月曜日 火曜日 水曜日 木曜日 金曜日 土曜日 誕生日 休み 夏休み 時 時半 半 分 日 月 年 頃".split())
+QUESTION = {"いつ", "誰", "どこ", "何", "どれ", "どちら"}  # いつも, 誰も…ない, どこも…ない are other grammar
+NOT_INVITE = {"有る", "居る", "思う", "呉れる", "出来る", "分かる", "知る", "下さる", "貰う", "見える", "聞こえる"}  # ませんか with these isn't an invitation
+KEIGO = {"参る", "申す", "いらっしゃる", "致す", "召し上がる", "仰る", "存じる", "伺う"}  # humble and honorific verbs: not taught
+INTERJ = {"はい", "いいえ", "ええ", "いえ", "ありがとう", "すみません", "こんにちは", "おはよう", "さようなら", "じゃあ"}
+
+def toks(s):
+    out = []
+    for w in TAG(s):
+        f = w.feature
+        out.append(dict(s=w.surface, p1=f.pos1, p2=f.pos2, p3=f.pos3, cf=f.cForm or "", ct=f.cType or "",
+                        lemma=(f.lemma or "").split("-")[0], base=f.orthBase or w.surface, kana=hira(f.kana or ""), lkana=hira(f.kanaBase or f.kana or ""),
+                        lform=hira(f.lForm or "")))
+    return out
+
+def analyse(ts):
+    """Grammar points found in a parsed sentence, or None if anything in it is beyond the points we teach."""
+    pts, n = set(), len(ts)
+    main = [t for t in ts if t["p1"] in ("動詞", "形容詞", "形状詞") and t["p2"] != "非自立可能" or (t["p1"] == "動詞" and t["lemma"] in ("有る", "居る"))]
+    verbs = {t["lemma"] for t in ts if t["p1"] == "動詞"}
+    i = 0
+    while i < n:
+        t = ts[i]; s, p1, p2 = t["s"], t["p1"], t["p2"]
+        nxt = ts[i + 1] if i + 1 < n else None
+        prv = ts[i - 1] if i else None
+        tail = "".join(x["s"] for x in ts[i + 1:i + 7])
+        if p1 == "補助記号":
+            if s not in "。、？！?!": return None
+        elif p1 == "助詞":
+            if s == "は" and p2 == "係助詞":
+                if prv and prv["s"] in ("て", "で") and tail.startswith("いけ"): pts.add("te_wa_ikenai")
+                elif prv and prv["s"] in ("じゃ", "で") and prv["p1"] in ("助動詞", "助詞"): pass  # では(ありません)
+                else: pts.add("wa_desu")
+            elif s == "も" and p2 == "係助詞":
+                if prv and prv["s"] in QUESTION: return None
+                pts.add("te_mo_ii" if prv and prv["s"] in ("て", "で") and tail.startswith(("いい", "良い", "よい")) else "mo_also")
+            elif s == "を" and p2 == "格助詞": pts.add("wo_obj")
+            elif s == "の" and p2 == "格助詞" and prv and prv["p1"] in ("名詞", "代名詞") and nxt and nxt["p1"] in ("名詞", "代名詞", "接頭辞"): pts.add("no_pos")
+            elif s == "か" and p2 == "終助詞" and (not nxt or nxt["p1"] == "補助記号"): pts.add("ka_q")
+            elif s in ("ね", "よ") and p2 == "終助詞": pts.add("ne_yo")
+            elif s in ("に", "へ") and p2 == "格助詞":
+                if s == "に" and prv and prv["s"] == "一緒": pts.add("to_with")
+                elif s == "に" and prv and (prv["p2"] == "数詞" or prv["base"] in TIME or prv["s"] in TIME): return None
+                elif verbs & GO and not (verbs - GO - {"有る", "居る"}): pts.add("ni_dest")
+                elif s == "に" and verbs <= {"有る", "居る"} and verbs: pts.add("ni_exist")
+                else: return None
+            elif s == "で" and p2 == "格助詞" and prv:
+                if prv["base"] in PLACE or prv["s"] in PLACE: pts.add("de_place")
+                elif prv["base"] in MEANS or prv["s"] in MEANS: pts.add("de_means")
+                else: return None
+            elif s == "と" and p2 == "格助詞" and prv and (prv["base"] in PERSON or prv["s"] in PERSON or prv["p2"] == "固有名詞") and nxt and (nxt["s"] == "一緒" or nxt["p1"] == "動詞"):
+                if nxt["lemma"] in ("言う", "申す", "思う", "呼ぶ"): return None  # トムと申します: と quoting a name
+                pts.add("to_with")
+            elif s == "が" and p2 == "格助詞":
+                rest = ts[i + 1:]
+                if any(x["base"] in LIKE or x["lemma"] in LIKE for x in rest): pts.add("ga_suki")
+                elif any(x["lemma"] in ("有る", "居る") and x["p1"] == "動詞" for x in rest): pts.add("aru_iru")
+                else: return None
+            elif s in ("て", "で") and p2 == "接続助詞":
+                if tail.startswith("ください") or tail.startswith("下さい"): pts.add("te_kudasai")
+                elif tail.startswith(("もいい", "も良い", "もよい", "はいけ")): pass  # counted at も / は
+                else: return None
+            else: return None
+        elif p1 == "助動詞":
+            if t["lemma"] == "です" and s == "です": pts.add("wa_desu")
+            elif s in ("じゃ", "で") and t["lemma"] == "だ" and tail.startswith(("ない", "ありませ", "はありませ", "はない")): pts.add("ja_nai")
+            elif t["lemma"] == "ます":
+                seq = "".join(x["s"] for x in ts[i:i + 5])
+                if prv and prv["lemma"] == "有る" and i >= 2 and ts[i - 2]["s"] in ("じゃ", "は", "で") and seq.startswith("ません") and not seq.startswith("ませんでした"): i += 1  # じゃありません
+                elif seq.startswith("ませんでした"): pts.add("masendeshita"); i += 4
+                elif seq.startswith("ませんか") and prv and prv["lemma"] in NOT_INVITE: pts.add("masen"); i += 1
+                elif seq.startswith("ませんか"): pts.add("masenka"); i += 1
+                elif seq.startswith("ません"): pts.add("masen"); i += 1
+                elif seq.startswith("ました"): pts.add("mashita"); i += 1
+                elif seq.startswith("ましょう"): pts.add("mashou")
+                elif s == "ます": pts.add("masu")
+                else: return None
+            elif s == "ない" and prv and (prv["s"] in ("じゃ",) or prv["cf"].startswith("連用形") and prv["p1"] == "形容詞"): pass
+            else: return None
+        elif p1 == "動詞":
+            if t["s"] == "いけ" and prv and prv["s"] == "は": i += 1; continue  # てはいけません (parsed as 行ける)
+            if t["lform"] and t["lkana"] and t["lform"] != t["lkana"]: return None  # potential (泳げる from 泳ぐ) or おる: not taught
+            if t["lemma"] in KEIGO: return None
+            if t["lemma"] == "下さる" and not (prv and prv["s"] in ("て", "で")): return None  # 水をください: not taught at that stop
+            if prv and prv["s"] in ("じゃ", "で", "は") and t["lemma"] == "有る": pass  # じゃありません
+            elif t["lemma"] in ("有る", "居る") and nxt and nxt["lemma"] == "ます": pts.add("aru_iru")
+            elif nxt and nxt["lemma"] == "ます" and t["cf"].startswith("連用形"): pass
+            elif nxt and nxt["s"] in ("て", "で") and nxt["p1"] == "助詞": pass
+            elif t["s"] in ("いけ",) and prv and prv["s"] == "は": pass
+            elif t["lemma"] == "下さる" and t["s"] in ("ください", "下さい"): pass
+            else: return None
+        elif p1 == "形容詞":
+            if t["lemma"] in ("無い",) and prv and (prv["s"] == "じゃ" or prv["p1"] == "形容詞"): pass
+            elif t["lemma"] in ("良い",) and prv and prv["s"] == "も": pass  # てもいい
+            elif t["cf"].startswith("終止形") and nxt and nxt["s"] == "です": pts.add("i_adj")
+            elif t["cf"].startswith("連体形") and nxt and nxt["p1"] in ("名詞", "代名詞"): pts.add("i_adj")
+            elif t["cf"].startswith("連用形") and nxt and nxt["s"] == "ない": pts.add("i_adj")
+            else: return None
+        elif p1 == "感動詞":
+            if s not in INTERJ: return None  # includes fillers: あの人 misread as "uh… person"
+        elif p1 == "形状詞":
+            if nxt and (nxt["s"] in ("な", "です") or nxt["s"] == "じゃ"):
+                pts.add("ga_suki" if t["base"] in LIKE else "na_adj")
+                if nxt["s"] == "な": i += 1
+            else: return None
+        elif p1 == "代名詞":
+            if s in ("これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ"): pts.add("kore")
+        elif p1 == "連体詞":
+            if s in ("この", "その", "あの", "どの"): pts.add("kono")
+            else: return None
+        elif p1 in ("接続詞",): return None
+        i += 1
+    # polite: the last word before the closing particles and punctuation is です or a ます form
+    core = [t for t in ts if t["p1"] != "補助記号" and not (t["p1"] == "助詞" and t["p2"] == "終助詞")]
+    if not core or not (core[-1]["lemma"] in ("です", "ます") or core[-1]["s"] in ("ん", "た", "ましょう", "ください", "下さい") and any(x["lemma"] == "ます" or x["s"] in ("ください", "下さい") for x in core[-4:])):
+        return None
+    return pts
+
+def vocab_ok(ts, vocab):
+    for t in ts:
+        if t["p1"] in ("助詞", "助動詞", "補助記号") or t["p2"] in ("数詞",) or t["p3"] == "人名" or t["p2"] == "固有名詞": continue
+        if t["p1"] == "接尾辞" and t["s"] in ("さん", "ちゃん", "くん", "君", "人", "語", "時", "分", "円", "年", "月", "日", "歳", "才", "本", "枚", "個", "回", "階", "番", "達", "たち"): continue
+        if t["p1"] == "接頭辞" and t["s"] in ("お", "ご", "御"): continue
+        if t["lemma"] in ("下さる", "無い", "良い", "居る", "有る", "為る", "来る", "行く") or t["s"] in ("いけ",): continue
+        if not ({hira(t["base"]), hira(t["lemma"]), t["lkana"], hira(t["s"])} & vocab): return False
+    return True
+
+def readings(plain, segs, ts):
+    """Per word: (text, reading, furigana segments relative to the word), or None if the parser and the
+    human transcription disagree anywhere."""
+    out, pos = [], 0
+    byc = {}
+    for a, b, k in segs:
+        for c in range(a, b + 1): byc[c] = (a, b, k)
+    for t in ts:
+        a, b = pos, pos + len(t["s"]) - 1; pos += len(t["s"])
+        if not any(isk(c) for c in t["s"]): out.append((t["s"], hira(t["s"]), [])); continue
+        mine, rd, i = [], "", a
+        while i <= b:
+            if i in byc:
+                sa, sb, k = byc[i]
+                if sa < a or sb > b: return None  # a reading spans two words: can't check it word by word
+                mine.append((sa - a, sb - a, k)); rd += k; i = sb + 1
+            elif isk(plain[i]): return None  # a kanji with no human reading
+            else: rd += hira(plain[i]); i += 1
+        # the human reading must agree with the parser, or be a JMdict reading of this exact word (私 わたし, where the
+        # parser says わたくし)
+        if rd != t["kana"] and (t["s"], rd) not in JMPAIRS: return None
+        out.append((t["s"], rd, mine))
+    return out
+
+def chunk(ts, rd):
+    """Tap units: a word with its endings (行き+ませ+ん → 行きません), and each particle on its own."""
+    out = []
+    for t, (txt, r, segs) in zip(ts, rd):
+        tail = t["p1"] == "助動詞" or (t["p1"] == "形容詞" and t["lemma"] == "無い" and out) or (t["p1"] == "助詞" and t["p2"] == "接続助詞") or t["p1"] == "接尾辞" \
+            or (t["lemma"] == "下さる" and out) or (t["s"] == "いけ" and out)
+        if tail and out and out[-1]["k"] == "w":
+            o = out[-1]; off = len(o["t"]); o["t"] += txt; o["r"] += r; o["g"] += [(a + off, b + off, k) for a, b, k in segs]
+        else:
+            kind = "p" if t["p1"] == "助詞" else "x" if t["p1"] == "補助記号" else "w"
+            gloss = PART.get(txt, "") if kind == "p" else "" if kind == "x" else (GLOSS.get((t["base"], t["lkana"])) or GLOSS.get((t["lemma"], t["lkana"])) or GLOSS1.get(t["base"]) or GLOSS1.get(t["s"]) or "")
+            if t["p3"] == "人名" or t["p2"] == "固有名詞": gloss = "a name"
+            out.append(dict(t=txt, r=r, g=list(segs), k=kind, m=gloss, b=t["base"] if kind == "w" and t["base"] != txt else ""))
+    return out
+
+# ---- go through the sentences
+cands, stats = [], collections.Counter()
+for sid, ja in jpn.items():
+    stats["native ja+en"] += 1
+    en = next((eng[e] for e in links[sid] if e in eng), None)
+    if not en: continue
+    stats["native English translation"] += 1
+    if sid not in trans or len(ja) > 22 or re.search(r"[「」『』（）()…・〜]", ja): continue
+    plain, segs = parse_trans(trans[sid])
+    if plain != ja: continue
+    stats["human furigana, short"] += 1
+    ts = toks(ja)
+    pts = analyse(ts)
+    if pts is None: continue
+    stats["grammar all taught"] += 1
+    tier = 0 if vocab_ok(ts, VOCAB) else 1 if vocab_ok(ts, VOCAB3) else None
+    if tier is None: continue
+    stats["words all N5/N4" if tier == 0 else "words N3 at most"] += 1
+    rd = readings(ja, segs, ts)
+    if rd is None: continue
+    stats["readings agree"] += 1
+    stop = max((STOP_OF[p] for p in pts), default=0)
+    cands.append(dict(id=int(sid), ja=ja, en=en, p=sorted(pts), s=stop, w=chunk(ts, rd), tier=tier))
+
+# per point: the clearest examples (the point is the newest grammar in them; N5/N4 words first, then short);
+# N3 words only top up points with fewer than four examples; per stop: a reading set of easy sentences
+cands.sort(key=lambda c: (c["tier"], len(c["ja"]), c["id"]))
+keep, per_point, per_stop = {}, collections.defaultdict(list), collections.defaultdict(list)
+# an example must show its point plainly: は and です for "A は B です", と for "with", も for "also"
+SHOWS = {"wa_desu": lambda c: "は" in c["ja"] and "です" in c["ja"], "to_with": lambda c: "と" in c["ja"], "mo_also": lambda c: "も" in c["ja"],
+         "ja_nai": lambda c: re.search("じゃ|では", c["ja"])}
+for c in cands:
+    for p in c["p"]:
+        room = 10 if c["tier"] == 0 else 4  # N3 words only while a point has fewer than four examples
+        if STOP_OF[p] == c["s"] and len(per_point[p]) < room and SHOWS.get(p, lambda c: True)(c): per_point[p].append(c["id"]); keep[c["id"]] = c
+for c in cands:
+    if c["tier"] == 0 and len(per_stop[c["s"]]) < 12 and c["id"] not in per_stop[c["s"]]: per_stop[c["s"]].append(c["id"]); keep[c["id"]] = c
+
+# ---- verbs for the form drills: Waller N5 verbs, forms by rule, each checked by parsing it back
+GODAN_I = dict(zip("うくぐすつぬぶむる", "いきぎしちにびみり"))
+GODAN_TE = {"う": "って", "つ": "って", "る": "って", "む": "んで", "ぶ": "んで", "ぬ": "んで", "く": "いて", "ぐ": "いで", "す": "して"}
+def forms(word, kana, cls):
+    """{form: (written, reading)} for the polite forms and the て-form, or None for classes we don't drill."""
+    def mk(stem_w, stem_r, end): return (stem_w + end, stem_r + end)
+    if cls == "v1": sw, sr, tw, tr = word[:-1], kana[:-1], word[:-1] + "て", kana[:-1] + "て"
+    elif cls.startswith("v5") and cls not in ("v5aru",):
+        last = word[-1]
+        if last not in GODAN_I: return None
+        sw, sr = word[:-1] + GODAN_I[last], kana[:-1] + GODAN_I[last]
+        te = "って" if cls == "v5k-s" else GODAN_TE[last]
+        tw, tr = word[:-1] + te, kana[:-1] + te
+    elif cls == "vs-i" and word.endswith("する"): sw, sr, tw, tr = word[:-2] + "し", kana[:-2] + "し", word[:-2] + "して", kana[:-2] + "して"
+    elif cls == "vk": sw, sr, tw, tr = word[:-1], "き", word[:-1] + "て", "きて"
+    else: return None
+    f = {e: mk(sw, sr, e) for e in ("ます", "ません", "ました", "ませんでした", "ましょう")}
+    f["て"] = (tw, tr)
+    return f
+POS = {}
+for e in JM:
+    for k in e["kanji"] or e["kana"]:
+        for r in e["kana"]:
+            POS.setdefault((k["text"], r["text"]), e["sense"][0].get("partOfSpeech", []) if e["sense"] else [])
+verbs, vstats = [], collections.Counter()
+for line in open(os.path.join(ROOT, "tools", "waller_vocab.tsv"), encoding="utf-8"):
+    if line.startswith("#"): continue
+    lv, words, kana, en = line.rstrip("\n").split("\t")
+    if lv != "N5": continue
+    word, kana = re.split(r"[\s/、・]+", words or kana)[0], hira(re.split(r"[\s/、・]+", kana)[0])
+    cls = next((c for c in POS.get((word, kana), []) if c.startswith(("v1", "v5", "vs-i", "vk"))), None)
+    if not cls: continue
+    vstats["N5 verbs"] += 1
+    fs = forms(word, kana, cls)
+    if not fs: continue
+    ok = True
+    for name, (w, r) in fs.items():
+        ts = toks(w + ("ください" if name == "て" else ""))
+        if not ts or ts[0]["base"] != word and ts[0]["lemma"] != word and hira(ts[0]["lkana"]) != kana: ok = False; break
+        if "".join(t["kana"] for t in ts) != r + ("ください" if name == "て" else ""): ok = False; break
+    if not ok: vstats["dropped: parser disagrees"] += 1; continue
+    al = furi.get(word, {}).get(kana, "")
+    segs = [(int(p.split(":")[0].split("-")[0]), int(p.split(":")[0].split("-")[-1]), p.split(":")[1]) for p in al.split(";")] if al else []
+    if any(isk(c) for c in word) and not segs: vstats["dropped: no furigana"] += 1; continue
+    gl = tidy(re.split(r"[,;]", en)[0].strip())
+    verbs.append(dict(v=word, r=kana, m=gl, g=segs, f={k: list(v) for k, v in fs.items()}, kuru=cls == "vk"))
+    vstats["kept"] += 1
+
+# ---- write
+data = {"stops": STOPS, "points": {k: {kk: vv for kk, vv in v.items() if kk != "check"} for k, v in P["points"].items()},
+        "ex": per_point, "read": per_stop, "sents": list(keep.values()), "verbs": verbs}
+js = ("// ===== Grammar road: post towns of the old Tōkaidō, grammar points, native example sentences, verb drills =====\n"
+      "// Built by tools/grammar_build.py. Sentences: Tatoeba (tatoeba.org, CC BY 2.0 FR), by native speakers, with sentence\n"
+      "// ids so each can be traced; word meanings: JMdict (EDRDG, CC BY-SA 4.0); word lists: Jonathan Waller (CC BY).\n"
+      "// Do not edit by hand.\n"
+      "const GRAMMAR = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n")
+open(os.path.join(ROOT, "src", "grammar-data.js"), "w", encoding="utf-8", newline="\n").write(js)
+rep = [f"{k}: {v}" for k, v in stats.items()] + [f"verbs {k}: {v}" for k, v in vstats.items()]
+for i, st in enumerate(STOPS):
+    rep.append(f"\n== {i} {st['ro']} ({len(per_stop[i])} reading sentences)")
+    for p in st["points"]:
+        rep.append(f"  {p}: {len(per_point[p])}")
+        for sid in per_point[p][:10]:
+            c = keep[sid]; rep.append(f"    {sid}  {c['ja']}  |  {c['en']}  |  {' '.join(c['p'])}")
+open(os.path.join(ROOT, "tools", "grammar_report.txt"), "w", encoding="utf-8", newline="\n").write("\n".join(rep) + "\n")
+print("\n".join(rep[:12]), f"\n{len(keep)} sentences, {len(verbs)} verbs, {len(js.encode('utf-8')) // 1024} KB")

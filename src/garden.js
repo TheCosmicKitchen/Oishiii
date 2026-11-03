@@ -45,7 +45,8 @@ const SHOP_BY = Object.fromEntries(SHOP.map(x => [x.id, x]));
 
 // ---- state: S.garden = { cashed, spent, shed: [{id, g}], plots: {cell: {id, g}}, rows, friends: {id: date} }
 const G = () => S.garden || (S.garden = { cashed: 0, spent: 0, shed: [], plots: {}, rows: GARDEN_ROWS0, friends: {} });
-const seedsEarned = () => foundCount() * SEED_PAY.kanji + ALL_SUBS.filter(visited).length * SEED_PAY.station + CITY_SUBS.filter(visited).length * SEED_PAY.city;
+const seedsEarned = () => foundCount() * SEED_PAY.kanji + ALL_SUBS.filter(visited).length * SEED_PAY.station + CITY_SUBS.filter(visited).length * SEED_PAY.city
+  + gCleared() * G_SEEDS + gReadDone() * G_READ_SEEDS;
 const seedsPending = () => Math.max(0, seedsEarned() - G().cashed);
 const seeds = () => G().cashed - G().spent;
 const isGrown = p => { const it = SHOP_BY[p.id]; return !!it.grow && p.g >= it.grow; };
@@ -107,7 +108,7 @@ function viewGarden(v) {
     <h2>Your garden</h2><p class="muted" style="font-size:.85rem">Trade in your stamps for seeds, then spend them on plants and decor. Your stamps stay in your book.</p>
     <div class="row seedbank"><span class="chip big" title="Seeds to spend">${IMG("seedling")}<b id="seedn">${seeds()}</b> seeds</span>
       ${pend ? `<button class="btn pink" id="tradein">${IMG("lantern")}Trade in for +${pend}</button>` : `<span class="muted" style="font-size:.8rem">Clear stops to earn more stamps.</span>`}</div>
-    <p class="help">Each kanji stamp is worth ${SEED_PAY.kanji} seed, each station stamp ${SEED_PAY.station}, and each city stamp ${SEED_PAY.station + SEED_PAY.city}.</p></div></section>
+    <p class="help">Each kanji stamp is worth ${SEED_PAY.kanji} seed, each station stamp ${SEED_PAY.station}, each city stamp ${SEED_PAY.station + SEED_PAY.city}, each grammar post town ${G_SEEDS} and each reading set ${G_READ_SEEDS}.</p></div></section>
   <section class="card stack">
     <header class="row"><h2>The garden</h2><span class="spacer"></span><span class="pill pink">${grownAll()} grown</span></header>
     <div class="gwrap" style="--rows:${g.rows}"><div class="ggrid">${Array.from({ length: cells }, (_, i) => plotHTML(i)).join("")}</div>

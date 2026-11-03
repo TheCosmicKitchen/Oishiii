@@ -1,0 +1,418 @@
+{
+ "_about": "Grammar points for the walk along the old Tōkaidō, one post town per stop, in the usual beginner order. Explanations are written for Oishii and cross-checked against Tae Kim's Guide to Learning Japanese (guidetojapanese.org); 'check' names the section each was compared with. Japanese in these cards marks kanji as {kanji|reading}, so the game shows kanji the player has stamped and kana for the rest. Example sentences are never written here: tools/grammar_build.py picks native Tatoeba sentences for each point. 'wrong' lists particles that are clearly wrong for this use, for the particle drills; 'also' lists other particles that are also right. Every 'wrong' particle must be wrong in any sentence for that point (を can mark a path with movement verbs, can stand where も replaced it, and で marks where events happen), so points where that can't be promised get no particle drill.",
+ "stops": [
+  {
+   "id": "nihonbashi",
+   "place": "日本橋",
+   "ro": "Nihonbashi",
+   "note": "The bridge in Edo where the Tōkaidō starts. Japan's national road distances from Tokyo are still measured from a marker on it.",
+   "points": [
+    "wa_desu",
+    "ja_nai",
+    "ka_q"
+   ]
+  },
+  {
+   "id": "shinagawa",
+   "place": "品川",
+   "ro": "Shinagawa",
+   "note": "The first post town, by the sea at the edge of Edo.",
+   "points": [
+    "no_pos",
+    "kore",
+    "kono"
+   ]
+  },
+  {
+   "id": "kawasaki",
+   "place": "川崎",
+   "ro": "Kawasaki",
+   "note": "The second post town, where travellers crossed the Tama River by ferry.",
+   "points": [
+    "wo_obj",
+    "masu",
+    "masen"
+   ]
+  },
+  {
+   "id": "kanagawa",
+   "place": "神奈川",
+   "ro": "Kanagawa",
+   "note": "The third post town, along a hillside above the bay, lined with tea houses.",
+   "points": [
+    "ni_dest",
+    "mo_also"
+   ]
+  },
+  {
+   "id": "hodogaya",
+   "place": "保土ヶ谷",
+   "ro": "Hodogaya",
+   "note": "The fourth post town. Past it the road climbs Gontazaka, the first steep hill out of Edo.",
+   "points": [
+    "de_place",
+    "de_means",
+    "to_with"
+   ]
+  },
+  {
+   "id": "totsuka",
+   "place": "戸塚",
+   "ro": "Totsuka",
+   "note": "The fifth post town, often the first night's stop for travellers walking out of Edo.",
+   "points": [
+    "mashita",
+    "masendeshita"
+   ]
+  },
+  {
+   "id": "fujisawa",
+   "place": "藤沢",
+   "ro": "Fujisawa",
+   "note": "The sixth post town, a temple town around Yugyō-ji, near the road to Enoshima.",
+   "points": [
+    "aru_iru",
+    "ni_exist"
+   ]
+  },
+  {
+   "id": "hiratsuka",
+   "place": "平塚",
+   "ro": "Hiratsuka",
+   "note": "The seventh post town, on the flat plain of the Sagami River.",
+   "points": [
+    "i_adj",
+    "na_adj"
+   ]
+  },
+  {
+   "id": "oiso",
+   "place": "大磯",
+   "ro": "Ōiso",
+   "note": "The eighth post town, by a long beach on Sagami Bay.",
+   "points": [
+    "masenka",
+    "mashou"
+   ]
+  },
+  {
+   "id": "odawara",
+   "place": "小田原",
+   "ro": "Odawara",
+   "note": "The ninth post town, a castle town at the foot of the Hakone hills.",
+   "points": [
+    "ga_suki",
+    "ne_yo"
+   ]
+  },
+  {
+   "id": "hakone",
+   "place": "箱根",
+   "ro": "Hakone",
+   "note": "The tenth post town, high in the hills, with the famous checkpoint where travellers were stopped and searched.",
+   "points": [
+    "te_kudasai",
+    "te_mo_ii",
+    "te_wa_ikenai"
+   ]
+  }
+ ],
+ "points": {
+  "wa_desu": {
+   "pattern": "A は B です",
+   "en": "A is B",
+   "make": "topic + は + noun + です",
+   "notes": [
+    "は marks the topic: what the sentence is about. As a particle it is said \"wa\", not \"ha\".",
+    "です ends the sentence politely, a bit like \"is\" or \"am\"."
+   ],
+   "check": "Tae Kim: Particles (は topic); Expressing state-of-being (です)",
+   "wrong": [
+    "を",
+    "に",
+    "で"
+   ]
+  },
+  "ja_nai": {
+   "pattern": "A は B じゃないです",
+   "en": "A is not B",
+   "make": "noun + じゃないです (or ではありません, more formal)",
+   "notes": [
+    "じゃないです and じゃありません both mean \"is not\". ではありません is the more formal, written form."
+   ],
+   "check": "Tae Kim: Expressing state-of-being (negative)"
+  },
+  "ka_q": {
+   "pattern": "…か",
+   "en": "question marker",
+   "make": "polite sentence + か",
+   "notes": [
+    "Put か at the end of a polite sentence to make it a question. The word order doesn't change."
+   ],
+   "check": "Tae Kim: The question marker"
+  },
+  "no_pos": {
+   "pattern": "A の B",
+   "en": "A's B, B of A",
+   "make": "noun + の + noun",
+   "notes": [
+    "の joins two nouns: the first one describes the second. {私|わたし}の{本|ほん} is \"my book\", {日本|にほん}の{車|くるま} is \"a Japanese car\"."
+   ],
+   "check": "Tae Kim: Particles (の)",
+   "wrong": [
+    "を",
+    "に",
+    "で"
+   ]
+  },
+  "kore": {
+   "pattern": "これ・それ・あれ・どれ",
+   "en": "this one, that one, that one over there, which one",
+   "make": "used on their own, like a noun",
+   "notes": [
+    "これ is near me, それ is near you, あれ is over there, away from us both. どれ asks \"which one?\"."
+   ],
+   "check": "Tae Kim: Nouns (demonstratives こそあど)"
+  },
+  "kono": {
+   "pattern": "この・その・あの・どの + noun",
+   "en": "this…, that…, that… over there, which…",
+   "make": "この + noun",
+   "notes": [
+    "The same idea as これ・それ・あれ・どれ, but always followed by a noun: この{本|ほん} \"this book\"."
+   ],
+   "check": "Tae Kim: Nouns (demonstratives こそあど)"
+  },
+  "wo_obj": {
+   "pattern": "A を verb",
+   "en": "A is what the action is done to",
+   "make": "noun + を + verb",
+   "notes": [
+    "を marks the object: the thing being eaten, read or bought. It is said \"o\"."
+   ],
+   "check": "Tae Kim: Particles (を)",
+   "wrong": [
+    "に",
+    "の"
+   ]
+  },
+  "masu": {
+   "pattern": "verb + ます",
+   "en": "polite verb (now, usually, or later)",
+   "make": "verb stem + ます: {食|た}べる → {食|た}べます, {行|い}く → {行|い}きます",
+   "notes": [
+    "ます is the polite form of a verb. It covers what you do now, usually, or will do.",
+    "For る-verbs drop る ({食|た}べる → {食|た}べ). For う-verbs change the last sound to the い row ({行|い}く → {行|い}き). する → します, {来|く}る → {来|き}ます."
+   ],
+   "check": "Tae Kim: Polite form and verb stems"
+  },
+  "masen": {
+   "pattern": "verb + ません",
+   "en": "polite negative: don't, won't",
+   "make": "verb stem + ません: {食|た}べません, {行|い}きません",
+   "notes": [
+    "Swap ます for ません to say you don't or won't do something."
+   ],
+   "check": "Tae Kim: Polite form and verb stems"
+  },
+  "ni_dest": {
+   "pattern": "place に / へ {行|い}きます",
+   "en": "to (a place)",
+   "make": "place + に or へ + {行|い}きます / {来|き}ます / {帰|かえ}ります",
+   "notes": [
+    "に or へ marks where you are going. With {行|い}く, {来|く}る and {帰|かえ}る both are fine; へ (said \"e\") stresses the direction."
+   ],
+   "check": "Tae Kim: Particles (に, へ)",
+   "also": [
+    "へ",
+    "に"
+   ],
+   "wrong": [
+    "が",
+    "の"
+   ]
+  },
+  "mo_also": {
+   "pattern": "A も",
+   "en": "A too, also A",
+   "make": "noun + も (in place of は, が or を)",
+   "notes": [
+    "も means \"also\". It replaces は, が or を: {私|わたし}も{行|い}きます \"I'm going too\"."
+   ],
+   "check": "Tae Kim: Particles (も)",
+   "wrong": [
+    "の",
+    "へ"
+   ]
+  },
+  "de_place": {
+   "pattern": "place で verb",
+   "en": "at, in (where an action happens)",
+   "make": "place + で + action verb",
+   "notes": [
+    "で marks where something is done: {図書館|としょかん}で{勉強|べんきょう}します \"I study at the library\".",
+    "For where something simply is, use に instead (Fujisawa)."
+   ],
+   "check": "Tae Kim: Particles (で)",
+   "wrong": [
+    "の",
+    "が"
+   ]
+  },
+  "de_means": {
+   "pattern": "means で verb",
+   "en": "by, with, in (how it's done)",
+   "make": "tool, vehicle or language + で + verb",
+   "notes": [
+    "The same で also marks how you do something: バスで{行|い}きます \"go by bus\", {日本語|にほんご}で{話|はな}します \"speak in Japanese\"."
+   ],
+   "check": "Tae Kim: Particles (で)"
+  },
+  "to_with": {
+   "pattern": "person と verb",
+   "en": "with (someone)",
+   "make": "person + と + verb, often と{一緒|いっしょ}に",
+   "notes": [
+    "と after a person means doing something together with them. {一緒|いっしょ}に (\"together\") is often added."
+   ],
+   "check": "Tae Kim: Particles (と)",
+   "wrong": [
+    "を",
+    "の"
+   ]
+  },
+  "mashita": {
+   "pattern": "verb + ました",
+   "en": "polite past: did",
+   "make": "verb stem + ました: {食|た}べました, {行|い}きました",
+   "notes": [
+    "Swap ます for ました to talk about the past."
+   ],
+   "check": "Tae Kim: Polite form (past)"
+  },
+  "masendeshita": {
+   "pattern": "verb + ませんでした",
+   "en": "polite past negative: didn't",
+   "make": "verb stem + ませんでした",
+   "notes": [
+    "Add でした to ません for \"didn't\": {行|い}きませんでした \"I didn't go\"."
+   ],
+   "check": "Tae Kim: Polite form (past negative)"
+  },
+  "aru_iru": {
+   "pattern": "A が あります / います",
+   "en": "there is A, A exists",
+   "make": "thing + が + あります; person or animal + が + います",
+   "notes": [
+    "あります is for things and plants, います for people and animals.",
+    "が marks the thing that is there."
+   ],
+   "check": "Tae Kim: Particles (が); the verbs ある and いる",
+   "wrong": [
+    "を",
+    "へ"
+   ]
+  },
+  "ni_exist": {
+   "pattern": "place に A が あります / います",
+   "en": "at, in (where something is)",
+   "make": "place + に + あります / います",
+   "notes": [
+    "に marks where something is. Compare で, which marks where something is done (Hodogaya)."
+   ],
+   "check": "Tae Kim: Particles (に)",
+   "wrong": [
+    "を",
+    "へ"
+   ]
+  },
+  "i_adj": {
+   "pattern": "い-adjective (です)",
+   "en": "describing words ending in い",
+   "make": "{高|たか}いです; not: {高|たか}くないです; before a noun: {高|たか}い{山|やま}",
+   "notes": [
+    "い-adjectives end in い. Add です to be polite.",
+    "For \"not\", change the last い to くない: {高|たか}い → {高|たか}くないです. いい is irregular: よくないです."
+   ],
+   "check": "Tae Kim: Adjectives (い-adjectives)"
+  },
+  "na_adj": {
+   "pattern": "な-adjective な + noun",
+   "en": "describing words that take な",
+   "make": "{静|しず}かです; not: {静|しず}かじゃないです; before a noun: {静|しず}かな{町|まち}",
+   "notes": [
+    "な-adjectives work like nouns: {静|しず}かです, {静|しず}かじゃないです.",
+    "Before a noun they take な: {静|しず}かな{町|まち} \"a quiet town\"."
+   ],
+   "check": "Tae Kim: Adjectives (な-adjectives)"
+  },
+  "masenka": {
+   "pattern": "verb + ませんか",
+   "en": "won't you…? (a polite invitation)",
+   "make": "verb stem + ませんか",
+   "notes": [
+    "Asking \"won't you…?\" is a soft, polite way to invite someone: {一緒|いっしょ}に{行|い}きませんか \"Would you like to go together?\"."
+   ],
+   "check": "Tae Kim: Polite form; invitations"
+  },
+  "mashou": {
+   "pattern": "verb + ましょう",
+   "en": "let's…",
+   "make": "verb stem + ましょう",
+   "notes": [
+    "ましょう suggests doing something together: {行|い}きましょう \"Let's go\". ましょうか means \"shall I…?\" or \"shall we…?\"."
+   ],
+   "check": "Tae Kim: Volitional form (polite)"
+  },
+  "ga_suki": {
+   "pattern": "A が {好|す}きです",
+   "en": "like A (also dislike, good at, bad at)",
+   "make": "thing + が + {好|す}き / {嫌|きら}い / {上手|じょうず} / {下手|へた} + です",
+   "notes": [
+    "{好|す}き (like), {嫌|きら}い (dislike), {上手|じょうず} (good at) and {下手|へた} (bad at) take が for the thing: {猫|ねこ}が{好|す}きです \"I like cats\"."
+   ],
+   "check": "Tae Kim: Particles (が); な-adjectives (好き, 嫌い)",
+   "wrong": [
+    "で",
+    "に"
+   ]
+  },
+  "ne_yo": {
+   "pattern": "…ね / …よ",
+   "en": "right? / you know",
+   "make": "sentence + ね or よ",
+   "notes": [
+    "ね at the end looks for agreement: \"isn't it?\". よ tells the listener something new: \"you know\"."
+   ],
+   "check": "Tae Kim: Sentence-ending particles (ね, よ)"
+  },
+  "te_kudasai": {
+   "pattern": "verb て ください",
+   "en": "please do…",
+   "make": "て-form + ください: {待|ま}ってください",
+   "notes": [
+    "The て-form joins a verb to what comes next. る-verbs: {食|た}べる → {食|た}べて. う-verbs change sound: {書|か}く → {書|か}いて, {泳|およ}ぐ → {泳|およ}いで, {話|はな}す → {話|はな}して, {待|ま}つ・{取|と}る・{買|か}う → {待|ま}って・{取|と}って・{買|か}って, {飲|の}む・{遊|あそ}ぶ・{死|し}ぬ → {飲|の}んで・{遊|あそ}んで・{死|し}んで. {行|い}く → {行|い}って, する → して, {来|く}る → {来|き}て.",
+    "て-form + ください asks someone politely to do something."
+   ],
+   "check": "Tae Kim: Te-form; requests (ください)"
+  },
+  "te_mo_ii": {
+   "pattern": "verb て も いいですか",
+   "en": "may I…?",
+   "make": "て-form + もいいです(か)",
+   "notes": [
+    "て-form + もいいです means \"it's all right to…\". Add か to ask for permission: {写真|しゃしん}を{撮|と}ってもいいですか \"May I take a photo?\"."
+   ],
+   "check": "Tae Kim: Expressing permission (てもいい)"
+  },
+  "te_wa_ikenai": {
+   "pattern": "verb て は いけません",
+   "en": "must not…",
+   "make": "て-form + はいけません",
+   "notes": [
+    "て-form + はいけません means \"you must not\": ここで{写真|しゃしん}を{撮|と}ってはいけません \"You mustn't take photos here\". Just what the guards at the Hakone checkpoint would say."
+   ],
+   "check": "Tae Kim: Expressing prohibition (てはいけない)"
+  }
+ }
+}

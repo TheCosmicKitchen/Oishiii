@@ -1,23 +1,25 @@
 // ===== shell, Learn path (kana → N5 → N1), quiz engine, stamp book =====
-let TAB = "learn";
-try { TAB = sessionStorage.getItem("kg.tab") || "learn"; } catch (e) { }
+let TAB = "home";
+try { TAB = sessionStorage.getItem("kg.tab") || "home"; } catch (e) { }
+if (TAB === "sushi" || TAB === "puzzles") TAB = "play";
 const TABS = [
-  { id: "learn", label: "Learn", icon: "pencil" },
+  { id: "home", label: "Today", icon: "sun" },
+  { id: "learn", label: "Kanji", icon: "train" },
+  { id: "grammar", label: "Grammar", icon: "lantern" },
+  { id: "play", label: "Play", icon: "sushi" },
   { id: "garden", label: "Garden", icon: "watering", badge: () => seedsPending() },
-  { id: "sushi", label: "Sushi", icon: "sushi" },
-  { id: "puzzles", label: "Puzzles", icon: "puzzle" },
-  { id: "book", label: "Stamps", icon: "book" },
 ];
 function render() {
   const app = $("#app");
-  app.innerHTML = `<header class="top"><div class="logo">${IMGW("blossom", 34)}<div><h1>${APP_NAME}</h1><small>おいしい</small></div></div>
-    <span class="chip" title="Stamps collected">${IMG("lantern")}${foundCount()}</span><span class="chip" title="Trophies">${IMG("trophy")}${trophyCount()}</span>
-    <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "Kanji reader" : "Kana speller"}</span></header>
+  app.innerHTML = `<header class="top"><button class="logo" id="tohome" aria-label="Today">${IMGW("blossom", 34)}<span><b class="brand">${APP_NAME}</b><small class="glyph">おいしい</small></span></button>
+    <button class="chip ${TAB === "book" ? "on" : ""}" id="tobook" title="Your collection and settings">${IMG("book")}${foundCount()}<span class="chip-sep"></span>${IMG("trophy")}${trophyCount()}</button></header>
     <main id="view" class="stack"></main>`;
+  $("#tobook").onclick = () => { TAB = TAB === "book" ? "home" : "book"; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); };
+  $("#tohome").onclick = () => { TAB = "home"; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); };
   const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span>${t.badge && t.badge() ? `<i class="tbadge" aria-label="${t.badge()} seeds to trade in">+${t.badge()}</i>` : ""}</button>`).join("")}</nav>`;
   $$("[data-tab]", tb).forEach(b => b.onclick = () => { TAB = b.dataset.tab; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); });
   dndReset(document);
-  ({ learn: viewLearn, garden: viewGarden, sushi: viewSushi, puzzles: viewPuzzles, book: viewBook })[TAB]($("#view"));
+  (({ home: viewHome, learn: viewLearn, grammar: viewGrammar, play: viewPlay, garden: viewGarden, book: viewBook })[TAB] || viewHome)($("#view"));
 }
 
 // ---------- progress helpers ----------
@@ -37,11 +39,10 @@ let unlockTaps = 0, unlockTimer = 0;
 function viewLearn(v) {
   const cur = TRACKS.find(t => t.id === S.track) || TRACKS[0];
   const nx = nextSub();
-  const greet = S.name ? `Welcome back, ${esc(S.name)}!` : "Welcome!";
   const stamped = foundCount();
   v.innerHTML = `
-  <section class="hello">${IMG(stamped ? "sakura" : "seedling")}<div class="stack" style="gap:6px;flex:1;min-width:0">
-    <h2>${greet}</h2><p class="muted" style="font-size:.85rem">${plantedKana().length < 46 && S.role !== "kanji" ? "Start with kana, then climb from N5 to N1. Every kanji you clear gets stamped." : "Clear sub-levels to stamp kanji. Games only quiz what you've stamped."}</p>
+  ${pageHead("train", "Kanji", "かんじ", "Ride the line across Japan: every stop is a real station with 10 kanji to stamp, from Tokyo to Wakkanai.")}
+  <section class="card stack"><div class="stack" style="gap:8px"><p class="muted" style="font-size:.85rem">${plantedKana().length < 46 && S.role !== "kanji" ? "Start with kana, then climb from N5 to N1. Every kanji you clear gets stamped." : "Clear sub-levels to stamp kanji. Games only quiz what you've stamped."}</p>
     <div class="stats"><div class="stat"><b>${plantedKana().length}</b><span>kana / 46</span></div><div class="stat"><b>${stamped}</b><span>kanji / ${KJ.length.toLocaleString()}</span></div><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}</b><span>levels / ${ALL_SUBS.length}</span></div></div>
     <div class="row">${nx ? `<button class="btn pink" id="continue">${IMG("sparkles")}${subStars(nx) ? "Replay" : "Continue"} ${esc(nx.title)}</button>` : ""}<button class="btn ghost" id="review" ${stamped || plantedKana().length ? "" : "disabled"}>${IMG("droplet")}Review</button></div>${nx && nx.track.kana ? `<button class="btn ghost small" id="skipkana">Already know hiragana? Take a quick check to skip ahead</button>` : ""}</div></section>
   <section class="card stack path">
@@ -297,13 +298,13 @@ function stampGridHTML(pg) {
 }
 function viewBook(v) {
   const found = foundCount();
-  v.innerHTML = `
-  <section class="card stack"><header class="row">${IMGW("crown", 40)}<div style="flex:1;min-width:0"><h2>Collection</h2><p class="muted" style="font-size:.82rem">Everything you've learned, stamped and won.</p></div><span class="pill pink" style="font-size:.9rem">${completionPct()}%</span></header>
+  v.innerHTML = `${pageHead("book", "Collection", "コレクション", "Everything you've stamped and won, and your settings.")}
+  <section class="card stack"><header class="row">${IMGW("crown", 40)}<div style="flex:1;min-width:0"><h2>Completion</h2><p class="muted" style="font-size:.82rem">Everything you've learned, stamped and won.</p></div><span class="pill pink" style="font-size:.9rem">${completionPct()}%</span></header>
     <div class="bar" style="height:12px"><i style="width:${completionPct()}%"></i></div>
     <div class="stats"><div class="stat"><b>${found}/${UNIQUE_WORDS.length}</b><span>kanji stamps</span></div><div class="stat"><b>${plantedKana().length}/46</b><span>kana learned</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div>
     <div class="stats"><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}/${ALL_SUBS.length}</b><span>stations</span></div><div class="stat"><b>${ALL_SUBS.reduce((a, s) => a + subStars(s), 0)}/${ALL_SUBS.length * 3}</b><span>route stars</span></div><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
-    ${["Learn", "Stamps", "Garden", "Sushi", "Puzzles", "Puzzle levels"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+    ${["Learn", "Grammar", "Stamps", "Garden", "Sushi", "Puzzles", "Puzzle levels"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
   </section>
   ${stationStampsHTML()}
   <section class="stampbook"><header class="row"><h2>Kanji stamps</h2><span class="spacer"></span><span class="pill pink">${found}/${UNIQUE_WORDS.length} stamps</span></header>
@@ -321,7 +322,7 @@ function viewBook(v) {
     <div class="row"><span class="lab">Sound effects</span><span class="spacer"></span><div class="seg"><button data-snd="1" aria-pressed="${S.sound}">On</button><button data-snd="0" aria-pressed="${!S.sound}">Off</button></div></div>
     <div class="row"><button class="btn ghost small" id="knowall">I already know hiragana: skip to N5</button></div>
     <div class="row"><button class="btn ghost small" id="reset">Start over</button><span id="resetconfirm"></span></div>
-    <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT). Kanji, readings and meanings from KANJIDIC2; radicals from RADKFILE, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (CC BY-SA 4.0). Radical names from Kanji alive (CC BY 4.0). JLPT levels and example words from Jonathan Waller's lists (tanos.co.uk, CC BY); word meanings from JMdict (EDRDG, CC BY-SA 4.0); furigana from JmdictFurigana (CC BY-SA 4.0); word frequencies from wordfreq (CC BY-SA 4.0).</p>
+    <p class="muted" style="font-size:.75rem">Progress is saved in this browser on this device. Fluent Emoji art by Microsoft (MIT). Kanji, readings and meanings from KANJIDIC2; radicals from RADKFILE, the property of the Electronic Dictionary Research and Development Group, used under the Group's licence (CC BY-SA 4.0). Radical names from Kanji alive (CC BY 4.0). JLPT levels and example words from Jonathan Waller's lists (tanos.co.uk, CC BY); word meanings from JMdict (EDRDG, CC BY-SA 4.0); furigana from JmdictFurigana (CC BY-SA 4.0); word frequencies from wordfreq (CC BY-SA 4.0). Grammar sentences by native speakers from Tatoeba (tatoeba.org, CC BY 2.0 FR). N5 exam facts from jlpt.jp.</p>
   </section>`;
   $$("details.stamppage[data-page]", v).forEach(d => d.addEventListener("toggle", () => { const pg = STAMP_PAGES.find(p => p.id === d.dataset.page); BOOK_OPEN[pg.id] = d.open; const body = $(".pagebody", d); if (d.open && !body.innerHTML) { body.innerHTML = stampGridHTML(pg); bindStampClicks(body); } }));
   bindStampClicks(v); bindStationStamps(v);

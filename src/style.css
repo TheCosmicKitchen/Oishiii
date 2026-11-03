@@ -4,7 +4,7 @@
   --bg:#F1F6EA; --surface:#FFFFFF; --surface-2:#E5EFDC; --ink:#22362A; --ink-soft:#5C7264;
   --leaf:#4E9F69; --leaf-deep:#2E7647; --sakura:#EE7299; --sakura-soft:#FCE2EB;
   --soil:#9C6B4A; --soil-deep:#704731; --stake:#E9CFA3; --sun:#F5C24F; --sky:#D3ECF6;
-  --sea:#D9EEF5; --land:#EEF5E6; --coast:#A9C3A0; --rail:#7A5236; --tie:#E9CFA3; --line:#D2E1C9; --good:#3E9A5E; --near:#E6AE2E; --kin:#4F9FD0; --bad:#D9534F; --on-accent:#FFFFFF; --shadow:rgba(40,70,45,.14);
+  --grass:#BCDFA0; --grass-deep:#9DCB80; --sea:#D9EEF5; --land:#EEF5E6; --coast:#A9C3A0; --rail:#7A5236; --tie:#E9CFA3; --line:#D2E1C9; --good:#3E9A5E; --near:#E6AE2E; --kin:#4F9FD0; --bad:#D9534F; --on-accent:#FFFFFF; --shadow:rgba(40,70,45,.14);
   --f-display:"Mochiy Pop One","M PLUS Rounded 1c",system-ui,sans-serif;
   --f-body:"M PLUS Rounded 1c",system-ui,-apple-system,"Hiragino Maru Gothic ProN",sans-serif;
   --f-glyph:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
@@ -14,13 +14,13 @@
   --bg:#12201A; --surface:#1A2B22; --surface-2:#22372B; --ink:#E7F2E2; --ink-soft:#A6BFAE;
   --leaf:#6CC488; --leaf-deep:#94DDAA; --sakura:#FF8FB3; --sakura-soft:#3B2431;
   --soil:#6B4834; --soil-deep:#4C3223; --stake:#C9AC80; --sun:#EFC15A; --sky:#1E3845;
-  --sea:#142A33; --land:#1F3529; --coast:#3E5E48; --rail:#C9A27A; --tie:#4A3424; --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
+  --grass:#284A30; --grass-deep:#1E3B25; --sea:#142A33; --land:#1F3529; --coast:#3E5E48; --rail:#C9A27A; --tie:#4A3424; --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
   color-scheme:dark; } }
 :root[data-theme="dark"]{
   --bg:#12201A; --surface:#1A2B22; --surface-2:#22372B; --ink:#E7F2E2; --ink-soft:#A6BFAE;
   --leaf:#6CC488; --leaf-deep:#94DDAA; --sakura:#FF8FB3; --sakura-soft:#3B2431;
   --soil:#6B4834; --soil-deep:#4C3223; --stake:#C9AC80; --sun:#EFC15A; --sky:#1E3845;
-  --sea:#142A33; --land:#1F3529; --coast:#3E5E48; --rail:#C9A27A; --tie:#4A3424; --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
+  --grass:#284A30; --grass-deep:#1E3B25; --sea:#142A33; --land:#1F3529; --coast:#3E5E48; --rail:#C9A27A; --tie:#4A3424; --line:#2D4838; --good:#5DBB7C; --near:#E3B04A; --kin:#62B3E0; --bad:#F07A76; --on-accent:#0F2117; --shadow:rgba(0,0,0,.4);
   color-scheme:dark; }
 
 html,body{height:100%}
@@ -50,7 +50,7 @@ p{margin:0}
 /* tab bar */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1.5px solid var(--line);
   padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
-.tabs nav{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.tabs nav{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
 .tab{background:none;border:0;border-radius:var(--r-md);padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:.72rem;font-weight:700;color:var(--ink-soft)}
 .tab .em{width:30px;height:30px;transition:transform .2s}
 .tab .jp{font-family:var(--f-glyph);font-size:.8rem}
@@ -606,3 +606,46 @@ details.stamppage:not([open]) > summary::after{content:"▸"}
 .help { display: block; font-size: .7rem; font-weight: 600; color: var(--ink-soft); line-height: 1.3; margin-top: 1px }
 .latin, .railmap .ml.latin { font-family: var(--f-body) !important; font-weight: 800 }
 .subplace .latin{font-size:.62em;letter-spacing:-.01em;white-space:nowrap}
+
+/* ---------- garden ---------- */
+.tab{position:relative}
+.tbadge{position:absolute;top:1px;left:calc(50% + 8px);background:var(--sakura);color:var(--on-accent);font-style:normal;font-size:.62rem;font-weight:800;line-height:1.5;border-radius:99px;padding:0 5px;min-width:18px}
+.gardenhello{background:linear-gradient(180deg,var(--grass),var(--surface))}
+.seedbank{gap:10px}
+.chip.big{font-size:1rem;padding:6px 12px 6px 8px}
+.chip.big .em{width:28px;height:28px}
+.gwrap{position:relative;border-radius:var(--r-lg);padding:10px;background:radial-gradient(circle at 20% 15%,var(--grass) 0 30%,transparent 60%),linear-gradient(180deg,var(--grass),var(--grass-deep));box-shadow:inset 0 -4px 0 color-mix(in srgb,var(--grass-deep) 70%,var(--soil))}
+.ggrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.plot{aspect-ratio:1;border:0;padding:0;border-radius:12px;position:relative;display:grid;place-items:center;background:color-mix(in srgb,var(--grass-deep) 70%,var(--surface));box-shadow:inset 0 2px 0 rgba(0,0,0,.06)}
+.plot.has.flower,.plot.has.veg,.plot.has.tree{background:color-mix(in srgb,var(--soil) 55%,var(--grass-deep));box-shadow:inset 0 -3px 0 var(--soil-deep)}
+.plot.has.decor{background:transparent;box-shadow:none}
+.plot .pl{display:grid;place-items:center;width:100%;height:100%;transform:scale(var(--s));transition:transform .4s cubic-bezier(.2,1.6,.4,1)}
+.plot .em{width:84%;height:84%;pointer-events:none}
+.plot.full .em{animation:sway 3.6s ease-in-out infinite;transform-origin:50% 92%}
+.plot.sel{outline:3px solid var(--sakura);outline-offset:1px}
+.plot.target{outline:3px dashed var(--sakura);outline-offset:1px}
+.gbar{position:absolute;left:20%;right:20%;bottom:4px;height:4px;border-radius:9px;background:rgba(255,255,255,.55);overflow:hidden}
+.gbar b{display:block;height:100%;background:var(--leaf)}
+.gfriend{position:absolute;pointer-events:none;width:calc((100% - 50px) / 6 * .5);aspect-ratio:1;left:calc(10px + (100% - 50px) / 6 * var(--col) + 6px * var(--col) + (100% - 50px) / 6 * .5);top:calc(10px + (100% - 20px - 6px * (var(--rows,4) - 1)) / var(--rows,4) * var(--row) + 6px * var(--row));animation:hop 2.8s ease-in-out infinite}
+.gfriend .em{width:100%;height:100%;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.gact{min-height:44px}
+.shed{display:flex;flex-wrap:wrap;gap:6px}
+.shedi{width:54px;height:54px;border-radius:14px;border:2px solid transparent;background:var(--surface-2);display:grid;place-items:center;padding:0}
+.shedi .em{width:40px;height:40px;pointer-events:none}
+.shedi.sel{border-color:var(--sakura);background:var(--sakura-soft)}
+.shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.shopi{background:var(--surface-2);border:0;border-radius:var(--r-md);padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.25}
+.shopi b{font-size:.85rem}.shopi b .glyph{font-size:1.1rem}.shopi small{font-size:.72rem;color:var(--ink-soft)}
+.shopi.locked{opacity:.75}.shopi.locked .em{filter:grayscale(1) brightness(.4);opacity:.35}
+.shopi:not(.locked):active{transform:scale(.96)}
+.friendgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.friendc{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;background:var(--surface-2);border-radius:var(--r-md);padding:8px 4px;font-size:.72rem;line-height:1.25;color:var(--ink-soft)}
+.friendc .em{width:40px;height:40px;filter:grayscale(1) brightness(.3);opacity:.3}
+.friendc.got{color:var(--ink);background:var(--sakura-soft)}.friendc.got .em{filter:none;opacity:1}
+@keyframes sway{50%{transform:rotate(3deg)}}
+@keyframes hop{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-6px)}90%{transform:translateY(0)}}
+@media (prefers-reduced-motion: reduce){.plot.full .em,.gfriend{animation:none}}
+.shedi{position:relative}
+.shedseed{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px var(--shadow);display:grid;place-items:center}
+.shedi .shedseed .em{width:16px;height:16px}
+.gjp{font-family:var(--f-glyph);font-weight:600}

@@ -9,7 +9,7 @@
 She hates engagement mechanics. No streaks, no wilting or decay, no "come back tomorrow" pressure, no expiring content. Everything is permanent and collectable: stamps, trophies, puzzle-level stars, and a puzzle archive that keeps every past day playable forever. Grind should always be available (endless modes, levels, archive).
 
 ## Progression rule: start from kana, then the JLPT route; quiz only what you've stamped
-The garden/planting metaphor tested poorly and was removed. Learning is a **route**: kana (6 sub-levels) → N5 → N4 → N3 → N2 → N1, each split into sub-levels of 10 kanji (KANJIDIC2 + Tanos JLPT lists, ordered by grade then frequency). Each stop: study cards (meanings, on/kun readings with romaji, radicals) and a clear test (meaning, radicals, reading; WaniKani-style requeue of misses; ★★★ for 0–1 mistakes). Clearing a stop stamps its kanji. Games only use learned kana and stamped kanji. Hidden "secret ticket": tap the route's station icon 5 times to unlock up to any stop (stamps still earned).
+Planting kana as the way you learn tested poorly and was removed (the Garden tab is decoration and collecting only). Learning is a **route**: kana (6 sub-levels) → N5 → N4 → N3 → N2 → N1, each split into sub-levels of 10 kanji (KANJIDIC2 + Tanos JLPT lists, ordered by grade then frequency). Each stop: study cards (meanings, on/kun readings with romaji, radicals) and a clear test (meaning, radicals, reading; WaniKani-style requeue of misses; ★★★ for 0–1 mistakes). Clearing a stop stamps its kanji. Games only use learned kana and stamped kanji. Hidden "secret ticket": tap the route's station icon 5 times to unlock up to any stop (stamps still earned).
 
 Core kanji games: **Radical Builder** (pick the radicals of a kanji; spot a kanji from its radicals; RADKFILE components with Kanji alive names) and **Meaning Match** (pair kanji ↔ meaning).
 
@@ -26,7 +26,8 @@ Each sub-level is a real station (tools/route.tsv, 228 stops in order): Tokyo ne
 - **Trophies:** gold medallions with a Fluent Emoji inside; locked ones are grey silhouettes with a hint. A completed stamp page gets a red 完 (kan, complete) seal. Progress is about collecting and completion — no streaks.
 - **Levels:** every game has a 10-level ladder (same seed for both players, so stars are comparable). Clearing a level earns ★ to ★★★; clearing all 10 earns a trophy, and three stars on all 10 a golden one.
 - **Only two kinds of stamp:** station stamps (city stamps are the scalloped kind) and kanji stamps. Playtesters found other stamps (like puzzle rally cards) cringey, so don't add new stamp types.
-- Rounded pill buttons with a 3px bottom shadow; bottom tab bar: Learn / Sushi / Puzzles / Stamps.
+- Rounded pill buttons with a 3px bottom shadow; bottom tab bar: Learn / Garden / Sushi / Puzzles / Stamps.
+- **Garden:** a grassy lawn (`--grass`, `--grass-deep`) with a 6-wide grid of plots; plants sit in soil patches, decor sits on the grass. A plant starts as a seedling and scales up each stage, then sways gently when fully grown. Friends hop around the plots. Seeds are the only currency, earned by trading in stamps; stamps are never used up.
 
 ## Roadmap
 1. **Rail trip across Japan:** the game becomes a train line; each station unlocks its own games, kanji, and a stamp page. A hidden "unlock up to a stop" picker (tap the train five times) opens every station up to the chosen one; stamps are still earned.

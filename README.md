@@ -11,6 +11,7 @@ Progress is saved per device in the browser (localStorage).
 ## What's in it
 
 - **The line (Learn tab):** a rail trip across Japan. Every sub-level is a real station (228 in all), from Tokyo for kana, down the Tōkaidō for N5, through Kansai, Kyushu, Shikoku, the Alps and Tōhoku, to Wakkanai, Japan's northernmost station, at the end of N1. Clearing a sub-level lays track on the map and earns that station's 駅スタンプ. Kana come first (6 stops), then JLPT N5 → N1 in sub-levels of 10 kanji. Each stop has study cards (meanings, on'yomi and kun'yomi with romaji, and the radicals that build the kanji) and a clear test. Mistakes come back until you get them, WaniKani style; 0–1 mistakes earns ★★★. Clearing a stop stamps its kanji.
+- **Garden:** trade in your stamps for seeds (they stay in your stamp book), then buy flowers, veggies, trees and decor in the garden shop. Plant them, water them up through their stages, clear more land, and twelve garden friends move in when the garden suits them.
 - **Secret ticket:** tap the little train on the line five times to unlock up to any stop (stamps and stars still have to be earned).
 - **Review:** a mixed quiz of your stamped kanji and learned kana, weighted toward the ones you miss.
 - **Radical Builder:** pick the radicals that make up a kanji, and spot a kanji from its parts.
@@ -42,6 +43,7 @@ This writes `index.html` (full standalone page) and `dist/oishii.html` (page bod
 - `src/core.js` — state, helpers, drag and drop, sounds, stamps, kana typing
 - `src/learn.js` — app shell, the route, study cards, quiz engine, review, stamp book, settings
 - `src/sushi.js` — Sushi Belt
+- `src/garden.js` — the Garden tab: stamp trade-in, shop, plots, garden friends
 - `src/puzzles.js` — the daily puzzles
 - `src/style.css` — all styles and color tokens
 - `assets/emoji.json` — Fluent Emoji images embedded as WebP data URIs (regenerate with `python3 tools/fetch_emoji.py`)

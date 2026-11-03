@@ -27,6 +27,8 @@ NAMES = {
  "watering":"Potted plant","book":"Open book","lock":"Locked","speaker":"Speaker high volume","caterpillar":"Bug","clover":"Four leaf clover",
  "cherries":"Cherries","snail":"Snail","butterfly":"Butterfly","basket":"Basket","hibiscus":"Hibiscus","leaves":"Leaf fluttering in wind",
  "egg":"Egg","cookedrice":"Cooked rice","teacup":"Teacup without handle","bento":"Bento box","door":"Door","crown":"Crown","teapot":"Teapot","chopsticks":"Chopsticks","dango":"Dango","rabbit":"Rabbit face","turtle":"Turtle","hamster":"Hamster","pig":"Pig face","lantern":"Red paper lantern","hourglass":"Hourglass not done","coin":"Coin","heartribbon":"Heart with ribbon","hatching":"Hatching chick","babychick":"Front-facing baby chick","fishcake":"Fish cake with swirl","cart":"Shopping cart","abacus":"Abacus","k1":"Keycap 1","k2":"Keycap 2","k3":"Keycap 3","k4":"Keycap 4","k5":"Keycap 5","k6":"Keycap 6","k7":"Keycap 7","k8":"Keycap 8","k9":"Keycap 9","k10":"Keycap 10","hundred":"Hundred points","moneybag":"Money bag","moneywings":"Money with wings","left":"Left arrow","right":"Right arrow","pencil":"Pencil","bricks":"Brick","train":"High-speed train","tracks":"Railway track","japanmap":"Map of Japan","ticket":"Ticket","dice":"Game die","check":"Check mark button","question":"Red question mark","gift":"Wrapped gift",
+ # garden shop
+ "rose":"Rose","cactus":"Cactus","frog":"Frog","duck":"Duck","hedgehog":"Hedgehog","hut":"Hut","fountain":"Fountain","strawberry":"Strawberry","corn":"Ear of corn","bouquet":"Bouquet","rainbow":"Rainbow","owl":"Owl","wood":"Wood","palm":"Palm tree","pepper":"Bell pepper","melon":"Watermelon","lotus":"Lotus","sunrise":"Sunrise over mountains",
 }
 
 def snake(n): return n.lower().replace(" ","_")

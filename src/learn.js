@@ -1,9 +1,9 @@
 // ===== shell, Learn path (kana → N5 → N1), quiz engine, stamp book =====
 let TAB = "learn";
 try { TAB = sessionStorage.getItem("kg.tab") || "learn"; } catch (e) { }
-if (TAB === "garden") TAB = "learn";
 const TABS = [
   { id: "learn", label: "Learn", icon: "pencil" },
+  { id: "garden", label: "Garden", icon: "watering", badge: () => seedsPending() },
   { id: "sushi", label: "Sushi", icon: "sushi" },
   { id: "puzzles", label: "Puzzles", icon: "puzzle" },
   { id: "book", label: "Stamps", icon: "book" },
@@ -14,10 +14,10 @@ function render() {
     <span class="chip" title="Stamps collected">${IMG("lantern")}${foundCount()}</span><span class="chip" title="Trophies">${IMG("trophy")}${trophyCount()}</span>
     <span class="chip" title="Your role">${IMG(S.role === "kanji" ? "japan" : "seedling")}${S.role === "kanji" ? "Kanji reader" : "Kana speller"}</span></header>
     <main id="view" class="stack"></main>`;
-  const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span></button>`).join("")}</nav>`;
+  const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span>${t.badge && t.badge() ? `<i class="tbadge" aria-label="${t.badge()} seeds to trade in">+${t.badge()}</i>` : ""}</button>`).join("")}</nav>`;
   $$("[data-tab]", tb).forEach(b => b.onclick = () => { TAB = b.dataset.tab; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); });
   dndReset(document);
-  ({ learn: viewLearn, sushi: viewSushi, puzzles: viewPuzzles, book: viewBook })[TAB]($("#view"));
+  ({ learn: viewLearn, garden: viewGarden, sushi: viewSushi, puzzles: viewPuzzles, book: viewBook })[TAB]($("#view"));
 }
 
 // ---------- progress helpers ----------
@@ -295,7 +295,7 @@ function viewBook(v) {
     <div class="stats"><div class="stat"><b>${found}/${UNIQUE_WORDS.length}</b><span>kanji stamps</span></div><div class="stat"><b>${plantedKana().length}/46</b><span>kana learned</span></div><div class="stat"><b>${trophyCount()}/${TROPHIES.length}</b><span>trophies</span></div></div>
     <div class="stats"><div class="stat"><b>${ALL_SUBS.filter(s => subStars(s)).length}/${ALL_SUBS.length}</b><span>stations</span></div><div class="stat"><b>${ALL_SUBS.reduce((a, s) => a + subStars(s), 0)}/${ALL_SUBS.length * 3}</b><span>route stars</span></div><div class="stat"><b>${allStars()}/${RALLY_GAMES.length * LEVELS_N * 3}</b><span>rally stars</span></div></div></section>
   <section class="card stack"><header class="row"><h2>Trophy cabinet</h2><span class="spacer"></span><span class="pill pink">${trophyCount()}/${TROPHIES.length}</span></header>
-    ${["Learn", "Stamps", "Sushi", "Puzzles", "Puzzle levels"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
+    ${["Learn", "Stamps", "Garden", "Sushi", "Puzzles", "Puzzle levels"].map(gp => `<span class="eyebrow">${gp}</span><div class="cabinet">${TROPHIES.filter(t => t.group === gp).map(t => { const got = S.trophies && S.trophies[t.id]; return `<button class="trophy ${got ? "got" : ""} ${t.gold ? "goldt" : ""}" data-trophy="${t.id}" aria-label="${esc(t.name)}${got ? "" : " (locked)"}"><div class="medal">${IMG(t.icon)}</div><small>${got ? esc(t.name) : "???"}</small></button>`; }).join("")}</div>`).join("")}
   </section>
   ${stationStampsHTML()}
   <section class="stampbook"><header class="row"><h2>Kanji stamps</h2><span class="spacer"></span><span class="pill pink">${found}/${UNIQUE_WORDS.length} stamps</span></header>

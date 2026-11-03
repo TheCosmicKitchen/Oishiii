@@ -113,6 +113,10 @@ function nextCeleb() {
   } else if (it.kind === "many") {
     o.innerHTML = `<div class="stampcard"><span class="eyebrow">${it.ws.length} new stamps!</span><div class="manystamps">${it.ws.slice(0, 12).map((w, i) => `<div style="animation-delay:${i * .09}s" class="manyone">${stampHTML(w, 66, "thunk")}</div>`).join("")}</div><span class="muted" style="font-size:.75rem">Tap to keep collecting</span></div>`;
     it.ws.slice(0, 6).forEach((_, i) => setTimeout(() => tone([196, 147], .07, "square", .05), i * 90)); setTimeout(() => SFX.pop(), 600);
+  } else if (it.kind === "friend") {
+    const f = it.f;
+    o.innerHTML = `<div class="stampcard trophycard"><span class="eyebrow">A friend moved in!</span><div class="medal big thunk">${IMG(f.e)}</div><h2>${esc(f.jp)}</h2><span class="ro">${esc(f.ro)}</span><span class="muted" style="font-size:.75rem">Tap to continue</span></div>`;
+    SFX.win(); confetti(24);
   } else {
     const t = it.t;
     o.innerHTML = `<div class="stampcard trophycard"><span class="eyebrow">Trophy unlocked!</span><div class="medal big thunk">${IMG(t.icon)}</div><h2>${esc(t.name)}</h2><span style="font-size:.9rem">${esc(t.desc)}</span><span class="muted" style="font-size:.75rem">Tap to continue</span></div>`;

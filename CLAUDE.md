@@ -8,11 +8,12 @@ A cute Japanese learning game for two adult beginners (a couple). One plays the 
 - **Show romaji alongside kana** for the kana role. Typing converts romaji to kana like WaniKani (WanaKana).
 - **Start from kana; quiz only what's been learned/stamped.**
 - **Players study kanji in English.** Never show a kanji they haven't stamped, except the kanji a stop is teaching on that stop's own screens. Show everything else in English with romaji (`canRead` / `placeName` in `src/rail.js`). Station stamps are the one exception: they're collectible art.
-- **The garden/planting metaphor was removed** after playtesting. Don't bring it back.
+- **Learning is not a garden.** Planting and watering kana as the way you learn tested poorly and was removed; don't bring that back. The **Garden tab** is a cozy decorating space instead: stamps are traded in for seeds (each stamp pays once and stays in the book; kanji 1, station 3, city +5), seeds buy plants and decor, watering grows plants a stage, and friends move in on their own. Nothing wilts or decays.
 - Progress is saved per device (localStorage). That's intended.
 
 ## Structure
 - Learning is **the line**: a rail trip of 228 real stations (`tools/route.tsv`). Each station is a sub-level: 6 kana stops (Tokyo), then all 2,211 JLPT kanji N5 → N1 in sub-levels of 10. Clearing one lays track on the map and earns a station stamp; its kanji get kanji stamps.
+- Garden (`src/garden.js`): shop items unlock as more seeds are traded in; kanji names show only once every kanji in them is stamped (`canRead`), otherwise English, always with kana and romaji. Friends and Garden trophies are permanent.
 - Games: Transfer Chain (link two-kanji words from JMdict, `src/compound-data.js`), Radical Builder, Meaning Match, Sushi Belt, Petal Guess, Garden Plot, Garden Logic, Missing Half, Number Line. Each has dailies (same seed for both players), endless mode and 10 levels with stars. Stamps are only station stamps (incl. city stamps) and kanji stamps; puzzles earn stars and trophies, not stamps.
 - 36 stops are **cities** (`city` column in `route.tsv`): scalloped city stamps, square map markers, an arrival card and a City stamps page.
 - N5/N4 kanji are **grounded**: each stop teaches kanji from its name, its local words (`tools/local_words.tsv`) or station signs within 25 km, plus one local special (名物) per city (`tools/meibutsu.tsv`). Regenerate `src/ground-data.js` with `tools/ground_kanji.py`. Local words must be real and verifiable.

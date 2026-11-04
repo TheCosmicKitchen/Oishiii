@@ -385,20 +385,102 @@ def readings(plain, segs, ts):
         out.append((t["s"], rd, mine))
     return out
 
+COPULA = {"だ", "です"}  # after a noun: its own chunk, so 学生じゃありません reads "gakusei ja arimasen"
+COP_GLOSS = {"です": "is, am, are (polite)", "だ": "is (casual)", "じゃ": "is not", "で": "is not", "でし": "was", "だっ": "was", "でしょ": "probably", "でしょう": "probably", "だろ": "probably", "だろう": "probably"}
+
 def chunk(ts, rd):
-    """Tap units: a word with its endings (行き+ませ+ん → 行きません), and each particle on its own."""
+    """Tap units: a word with its endings (行き+ませ+ん → 行きません), a copula after a noun on its own (学生 + じゃない),
+    and each particle on its own. Each keeps its dictionary form and whether it is negative, for matching the English."""
     out = []
-    for t, (txt, r, segs) in zip(ts, rd):
-        tail = t["p1"] == "助動詞" or (t["p1"] == "形容詞" and t["lemma"] == "無い" and out) or (t["p1"] == "助詞" and t["p2"] == "接続助詞") or t["p1"] == "接尾辞" \
-            or (t["lemma"] == "下さる" and out) or (t["s"] == "いけ" and out)
+    for k, (t, (txt, r, segs)) in enumerate(zip(ts, rd)):
+        prv = ts[k - 1] if k else None
+        cop = t["p1"] == "助動詞" and t["lemma"] in COPULA and prv and prv["p1"] in ("名詞", "代名詞", "形状詞", "接尾辞")
+        tail = not cop and (t["p1"] == "助動詞" or (t["p1"] == "形容詞" and t["lemma"] == "無い" and out) or (t["p1"] == "助詞" and t["p2"] == "接続助詞") or t["p1"] == "接尾辞"
+                            or (t["lemma"] == "下さる" and out) or (t["s"] == "いけ" and out))
         if tail and out and out[-1]["k"] == "w":
-            o = out[-1]; off = len(o["t"]); o["t"] += txt; o["r"] += r; o["g"] += [(a + off, b + off, k) for a, b, k in segs]
+            o = out[-1]; off = len(o["t"]); o["t"] += txt; o["r"] += r; o["g"] += [(a + off, b + off, kk) for a, b, kk in segs]
+            if t["lemma"] in ("ない", "無い", "ず", "ぬ"): o["_neg"] = True
         else:
             kind = "p" if t["p1"] == "助詞" else "x" if t["p1"] == "補助記号" else "w"
-            gloss = PART.get(txt, "") if kind == "p" else "" if kind == "x" else (GLOSS.get((t["base"], t["lkana"])) or GLOSS.get((t["lemma"], t["lkana"])) or GLOSS1.get(t["base"]) or GLOSS1.get(t["s"]) or "")
+            if cop: gloss = COP_GLOSS.get(t["s"], "is")
+            elif kind == "p": gloss = PART.get(txt, "")
+            elif kind == "x": gloss = ""
+            else: gloss = GLOSS.get((t["base"], t["lkana"])) or GLOSS.get((t["lemma"], t["lkana"])) or GLOSS1.get(t["base"]) or GLOSS1.get(t["s"]) or ""
             if t["p3"] == "人名" or t["p2"] == "固有名詞": gloss = "a name"
-            out.append(dict(t=txt, r=r, g=list(segs), k=kind, m=gloss, b=t["base"] if kind == "w" and t["base"] != txt else ""))
+            out.append(dict(t=txt, r=r, g=list(segs), k=kind, m=gloss, b=t["base"] if kind == "w" and t["base"] != txt and not cop else "",
+                            _base=t["base"], _lemma=t["lemma"], _kana=t["lkana"], _pos=t["p1"], _cop=cop, _neg=False, _name=t["p3"] == "人名" or t["p2"] == "固有名詞"))
     return out
+
+# ---- matching chunks to words of the English translation, so both can share a colour. Tatoeba pairs whole sentences,
+# not words, so this only colours a pair when it is sure: the word's JMdict meanings (or a particle's usual English)
+# must fit exactly one word of the English that nothing else has taken.
+STOP = set("to a an the of be one s something someone somebody thing etc or and in on at for with as by up out oneself one's it is are am do does did get make have about from into over off down away back through around like so than very much there here up some any many all few each every other".split())
+GLOSSW = collections.defaultdict(set)
+for e in JM:
+    words = set()
+    for sn in e["sense"]:
+        for gl in sn["gloss"]:
+            for w in re.findall(r"[a-z]+", re.sub(r"\([^)]*\)", "", gl["text"].lower())):
+                if w not in STOP and len(w) > 1: words.add(w)
+    for k in [x["text"] for x in e["kanji"]] + [x["text"] for x in e["kana"]]: GLOSSW[k] |= words
+PRON = {"私": "i me my mine myself", "わたし": "i me my mine", "僕": "i me my", "ぼく": "i me my", "あなた": "you your", "君": "you your", "きみ": "you your",
+        "彼": "he him his", "彼女": "she her", "私たち": "we us our", "わたしたち": "we us our", "これ": "this", "それ": "that it", "あれ": "that",
+        "ここ": "here", "そこ": "there", "あそこ": "there", "どこ": "where", "何": "what", "なに": "what", "なん": "what", "誰": "who", "だれ": "who", "いつ": "when",
+        "どれ": "which", "この": "this", "その": "that the", "あの": "that", "どの": "which", "今": "now", "今日": "today", "明日": "tomorrow", "昨日": "yesterday"}
+PART_EN = {"に": {"to", "at", "in", "on", "into"}, "へ": {"to", "toward", "towards"}, "で": {"at", "in", "by", "with", "on"}, "と": {"with", "and"},
+           "も": {"too", "also", "either", "even"}, "の": {"of"}, "から": {"from", "since", "because", "so"}, "まで": {"until", "till", "to"},
+           "より": {"than"}, "や": {"and"}, "か": {"?", "or"}, "だけ": {"only", "just"}, "ぐらい": {"about", "around"}, "くらい": {"about", "around"}}
+NEG_EN = {"not", "n't", "never", "no"}
+BE_EN = {"is", "am", "are", "was", "were", "'m", "'re"}
+IRREG = dict(x.split(":") for x in "went:go gone:go going:go came:come became:become begun:begin ate:eat saw:see did:do had:have was:be were:be bought:buy said:say took:take got:get made:make knew:know thought:think wrote:write gave:give left:leave slept:sleep met:meet told:tell felt:feel found:find ran:run sat:sit stood:stand spoke:speak drank:drink swam:swim sang:sing forgot:forget began:begin understood:understand taught:teach brought:bring caught:catch heard:hear lost:lose paid:pay sent:send spent:spend built:build won:win broke:break chose:choose wore:wear woke:wake fell:fall flew:fly grew:grow threw:throw kept:keep held:hold meant:mean children:child men:man women:woman feet:foot teeth:tooth mice:mouse people:person better:good best:good".split())
+def variants(w):
+    w = w.lower(); out = {w, IRREG.get(w, w)}
+    for suf, rep in (("ies", "y"), ("es", ""), ("s", ""), ("ed", ""), ("ed", "e"), ("ing", ""), ("ing", "e"), ("ly", ""), ("er", ""), ("est", "")):
+        if w.endswith(suf) and len(w) >= len(suf) + 2: out.add(w[:-len(suf)] + rep)
+    if len(w) > 4 and w[-3] == w[-4] and w.endswith(("ped", "ted", "ned", "ged", "med", "ning", "ting", "ping")): out.add(w[:-3] if w.endswith("ed") else w[:-4])
+    return out
+
+DET = {"the", "a", "an", "my", "your", "his", "her", "our", "their", "this", "that", "these", "those", "home", "school", "work", "bed", "me", "him", "us", "them", "you", "her"}
+def align(ch, en):
+    """Colour group per chunk (key "c") and the English as [[text, group], ...]; group 0 means no colour."""
+    toks = re.findall(r"\s+|[A-Za-z]+(?=n't\b)|n't\b|'[A-Za-z]+|[A-Za-z]+|\d+(?:[:.,]\d+)*|.", en)
+    words = [(i, tk.lower()) for i, tk in enumerate(toks) if tk.strip() and (tk[0].isalnum() or tk[0] == "'" or tk == "?")]
+    order = [i for i, _ in words]
+    nxt_word = lambda i: next((toks[j] for j in order if j > i), "")
+    taken, group, owner = {}, 0, {}
+    def take(c, cands, strict, where=lambda i: True):
+        nonlocal group
+        hits = [i for i, w in words if i not in taken and cands(w) and where(i)]
+        if not hits or (strict and len(hits) != 1) or len({toks[i].lower() for i in hits}) != 1: return
+        group += 1; c["c"] = group; taken[hits[0]] = group; owner[group] = c
+    for c in ch:  # content words first; pronouns by their main meanings only (そこ "there", not its rare "you")
+        if c["k"] != "w" or c["_cop"] or c["_name"] or c["_lemma"] == "為る": continue
+        pron = PRON.get(c["_base"]) or PRON.get(c["t"])
+        meant = set(pron.split()) if pron else GLOSSW.get(c["_base"], set()) | GLOSSW.get(c["_lemma"], set())
+        if meant: take(c, lambda w, m=meant: bool(variants(w) & m), False)
+    def followed_well(i):  # a preposition only counts when what follows belongs to it: the, my, a number, a matched word
+        j = next((j for j in order if j > i), None)
+        return j is not None and ((j in taken and owner[taken[j]]["_pos"] in ("名詞", "代名詞")) or toks[j].lower() in DET or toks[j][0].isdigit() or toks[j][0].isupper())
+    for c in ch:  # copulas and negatives; "is" as part of a passive or -ing verb (are wanted, is going) doesn't count
+        if c["k"] != "w" or "c" in c: continue
+        if c["_neg"] or c["t"].startswith(("じゃ", "では")): take(c, lambda w: w in NEG_EN, True)
+        elif c["_cop"]: take(c, lambda w: w in BE_EN, True, lambda i: not nxt_word(i).lower().endswith(("ed", "en", "ing")))
+    last = max((k for k, c in enumerate(ch) if c["k"] != "x"), default=-1)
+    for k, c in enumerate(ch):  # particles with a usual English counterpart
+        if c["k"] != "p" or c["t"] not in PART_EN: continue
+        if c["t"] == "か":
+            if k == last: take(c, lambda w: w == "?", True)  # only the question か at the end
+            continue
+        if c["t"] == "に" and k and ch[k - 1]["t"] in ("前", "後", "時", "まえ", "あと", "とき"): continue  # 前に "before": not "to"
+        take(c, lambda w, e=PART_EN[c["t"]]: w in e, True, followed_well)
+    segs = []
+    for i, tk in enumerate(toks):
+        g = taken.get(i, 0)
+        if segs and segs[-1][1] == g == 0: segs[-1][0] += tk
+        else: segs.append([tk, g])
+    for c in ch:
+        for k in [k for k in c if k.startswith("_")]: del c[k]
+    return segs
 
 # ---- go through the sentences
 cands, stats = [], collections.Counter()
@@ -422,7 +504,8 @@ for sid, ja in jpn.items():
     if rd is None: continue
     stats["readings agree"] += 1
     stop = max((STOP_OF[p] for p in pts), default=0)
-    cands.append(dict(id=int(sid), ja=ja, en=en, p=sorted(pts), s=stop, w=chunk(ts, rd), tier=tier))
+    ch = chunk(ts, rd); eseg = align(ch, en)
+    cands.append(dict(id=int(sid), ja=ja, en=en, p=sorted(pts), s=stop, w=ch, e=eseg, tier=tier))
     cands[-1]["plain"] = "plain_dict" in pts
 
 # per point: the clearest examples (the point is the newest grammar in them; N5/N4 words first, then short);

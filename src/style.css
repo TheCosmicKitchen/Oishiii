@@ -802,3 +802,14 @@ button.friendc{border:0;font:inherit}
 .serve{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
 .sdish{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid var(--line);border-radius:var(--r-md);padding:8px 4px;background:var(--surface);box-shadow:0 3px 0 var(--line)}
 .sdish small{font-size:.75rem;text-align:center}.sdish.wrong{animation:shake .4s;border-color:var(--bad)}
+
+/* ---------- colour-matched sentences: chunk and English word share a colour once the English shows ---------- */
+:root{--a1:#D9467A;--a2:#2F80C2;--a3:#2E8A50;--a4:#C77A12;--a5:#7A4FC0;--a6:#0F8C8C}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--a1:#FF8FB3;--a2:#7DB8F0;--a3:#79D196;--a4:#F2B45A;--a5:#B79BF0;--a6:#5FD3CF} }
+:root[data-theme="dark"]{--a1:#FF8FB3;--a2:#7DB8F0;--a3:#79D196;--a4:#F2B45A;--a5:#B79BF0;--a6:#5FD3CF}
+.gsent.shown .gw.a1,.ga.a1{--ac:var(--a1)}.gsent.shown .gw.a2,.ga.a2{--ac:var(--a2)}.gsent.shown .gw.a3,.ga.a3{--ac:var(--a3)}
+.gsent.shown .gw.a4,.ga.a4{--ac:var(--a4)}.gsent.shown .gw.a5,.ga.a5{--ac:var(--a5)}.gsent.shown .gw.a6,.ga.a6{--ac:var(--a6)}
+.gsent.shown .gw[class*=" a"]{color:var(--ac);border-bottom:2.5px solid var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent)}
+.gsent.shown .gw[class*=" a"] .kn{color:var(--ac)}
+.ga{color:var(--ac);font-weight:800;border-bottom:2.5px solid var(--ac)}
+p.gen.shown{margin:0;color:var(--ink);font-weight:600;font-size:.92rem;line-height:1.6}

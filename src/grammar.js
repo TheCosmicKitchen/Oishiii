@@ -14,13 +14,15 @@ const gNext = () => { const i = G_STOPS.findIndex((_, j) => !gStars(j)); return 
 const gPlace = st => canRead(st.place) ? esc(st.place) : `<span class="latin">${esc(st.ro)}</span>`;
 // {漢字|かな} in card text: the kanji once stamped, else the kana
 const furiText = s => esc(s).replace(/\{([^|}]+)\|([^}]+)\}/g, (m, k, r) => canRead(k) ? `<b class="kj">${k}</b>` : `<span class="kn">${r}</span>`);
-const sentRo = s => romajiSentence(s.w.filter(c => c.k !== "x").flatMap(c => c.k === "p" ? [c.t] : c.r.split(/(?=です$|でした$|でしょう?$|だろう?$|だった$|だ$)/))); // ねこです → neko desu
+const sentRo = s => romajiSentence(s.w.filter(c => c.k !== "x").flatMap(c => c.k === "p" ? [c.t] : c.r.split(/(?=です$|でした$|でしょう?$|だろう?$|だった$|だ$)/).filter(Boolean))); // ねこです → neko desu
 
-// ---- a sentence you can tap: each word shows its reading and meaning; the line below shows the English
-function sentHTML(s, { en = true, blank = -1, blankText = "（　）" } = {}) {
-  const words = s.w.map((c, i) => i === blank ? `<span class="gblank">${blankText}</span>` : c.k === "x" ? `<span class="gx">${esc(c.t)}</span>` : `<button class="gw ${c.k}" data-w="${i}">${mixedHTML(c.t, c.g)}</button>`).join("");
-  return `<div class="gsent" data-sid="${s.id}"><p class="gja glyph">${words}</p>${showRo() && blank < 0 ? `<p class="gro">${esc(sentRo(s))}</p>` : ""}
-    ${en ? `<button class="gen" data-en>Tap for English</button>` : ""}<div class="gtip" hidden></div></div>`;
+// ---- a sentence you can tap: each word shows its reading and meaning; the line below shows the English. Once the English
+// is showing, each chunk and the English word it matches share a colour (tools/grammar_build.py only pairs them when sure)
+const enHTML = s => (s.e || [[s.en, 0]]).map(([t, g]) => g ? `<span class="ga a${(g - 1) % 6 + 1}">${esc(t)}</span>` : esc(t)).join("");
+function sentHTML(s, { en = true, blank = -1, blankText = "（　）", reveal = false } = {}) {
+  const words = s.w.map((c, i) => i === blank ? `<span class="gblank">${blankText}</span>` : c.k === "x" ? `<span class="gx">${esc(c.t)}</span>` : `<button class="gw ${c.k} ${c.c ? `a${(c.c - 1) % 6 + 1}` : ""}" data-w="${i}">${mixedHTML(c.t, c.g)}</button>`).join("");
+  return `<div class="gsent ${reveal ? "shown" : ""}" data-sid="${s.id}"><p class="gja glyph">${words}</p>${showRo() && blank < 0 ? `<p class="gro">${esc(sentRo(s))}</p>` : ""}
+    ${reveal ? `<p class="gen shown">${enHTML(s)}</p>` : en ? `<button class="gen" data-en>Tap for English</button>` : ""}<div class="gtip" hidden></div></div>`;
 }
 function bindSents(root) {
   $$(".gsent", root).forEach(el => {
@@ -31,7 +33,7 @@ function bindSents(root) {
       tip.hidden = false; tip.innerHTML = `<b class="glyph">${esc(c.r)}</b> <span class="ro">${esc(c.k === "p" ? sentRo({ w: [c] }) : romaji(c.r))}</span>${base}<div>${esc(c.m || (c.k === "p" ? "particle" : ""))}</div>`;
       say(c.r);
     });
-    const e = $("[data-en]", el); if (e) e.onclick = () => { e.textContent = s.en; e.classList.add("shown"); };
+    const e = $("[data-en]", el); if (e) e.onclick = () => { e.innerHTML = enHTML(s); e.classList.add("shown"); el.classList.add("shown"); };
   });
 }
 
@@ -123,7 +125,7 @@ function runGDrill(st, hud, qs, onFinish) {
       const pick = q.opts[+b.dataset.o], right = q.ok.includes(pick); const rec = (GS().pts[q.pid] = GS().pts[q.pid] || { ok: 0, miss: 0 });
       $$("[data-o]", st).forEach(x => { x.disabled = true; if (q.ok.includes(q.opts[+x.dataset.o])) x.classList.add("right"); });
       if (right) { SFX.good(); rec.ok++; } else { SFX.bad(); b.classList.add("wrong"); mistakes++; rec.miss++; missed.add(q.pid); if (!q.requeued) queue.push({ ...q, requeued: true, opts: RND.shuffle(q.opts) }); }
-      const full = q.s ? `<div class="gfull">${sentHTML(q.s, { en: false })}<p class="gctx">“${esc(q.s.en)}”</p></div>` : "";
+      const full = q.s ? `<div class="gfull">${sentHTML(q.s, { reveal: true })}</div>` : "";
       $("#gfb", st).innerHTML = `<div class="gfeed ${right ? "ok" : "no"}"><b>${right ? "おいしい！ Right." : `Not quite: it's ${esc(q.ans)}`}</b>${full}<button class="btn" id="gnext">Next →</button></div>`;
       bindSents($("#gfb", st)); save();
       $("#gnext", st).onclick = () => { i++; draw(); };

@@ -747,3 +747,33 @@ main#view{gap:16px}
 .gcard{border-top:5px solid var(--sakura)}
 .jlpt{background:linear-gradient(180deg,color-mix(in srgb,var(--sky) 60%,var(--surface)),var(--surface))}
 @media (prefers-reduced-motion: reduce){.hero-art .em{animation:none}}
+
+/* ---------- garden: sky, rank, kitchen ---------- */
+.grank .gname{font-family:var(--f-display);font-size:1.2rem;border:0;background:none;color:var(--ink);padding:0;width:100%;outline-offset:4px}
+.grank .gname::placeholder{color:var(--ink-soft)}
+.gwrap{overflow:hidden;padding-top:62px}
+.gsky{position:absolute;left:0;right:0;top:0;height:58px;border-radius:var(--r-lg) var(--r-lg) 0 0;background:linear-gradient(180deg,#BFE3F7,#E3F3FB)}
+.gsky.morning{background:linear-gradient(180deg,#FFD9E6,#FFF1DA)}
+.gsky.evening{background:linear-gradient(180deg,#F7A98B,#FBD9A5)}
+.gsky.night{background:linear-gradient(180deg,#1E2A55,#3A4A7A)}
+.gorb{position:absolute;right:16px;top:8px;width:40px;height:40px}.gorb .em{width:100%;height:100%}
+.gsky.night .gorb .em{filter:drop-shadow(0 0 8px rgba(255,240,180,.8))}
+.gcloud{position:absolute;top:10px;width:46px;height:30px;opacity:.9;animation:drift 38s linear infinite}.gcloud .em{width:100%;height:100%}
+.gcloud.c1{left:-60px}.gcloud.c2{left:-60px;top:22px;width:34px;animation-duration:52s;animation-delay:-20s}
+.gsky.night .gcloud{opacity:.35}
+.gstars{position:absolute;left:30%;top:8px;width:26px;height:26px;animation:glow 2s ease-in-out infinite alternate}.gstars .em{width:100%;height:100%}
+.gfall{position:absolute;left:var(--x);top:-20px;width:16px;height:16px;pointer-events:none;z-index:2;animation:fallleaf var(--d) linear infinite;animation-delay:var(--w);opacity:.85}.gfall .em{width:100%;height:100%}
+.gwrap.night{box-shadow:inset 0 -4px 0 color-mix(in srgb,var(--grass-deep) 70%,var(--soil)),inset 0 0 0 999px rgba(20,30,70,.18)}
+.gwrap.night .plot.lantern .em,.gwrap.night .plot.house .em,.gwrap.night .plot.hut .em{filter:drop-shadow(0 0 10px rgba(255,190,90,.95))}
+@keyframes drift{to{transform:translateX(calc(100vw + 120px))}}
+@keyframes fallleaf{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(14px,45vh) rotate(160deg)}100%{transform:translate(-8px,90vh) rotate(320deg);opacity:0}}
+.pantry{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{display:inline-flex;align-items:center;gap:3px;background:var(--surface-2);border-radius:99px;padding:3px 9px 3px 5px;font-size:.85rem}.pchip .em{width:22px;height:22px}
+.recipes{display:flex;flex-direction:column;gap:8px}
+.recipe{display:flex;align-items:center;gap:10px;background:var(--surface-2);border-radius:var(--r-md);padding:8px 10px}
+.rdish{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--surface)}.rdish .em{width:36px;height:36px;filter:grayscale(1) brightness(.4);opacity:.35}
+.recipe.done .rdish .em{filter:none;opacity:1}.recipe.done .rdish{box-shadow:0 0 0 2px var(--sakura)}
+.rinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.rinfo small{color:var(--ink-soft);font-size:.75rem}
+.rneed{display:flex;gap:4px;font-size:.75rem;color:var(--ink-soft)}.rneed span{display:inline-flex;align-items:center;opacity:.5}.rneed span.have{opacity:1;color:var(--ink)}.rneed .em{width:18px;height:18px}
+button.friendc{border:0;font:inherit}
+@media (prefers-reduced-motion: reduce){.gcloud,.gfall,.gstars{animation:none}.gfall{display:none}}

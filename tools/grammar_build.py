@@ -95,7 +95,8 @@ PERSON = set("私 僕 あなた 彼 彼女 友達 母 父 お母さん お父さ
 GO = {"行く", "来る", "帰る"}
 LIKE = {"好き", "嫌い", "上手", "下手", "大好き"}
 # に after a time (二時半に来ます "comes at 2:30") is a different に, not taught yet
-TIME = set("朝 昼 夜 晩 今日 明日 昨日 毎日 毎朝 毎晩 今週 来週 先週 今年 来年 去年 毎年 週末 午前 午後 夏 冬 春 秋 今 後 前 日曜日 月曜日 火曜日 水曜日 木曜日 金曜日 土曜日 誕生日 休み 夏休み 時 時半 半 分 日 月 年 頃".split())
+TIME = set("夏 冬 春 秋 週末 日曜日 月曜日 火曜日 水曜日 木曜日 金曜日 土曜日 誕生日 時 時半 半 分 日 月 年 頃 後".split())  # take に
+RELTIME = set("朝 昼 夜 晩 今日 明日 昨日 毎日 毎朝 毎晩 今週 来週 先週 今年 来年 去年 毎年 午前 午後 今 前 休み 夏休み".split())  # don't take に
 QUESTION = {"いつ", "誰", "どこ", "何", "どれ", "どちら"}  # いつも, 誰も…ない, どこも…ない are other grammar
 NOT_INVITE = {"有る", "居る", "思う", "呉れる", "出来る", "分かる", "知る", "下さる", "貰う", "見える", "聞こえる"}  # ませんか with these isn't an invitation
 KEIGO = {"参る", "申す", "いらっしゃる", "致す", "召し上がる", "仰る", "存じる", "伺う"}  # humble and honorific verbs: not taught
@@ -110,13 +111,32 @@ def toks(s):
                         lform=hira(f.lForm or "")))
     return out
 
+# Multi-word patterns found on the sentence text first; their words are then skipped one by one
+SEQ = [(re.compile(r"なければ(なりません|ならない|ならなかった|なりませんでした)|なくては(いけません|いけない|なりません|ならない)"), "nakereba"),
+       (re.compile(r"ないで(ください|下さい)"), "naide_kudasai")]
+SENT_END = ("補助記号",)
+
 def analyse(ts):
     """Grammar points found in a parsed sentence, or None if anything in it is beyond the points we teach."""
     pts, n = set(), len(ts)
-    main = [t for t in ts if t["p1"] in ("動詞", "形容詞", "形状詞") and t["p2"] != "非自立可能" or (t["p1"] == "動詞" and t["lemma"] in ("有る", "居る"))]
-    verbs = {t["lemma"] for t in ts if t["p1"] == "動詞"}
+    text, starts, o = "".join(t["s"] for t in ts), [], 0
+    for t in ts: starts.append(o); o += len(t["s"])
+    used = {}
+    for rx, p in SEQ:
+        for m in rx.finditer(text):
+            idx = [k for k in range(n) if starts[k] >= m.start() and starts[k] + len(ts[k]["s"]) <= m.end()]
+            if not idx or starts[idx[0]] != m.start(): return None  # the pattern starts mid-word: don't guess
+            after = idx[-1] + 1
+            if after < n and not (ts[after]["p1"] == "補助記号" or ts[after]["p1"] == "助詞" and ts[after]["p2"] in ("終助詞", "接続助詞")): return None
+            pts.add(p); used.update({k: p for k in idx})
+    after_te = lambda k: k and ts[k - 1]["s"] in ("て", "で") and ts[k - 1]["p1"] == "助詞"
+    verbs = {t["lemma"] for k, t in enumerate(ts) if t["p1"] == "動詞" and k not in used and not (t["lemma"] == "居る" and after_te(k))
+             and not (t["lemma"] == "有る" and k and ts[k - 1]["s"] in ("じゃ", "は", "で"))}
+    def ends(k):  # nothing but punctuation or sentence-final particles after word k, or a clause joiner
+        return k + 1 >= n or ts[k + 1]["p1"] == "補助記号" or (ts[k + 1]["p1"] == "助詞" and (ts[k + 1]["p2"] == "終助詞" or ts[k + 1]["s"] in ("から", "が") and ts[k + 1]["p2"] == "接続助詞"))
     i = 0
     while i < n:
+        if i in used: i += 1; continue
         t = ts[i]; s, p1, p2 = t["s"], t["p1"], t["p2"]
         nxt = ts[i + 1] if i + 1 < n else None
         prv = ts[i - 1] if i else None
@@ -130,16 +150,24 @@ def analyse(ts):
                 else: pts.add("wa_desu")
             elif s == "も" and p2 == "係助詞":
                 if prv and prv["s"] in QUESTION: return None
+                if prv and prv["s"] == "より": i += 1; continue  # よりも: "than", not "also"
                 pts.add("te_mo_ii" if prv and prv["s"] in ("て", "で") and tail.startswith(("いい", "良い", "よい")) else "mo_also")
             elif s == "を" and p2 == "格助詞": pts.add("wo_obj")
+            elif s == "の" and p2 == "格助詞" and prv and prv["p1"] in ("名詞", "代名詞") and nxt and nxt["base"] in ("方",) and i + 2 < n and ts[i + 2]["s"] == "が": pts.add("hou_ga")
             elif s == "の" and p2 == "格助詞" and prv and prv["p1"] in ("名詞", "代名詞") and nxt and nxt["p1"] in ("名詞", "代名詞", "接頭辞"): pts.add("no_pos")
             elif s == "か" and p2 == "終助詞" and (not nxt or nxt["p1"] == "補助記号"): pts.add("ka_q")
             elif s in ("ね", "よ") and p2 == "終助詞": pts.add("ne_yo")
             elif s in ("に", "へ") and p2 == "格助詞":
                 if s == "に" and prv and prv["s"] == "一緒": pts.add("to_with")
-                elif s == "に" and prv and (prv["p2"] == "数詞" or prv["base"] in TIME or prv["s"] in TIME): return None
+                elif s == "に" and prv and prv["s"] in ("前", "まえ") and prv["p1"] == "名詞":
+                    pp = ts[i - 2] if i >= 2 else None
+                    if pp and pp["p1"] == "動詞": pts.add("mae_ni")  # 寝る前に
+                    elif pp and pp["s"] == "の" and verbs and verbs <= {"有る", "居る"}: pts.add("ni_exist")  # 駅の前にいます: in front of
+                    else: return None
+                elif s == "に" and prv and (prv["base"] in RELTIME or prv["s"] in RELTIME): return None  # 明日には: not as taught
+                elif s == "に" and prv and (prv["p2"] == "数詞" or prv["base"] in TIME or prv["s"] in TIME or prv["p1"] == "接尾辞" and prv["s"] in TIME): pts.add("ni_time")
                 elif verbs & GO and not (verbs - GO - {"有る", "居る"}): pts.add("ni_dest")
-                elif s == "に" and verbs <= {"有る", "居る"} and verbs: pts.add("ni_exist")
+                elif s == "に" and verbs and verbs <= {"有る", "居る"}: pts.add("ni_exist")
                 else: return None
             elif s == "で" and p2 == "格助詞" and prv:
                 if prv["base"] in PLACE or prv["s"] in PLACE: pts.add("de_place")
@@ -150,17 +178,34 @@ def analyse(ts):
                 pts.add("to_with")
             elif s == "が" and p2 == "格助詞":
                 rest = ts[i + 1:]
-                if any(x["base"] in LIKE or x["lemma"] in LIKE for x in rest): pts.add("ga_suki")
-                elif any(x["lemma"] in ("有る", "居る") and x["p1"] == "動詞" for x in rest): pts.add("aru_iru")
-                else: return None
+                if prv and prv["base"] == "方": pts.add("hou_ga")
+                elif any(x["base"] in LIKE or x["lemma"] in LIKE for x in rest): pts.add("ga_suki")
+                elif any(x["lemma"] == "欲しい" for x in rest): pts.add("hoshii")
+                elif any(x["lemma"] in ("有る", "居る") and x["p1"] == "動詞" and not after_te(i + 1 + k) for k, x in enumerate(rest)): pts.add("aru_iru")
+                else: pts.add("ga_subj")
+            elif s == "が" and p2 == "接続助詞": pts.add("ga_but")
+            elif s == "から" and prv and prv["s"] in ("て", "で") and prv["p1"] == "助詞": pts.add("tekara")  # 食べてから (tagged either way)
+            elif s == "から" and p2 == "格助詞": pts.add("kara_made")
+            elif s == "から" and p2 == "接続助詞": pts.add("tekara" if prv and prv["s"] in ("て", "で") and prv["p1"] == "助詞" else "kara_because")
+            elif s == "まで" and p2 in ("副助詞", "格助詞"): pts.add("kara_made")
+            elif s == "より" and p2 == "格助詞": pts.add("hou_ga")
             elif s in ("て", "で") and p2 == "接続助詞":
-                if tail.startswith("ください") or tail.startswith("下さい"): pts.add("te_kudasai")
-                elif tail.startswith(("もいい", "も良い", "もよい", "はいけ")): pass  # counted at も / は
+                if tail.startswith(("ください", "下さい")): pts.add("te_kudasai")
+                elif tail.startswith(("もいい", "も良い", "もよい", "はいけ", "から")): pass  # counted at も / は / から
+                elif nxt and nxt["lemma"] == "居る": pts.add("te_iru")
                 else: return None
             else: return None
         elif p1 == "助動詞":
-            if t["lemma"] == "です" and s == "です": pts.add("wa_desu")
-            elif s in ("じゃ", "で") and t["lemma"] == "だ" and tail.startswith(("ない", "ありませ", "はありませ", "はない")): pts.add("ja_nai")
+            if t["lemma"] == "です":
+                if s == "です": pts.add("wa_desu")
+                elif s == "でし" and nxt and nxt["s"] == "た": pts.add("deshita"); i += 1
+                else: return None
+            elif t["lemma"] == "だ":
+                if s in ("じゃ", "で") and tail.startswith(("ない", "ありませ", "はありませ", "はない", "なかった")): pts.add("ja_nai")
+                elif s == "だ" and ends(i): pts.add("da")
+                elif s == "だっ" and nxt and nxt["s"] == "た": pts.add("deshita"); i += 1
+                elif s == "な" and prv and prv["p1"] == "形状詞": pass  # 静かな町
+                else: return None
             elif t["lemma"] == "ます":
                 seq = "".join(x["s"] for x in ts[i:i + 5])
                 if prv and prv["lemma"] == "有る" and i >= 2 and ts[i - 2]["s"] in ("じゃ", "は", "で") and seq.startswith("ません") and not seq.startswith("ませんでした"): i += 1  # じゃありません
@@ -172,31 +217,51 @@ def analyse(ts):
                 elif seq.startswith("ましょう"): pts.add("mashou")
                 elif s == "ます": pts.add("masu")
                 else: return None
+            elif t["lemma"] == "たい" and prv and prv["p1"] == "動詞":
+                pts.add("tai")
+                if s == "たかっ" and nxt and nxt["s"] == "た": i += 1  # 行きたかった
+                elif s == "たく" and nxt and nxt["lemma"] in ("無い", "ない"): i += 1  # 行きたくない
+                elif not (s == "たい" and (ends(i) or nxt and nxt["s"] == "です")): return None
+            elif t["lemma"] == "ない" and prv and prv["p1"] == "動詞" and prv["cf"].startswith("未然形"):
+                pts.add("plain_nai")
+                if s == "なかっ" and nxt and nxt["s"] == "た": pts.add("plain_ta"); i += 1
+                elif not (s == "ない" and (ends(i) or nxt and nxt["s"] == "です")): return None
+            elif t["lemma"] == "た" and prv and (prv["p1"] == "動詞" or prv["s"] in ("て", "で")):
+                if not ends(i) and not (nxt and nxt["s"] in ("前",)): return None
+                pts.add("plain_ta")
             elif s == "ない" and prv and (prv["s"] in ("じゃ",) or prv["cf"].startswith("連用形") and prv["p1"] == "形容詞"): pass
             else: return None
         elif p1 == "動詞":
             if t["s"] == "いけ" and prv and prv["s"] == "は": i += 1; continue  # てはいけません (parsed as 行ける)
             if t["lform"] and t["lkana"] and t["lform"] != t["lkana"]: return None  # potential (泳げる from 泳ぐ) or おる: not taught
             if t["lemma"] in KEIGO: return None
-            if t["lemma"] == "下さる" and not (prv and prv["s"] in ("て", "で")): return None  # 水をください: not taught at that stop
-            if prv and prv["s"] in ("じゃ", "で", "は") and t["lemma"] == "有る": pass  # じゃありません
+            if t["lemma"] == "下さる" and not after_te(i): return None  # 水をください: not taught
+            if t["lemma"] == "居る" and after_te(i):  # ている / てる
+                if not (nxt and (nxt["lemma"] in ("ます", "た", "ない") or ends(i))): return None
+            elif prv and prv["s"] in ("じゃ", "で", "は") and t["lemma"] == "有る": pass  # じゃありません
             elif t["lemma"] in ("有る", "居る") and nxt and nxt["lemma"] == "ます": pts.add("aru_iru")
             elif nxt and nxt["lemma"] == "ます" and t["cf"].startswith("連用形"): pass
             elif nxt and nxt["s"] in ("て", "で") and nxt["p1"] == "助詞": pass
-            elif t["s"] in ("いけ",) and prv and prv["s"] == "は": pass
+            elif nxt and nxt["lemma"] in ("たい", "た") and t["cf"].startswith("連用形"): pass
+            elif nxt and (nxt["lemma"] == "ない" or (i + 1) in used) and t["cf"].startswith("未然形"): pass
             elif t["lemma"] == "下さる" and t["s"] in ("ください", "下さい"): pass
+            elif t["cf"].startswith(("終止形", "連体形")) and nxt and nxt["s"] in ("前", "まえ") and nxt["p1"] == "名詞": pass  # 寝る前に
+            elif t["cf"].startswith("終止形") and ends(i):
+                pts.add("plain_dict")
+                if t["lemma"] in ("有る", "居る"): pts.add("aru_iru")
             else: return None
         elif p1 == "形容詞":
-            if t["lemma"] in ("無い",) and prv and (prv["s"] == "じゃ" or prv["p1"] == "形容詞"): pass
+            if t["lemma"] in ("無い",) and prv and (prv["s"] == "じゃ" or prv["p1"] == "形容詞" or prv["lemma"] == "たい"): pass
             elif t["lemma"] in ("良い",) and prv and prv["s"] == "も": pass  # てもいい
+            elif t["lemma"] == "欲しい" and (t["cf"].startswith("終止形") and (ends(i) or nxt and nxt["s"] == "です")): pts.add("hoshii")
             elif t["cf"].startswith("終止形") and nxt and nxt["s"] == "です": pts.add("i_adj")
+            elif t["cf"].startswith("終止形") and ends(i): pts.add("i_adj")
             elif t["cf"].startswith("連体形") and nxt and nxt["p1"] in ("名詞", "代名詞"): pts.add("i_adj")
-            elif t["cf"].startswith("連用形") and nxt and nxt["s"] == "ない": pts.add("i_adj")
+            elif t["cf"].startswith("連用形") and nxt and nxt["s"] in ("ない", "なかっ"): pts.add("i_adj"); pts.add("i_adj_past") if nxt["s"] == "なかっ" else None
+            elif t["s"].endswith("かっ") and nxt and nxt["s"] == "た": pts.add("i_adj_past"); i += 1
             else: return None
-        elif p1 == "感動詞":
-            if s not in INTERJ: return None  # includes fillers: あの人 misread as "uh… person"
         elif p1 == "形状詞":
-            if nxt and (nxt["s"] in ("な", "です") or nxt["s"] == "じゃ"):
+            if nxt and nxt["s"] in ("な", "です", "じゃ", "だ", "でし", "だっ"):
                 pts.add("ga_suki" if t["base"] in LIKE else "na_adj")
                 if nxt["s"] == "な": i += 1
             else: return None
@@ -205,12 +270,23 @@ def analyse(ts):
         elif p1 == "連体詞":
             if s in ("この", "その", "あの", "どの"): pts.add("kono")
             else: return None
-        elif p1 in ("接続詞",): return None
+        elif p1 == "感動詞":
+            if s not in INTERJ: return None  # includes fillers: あの人 misread as "uh… person"
+        elif p1 == "接続詞": return None
+        elif t["base"] == "一番": pts.add("ichiban")
+        elif t["base"] == "方" and t["p1"] == "名詞":
+            if not (prv and prv["s"] == "の" and nxt and nxt["s"] == "が"): return None
         i += 1
-    # polite: the last word before the closing particles and punctuation is です or a ます form
+    # how it ends: polite (です or a ます form) is chapter 1; anything else is the plain style, taught at Yoshiwara
     core = [t for t in ts if t["p1"] != "補助記号" and not (t["p1"] == "助詞" and t["p2"] == "終助詞")]
-    if not core or not (core[-1]["lemma"] in ("です", "ます") or core[-1]["s"] in ("ん", "た", "ましょう", "ください", "下さい") and any(x["lemma"] == "ます" or x["s"] in ("ください", "下さい") for x in core[-4:])):
-        return None
+    if not core: return None
+    last = core[-1]
+    if last["p1"] == "助詞": return None
+    polite = last["lemma"] in ("です", "ます") or last["s"] in ("ましょう", "ください", "下さい") or \
+        (last["s"] in ("ん", "た") and any(x["lemma"] in ("ます", "です") for x in core[-4:]))
+    if not polite:
+        if last["p1"] == "名詞" or last["p1"] == "代名詞": return None  # casual sentences ending in a bare noun: skip
+        pts.add("plain_dict")
     return pts
 
 def vocab_ok(ts, vocab):
@@ -284,6 +360,7 @@ for sid, ja in jpn.items():
     stats["readings agree"] += 1
     stop = max((STOP_OF[p] for p in pts), default=0)
     cands.append(dict(id=int(sid), ja=ja, en=en, p=sorted(pts), s=stop, w=chunk(ts, rd), tier=tier))
+    cands[-1]["plain"] = "plain_dict" in pts
 
 # per point: the clearest examples (the point is the newest grammar in them; N5/N4 words first, then short);
 # N3 words only top up points with fewer than four examples; per stop: a reading set of easy sentences
@@ -291,7 +368,12 @@ cands.sort(key=lambda c: (c["tier"], len(c["ja"]), c["id"]))
 keep, per_point, per_stop = {}, collections.defaultdict(list), collections.defaultdict(list)
 # an example must show its point plainly: は and です for "A は B です", と for "with", も for "also"
 SHOWS = {"wa_desu": lambda c: "は" in c["ja"] and "です" in c["ja"], "to_with": lambda c: "と" in c["ja"], "mo_also": lambda c: "も" in c["ja"],
-         "ja_nai": lambda c: re.search("じゃ|では", c["ja"])}
+         "ja_nai": lambda c: re.search("じゃ|では", c["ja"]), "tai": lambda c: "た" in c["ja"], "hoshii": lambda c: re.search("ほし|欲し", c["ja"]),
+         "te_iru": lambda c: re.search("[てで](い|る)", c["ja"]), "kara_made": lambda c: re.search("まで", c["ja"]) or re.search("(?<!これ)(?<!今)(?<!後)から", c["ja"]), "plain_dict": lambda c: c["plain"],
+         "da": lambda c: "だ" in c["ja"], "plain_nai": lambda c: "な" in c["ja"], "plain_ta": lambda c: c["plain"], "deshita": lambda c: re.search("でした|だった", c["ja"]),
+         "i_adj_past": lambda c: "かった" in c["ja"], "kara_because": lambda c: re.search("から、?[^。？！?!]", c["ja"]), "ga_but": lambda c: re.search("が、?[^。？！?!]", c["ja"]),
+         "tekara": lambda c: re.search("[てで]から", c["ja"]), "mae_ni": lambda c: re.search("前に|まえに", c["ja"]), "hou_ga": lambda c: re.search("ほう|方|より", c["ja"]),
+         "ichiban": lambda c: re.search("一番|いちばん", c["ja"])}
 for c in cands:
     for p in c["p"]:
         room = 10 if c["tier"] == 0 else 4  # N3 words only while a point has fewer than four examples
@@ -315,8 +397,17 @@ def forms(word, kana, cls):
     elif cls == "vs-i" and word.endswith("する"): sw, sr, tw, tr = word[:-2] + "し", kana[:-2] + "し", word[:-2] + "して", kana[:-2] + "して"
     elif cls == "vk": sw, sr, tw, tr = word[:-1], "き", word[:-1] + "て", "きて"
     else: return None
-    f = {e: mk(sw, sr, e) for e in ("ます", "ません", "ました", "ませんでした", "ましょう")}
+    f = {e: mk(sw, sr, e) for e in ("ます", "ません", "ました", "ませんでした", "ましょう", "たい")}
     f["て"] = (tw, tr)
+    f["ている"] = (tw + "いる", tr + "いる")
+    f["た"] = (tw[:-1] + ("だ" if tw.endswith("で") else "た"), tr[:-1] + ("だ" if tr.endswith("で") else "た"))
+    # ない: る-verbs drop る; う-verbs move to the あ row (う → わ); する → しない; 来る → 来ない (こない)
+    if cls == "v1": f["ない"] = (word[:-1] + "ない", kana[:-1] + "ない")
+    elif cls.startswith("v5"):
+        a = dict(zip("うくぐすつぬぶむる", "わかがさたなばまら"))[word[-1]]
+        f["ない"] = (word[:-1] + a + "ない", kana[:-1] + a + "ない")
+    elif cls == "vs-i": f["ない"] = (word[:-2] + "しない", kana[:-2] + "しない")
+    elif cls == "vk": f["ない"] = (word[:-1] + "ない", "こない")
     return f
 POS = {}
 for e in JM:
@@ -330,7 +421,7 @@ for line in open(os.path.join(ROOT, "tools", "waller_vocab.tsv"), encoding="utf-
     if lv != "N5": continue
     word, kana = re.split(r"[\s/、・]+", words or kana)[0], hira(re.split(r"[\s/、・]+", kana)[0])
     cls = next((c for c in POS.get((word, kana), []) if c.startswith(("v1", "v5", "vs-i", "vk"))), None)
-    if not cls: continue
+    if not cls or cls == "v5r-i": continue  # ある: its ない form is just ない, so it doesn't fit the drill
     vstats["N5 verbs"] += 1
     fs = forms(word, kana, cls)
     if not fs: continue
@@ -348,7 +439,7 @@ for line in open(os.path.join(ROOT, "tools", "waller_vocab.tsv"), encoding="utf-
     vstats["kept"] += 1
 
 # ---- write
-data = {"stops": STOPS, "points": {k: {kk: vv for kk, vv in v.items() if kk != "check"} for k, v in P["points"].items()},
+data = {"stops": STOPS, "chapters": P["chapters"], "points": {k: {kk: vv for kk, vv in v.items() if kk != "check"} for k, v in P["points"].items()},
         "ex": per_point, "read": per_stop, "sents": list(keep.values()), "verbs": verbs}
 js = ("// ===== Grammar road: post towns of the old Tōkaidō, grammar points, native example sentences, verb drills =====\n"
       "// Built by tools/grammar_build.py. Sentences: Tatoeba (tatoeba.org, CC BY 2.0 FR), by native speakers, with sentence\n"

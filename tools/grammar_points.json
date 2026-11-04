@@ -1,5 +1,5 @@
 {
- "_about": "Grammar points for the walk along the old Tōkaidō, one post town per stop, in the usual beginner order. Explanations are written for Oishii and cross-checked against Tae Kim's Guide to Learning Japanese (guidetojapanese.org); 'check' names the section each was compared with. Japanese in these cards marks kanji as {kanji|reading}, so the game shows kanji the player has stamped and kana for the rest. Example sentences are never written here: tools/grammar_build.py picks native Tatoeba sentences for each point. 'wrong' lists particles that are clearly wrong for this use, for the particle drills; 'also' lists other particles that are also right. Every 'wrong' particle must be wrong in any sentence for that point (を can mark a path with movement verbs, can stand where も replaced it, and で marks where events happen), so points where that can't be promised get no particle drill.",
+ "_about": "Grammar points for the walk along the old Tōkaidō, one post town per stop, in the usual beginner order, grouped into chapters. Explanations are written for Oishii and cross-checked against Tae Kim's Guide to Learning Japanese (guidetojapanese.org); 'check' names the section each was compared with. Japanese in these cards marks kanji as {kanji|reading}, so the game shows kanji the player has stamped and kana for the rest. Example sentences are never written here: tools/grammar_build.py picks native Tatoeba sentences for each point. 'wrong' lists particles that are clearly wrong for this use, for the particle drills; 'also' lists other particles that are also right. Every 'wrong' particle must be wrong in any sentence for that point (を can mark a path with movement verbs, can stand where も replaced it, and で marks where events happen), so points where that can't be promised get no particle drill.",
  "stops": [
   {
    "id": "nihonbashi",
@@ -10,7 +10,8 @@
     "wa_desu",
     "ja_nai",
     "ka_q"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "shinagawa",
@@ -21,7 +22,8 @@
     "no_pos",
     "kore",
     "kono"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "kawasaki",
@@ -32,7 +34,8 @@
     "wo_obj",
     "masu",
     "masen"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "kanagawa",
@@ -42,7 +45,8 @@
    "points": [
     "ni_dest",
     "mo_also"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "hodogaya",
@@ -53,7 +57,8 @@
     "de_place",
     "de_means",
     "to_with"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "totsuka",
@@ -63,7 +68,8 @@
    "points": [
     "mashita",
     "masendeshita"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "fujisawa",
@@ -73,7 +79,8 @@
    "points": [
     "aru_iru",
     "ni_exist"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "hiratsuka",
@@ -83,7 +90,8 @@
    "points": [
     "i_adj",
     "na_adj"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "oiso",
@@ -93,7 +101,8 @@
    "points": [
     "masenka",
     "mashou"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "odawara",
@@ -103,7 +112,8 @@
    "points": [
     "ga_suki",
     "ne_yo"
-   ]
+   ],
+   "ch": 1
   },
   {
    "id": "hakone",
@@ -114,6 +124,117 @@
     "te_kudasai",
     "te_mo_ii",
     "te_wa_ikenai"
+   ],
+   "ch": 1
+  },
+  {
+   "ch": 2,
+   "id": "mishima",
+   "place": "三島",
+   "ro": "Mishima",
+   "note": "The 11th post town, at the foot of the Hakone pass, known for Mishima Taisha shrine and spring water from Mount Fuji.",
+   "points": [
+    "tai",
+    "hoshii"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "numazu",
+   "place": "沼津",
+   "ro": "Numazu",
+   "note": "The 12th post town, on Suruga Bay.",
+   "points": [
+    "ga_subj",
+    "te_iru"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "hara",
+   "place": "原",
+   "ro": "Hara",
+   "note": "The 13th post town, with one of the road's finest views of Mount Fuji.",
+   "points": [
+    "ni_time",
+    "kara_made"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "yoshiwara",
+   "place": "吉原",
+   "ro": "Yoshiwara",
+   "note": "The 14th post town, where the road bends and Mount Fuji appears on the left: the famous \"left-hand Fuji\".",
+   "points": [
+    "plain_dict",
+    "da"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "kanbara",
+   "place": "蒲原",
+   "ro": "Kanbara",
+   "note": "The 15th post town, painted by Hiroshige under a night of snow.",
+   "points": [
+    "plain_nai",
+    "plain_ta"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "yui",
+   "place": "由比",
+   "ro": "Yui",
+   "note": "The 16th post town, before the Satta Pass and its views of Fuji over the sea. Today it is known for sakura shrimp.",
+   "points": [
+    "deshita",
+    "i_adj_past"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "okitsu",
+   "place": "興津",
+   "ro": "Okitsu",
+   "note": "The 17th post town, a seaside town by Seiken-ji temple.",
+   "points": [
+    "kara_because",
+    "ga_but"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "ejiri",
+   "place": "江尻",
+   "ro": "Ejiri",
+   "note": "The 18th post town, near the port of Shimizu and the pine beach of Miho.",
+   "points": [
+    "naide_kudasai",
+    "nakereba"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "fuchu",
+   "place": "府中",
+   "ro": "Fuchū",
+   "note": "The 19th post town, the castle town of Sunpu, where Tokugawa Ieyasu retired. Today it is Shizuoka city.",
+   "points": [
+    "tekara",
+    "mae_ni"
+   ]
+  },
+  {
+   "ch": 2,
+   "id": "mariko",
+   "place": "鞠子",
+   "ro": "Mariko",
+   "note": "The 20th post town, famous for tororo-jiru, a soup of grated mountain yam.",
+   "points": [
+    "hou_ga",
+    "ichiban"
    ]
   }
  ],
@@ -413,6 +534,216 @@
     "て-form + はいけません means \"you must not\": ここで{写真|しゃしん}を{撮|と}ってはいけません \"You mustn't take photos here\". Just what the guards at the Hakone checkpoint would say."
    ],
    "check": "Tae Kim: Expressing prohibition (てはいけない)"
+  },
+  "tai": {
+   "pattern": "verb + たい(です)",
+   "en": "want to…",
+   "make": "verb stem + たい: {食|た}べたい, {行|い}きたい",
+   "notes": [
+    "Swap ます for たい to say what you want to do: {日本|にほん}に{行|い}きたいです \"I want to go to Japan\".",
+    "たい works like an い-adjective: {行|い}きたくないです \"I don't want to go\"."
+   ],
+   "check": "Tae Kim: Desire (たい)"
+  },
+  "hoshii": {
+   "pattern": "A が ほしいです",
+   "en": "want (a thing)",
+   "make": "thing + が + ほしいです",
+   "notes": [
+    "ほしい is an い-adjective for wanting things: {新|あたら}しい{車|くるま}がほしいです \"I want a new car\". For wanting to do something, use たい."
+   ],
+   "check": "Tae Kim: Desire (ほしい)",
+   "wrong": [
+    "で",
+    "に"
+   ]
+  },
+  "te_iru": {
+   "pattern": "verb て います",
+   "en": "is doing; is in a state",
+   "make": "て-form + います: {食|た}べています",
+   "notes": [
+    "て-form + いる says something is going on now: {今|いま}{食|た}べています \"I'm eating now\".",
+    "It also describes a state that lasts: {東京|とうきょう}に{住|す}んでいます \"I live in Tokyo\", {知|し}っています \"I know\". In casual speech the い is often dropped: {食|た}べてる."
+   ],
+   "check": "Tae Kim: Enduring state (ている)"
+  },
+  "ni_time": {
+   "pattern": "time に verb",
+   "en": "at, on, in (a time)",
+   "make": "time + に: {七時|しちじ}に, {日曜日|にちようび}に",
+   "notes": [
+    "に marks a set time: {七時|しちじ}に{起|お}きます \"I get up at seven\".",
+    "Words like {今日|きょう}, {明日|あした}, {毎日|まいにち} and {今|いま} don't take に."
+   ],
+   "check": "Tae Kim: Particles (に for time)",
+   "wrong": [
+    "を",
+    "が"
+   ]
+  },
+  "kara_made": {
+   "pattern": "A から B まで",
+   "en": "from A to/until B",
+   "make": "time or place + から; time or place + まで",
+   "notes": [
+    "から marks a starting point and まで an end point, in time or space: {九時|くじ}から{五時|ごじ}まで \"from nine to five\", {駅|えき}まで \"as far as the station\"."
+   ],
+   "check": "Tae Kim: Particles (から, まで)"
+  },
+  "plain_dict": {
+   "pattern": "verb (dictionary form)",
+   "en": "plain present: do, will do",
+   "make": "the dictionary form: {行|い}く, {食|た}べる, する",
+   "notes": [
+    "With friends and family, Japanese drops です and ます. The plain form of a verb is the one in the dictionary: {明日|あした}{行|い}く \"I'll go tomorrow\".",
+    "It means the same as the ます form, just casual."
+   ],
+   "check": "Tae Kim: Verb basics (plain form)"
+  },
+  "da": {
+   "pattern": "noun / な-adjective + だ",
+   "en": "plain \"is\"",
+   "make": "{学生|がくせい}だ, {静|しず}かだ; not: {学生|がくせい}じゃない",
+   "notes": [
+    "だ is the casual です after nouns and な-adjectives. Its negative is じゃない. い-adjectives never take だ: {高|たか}い on its own is already a full sentence."
+   ],
+   "check": "Tae Kim: State of being (だ)"
+  },
+  "plain_nai": {
+   "pattern": "verb + ない",
+   "en": "plain negative: don't, won't",
+   "make": "る-verbs: {食|た}べない; う-verbs, last sound to the あ row: {行|い}かない, {買|か}わない; しない, {来|こ}ない",
+   "notes": [
+    "The ない form is the casual ません. For う-verbs ending in う, it becomes わ: {買|か}う → {買|か}わない. ある becomes just ない."
+   ],
+   "check": "Tae Kim: Negative verbs"
+  },
+  "plain_ta": {
+   "pattern": "verb + た / なかった",
+   "en": "plain past: did, didn't",
+   "make": "the て-form with た: {食|た}べた, {行|い}った, {飲|の}んだ; ない → なかった",
+   "notes": [
+    "The た form is the casual ました. It is made just like the て-form, with た for て and だ for で.",
+    "For the past negative, ない becomes なかった: {行|い}かなかった \"I didn't go\"."
+   ],
+   "check": "Tae Kim: Past tense"
+  },
+  "deshita": {
+   "pattern": "noun でした / だった",
+   "en": "was (a noun or な-adjective)",
+   "make": "{学生|がくせい}でした (polite), {学生|がくせい}だった (casual)",
+   "notes": [
+    "でした is the past of です after nouns and な-adjectives: {昨日|きのう}は{雨|あめ}でした \"It was rainy yesterday\". だった is the casual past."
+   ],
+   "check": "Tae Kim: State of being (past)"
+  },
+  "i_adj_past": {
+   "pattern": "い-adjective + かった",
+   "en": "was (an い-adjective)",
+   "make": "{高|たか}い → {高|たか}かった(です); not: {高|たか}くなかった(です)",
+   "notes": [
+    "い-adjectives change for the past themselves: the last い becomes かった. {楽|たの}しかったです \"It was fun\". いい → よかった."
+   ],
+   "check": "Tae Kim: Adjectives (past)"
+  },
+  "kara_because": {
+   "pattern": "reason から, result",
+   "en": "because, so",
+   "make": "sentence + から + the result",
+   "notes": [
+    "から after a sentence gives a reason: {暑|あつ}いから、{窓|まど}を{開|あ}けます \"It's hot, so I'll open the window\". It follows a plain or a polite form."
+   ],
+   "check": "Tae Kim: Compound sentences (から)"
+  },
+  "ga_but": {
+   "pattern": "A が、B",
+   "en": "but",
+   "make": "sentence + が + another sentence",
+   "notes": [
+    "が between two sentences means \"but\": {高|たか}いですが、おいしいです \"It's expensive, but it's tasty\". It is often softer than English \"but\"."
+   ],
+   "check": "Tae Kim: Compound sentences (が, けど)"
+  },
+  "naide_kudasai": {
+   "pattern": "verb ないで ください",
+   "en": "please don't…",
+   "make": "ない form + でください: {行|い}かないでください",
+   "notes": [
+    "The ない form + でください asks someone not to do something: {忘|わす}れないでください \"Please don't forget\"."
+   ],
+   "check": "Tae Kim: Requests (ないでください)"
+  },
+  "nakereba": {
+   "pattern": "verb なければ なりません",
+   "en": "must, have to",
+   "make": "ない form, ない → なければなりません: {行|い}かなければなりません",
+   "notes": [
+    "It literally says \"if I don't go, it won't do\": {帰|かえ}らなければなりません \"I have to go home\". なくてはいけません means the same."
+   ],
+   "check": "Tae Kim: Must (なければならない)"
+  },
+  "tekara": {
+   "pattern": "verb て から",
+   "en": "after doing…",
+   "make": "て-form + から: {食|た}べてから",
+   "notes": [
+    "て-form + から means \"after doing\": {宿題|しゅくだい}をしてから{遊|あそ}びます \"I'll play after doing my homework\". Compare から after a plain sentence, \"because\" (Okitsu)."
+   ],
+   "check": "Tae Kim: Sequential actions (てから)"
+  },
+  "mae_ni": {
+   "pattern": "verb / noun の 前に",
+   "en": "before…",
+   "make": "dictionary form + {前|まえ}に; noun + の{前|まえ}に",
+   "notes": [
+    "{前|まえ}に means \"before\": {寝|ね}る{前|まえ}に \"before going to bed\", {食事|しょくじ}の{前|まえ}に \"before the meal\". The verb stays in the dictionary form, even when the sentence is in the past."
+   ],
+   "check": "Tae Kim: Time expressions (前に)"
+  },
+  "hou_ga": {
+   "pattern": "A より B の ほうが…",
+   "en": "B is more… than A",
+   "make": "A + より, B + のほうが + adjective",
+   "notes": [
+    "より means \"than\" and のほうが marks the winner: {電車|でんしゃ}のほうが{速|はや}いです \"The train is faster\", バスより{電車|でんしゃ}のほうが{速|はや}いです \"The train is faster than the bus\"."
+   ],
+   "check": "Tae Kim: Comparison (より, ほう)"
+  },
+  "ichiban": {
+   "pattern": "いちばん…",
+   "en": "the most…",
+   "make": "{一番|いちばん} + adjective",
+   "notes": [
+    "{一番|いちばん} means \"number one\", so before an adjective it means \"the most\": {一番|いちばん}{好|す}きです \"I like it best\"."
+   ],
+   "check": "Tae Kim: Comparison (一番)"
+  },
+  "ga_subj": {
+   "pattern": "A が verb",
+   "en": "A (who or what does it)",
+   "make": "noun + が + verb or adjective",
+   "notes": [
+    "が marks the one doing something or being described: {雪|ゆき}が{降|ふ}っています \"Snow is falling\", {目|め}が{痛|いた}いです \"My eyes hurt\".",
+    "は says what you're talking about; が points at who or what. Questions use が: {誰|だれ}が{来|き}ますか \"Who's coming?\"."
+   ],
+   "check": "Tae Kim: Particles (が, and は compared)",
+   "wrong": [
+    "を",
+    "で"
+   ]
   }
- }
+ },
+ "chapters": [
+  {
+   "n": 1,
+   "name": "Nihonbashi to Hakone",
+   "note": "Polite sentences: です, ます and the particles."
+  },
+  {
+   "n": 2,
+   "name": "Mishima to Mariko",
+   "note": "Wants, ongoing actions, time, and the plain forms friends use with each other."
+  }
+ ]
 }

@@ -33,7 +33,7 @@ function viewHome(v) {
     <header class="row">${IMGW("target", 40)}<div style="flex:1;min-width:0"><h2>JLPT N5 readiness</h2><p class="muted" style="font-size:.82rem">What you've learned in Oishii, against the N5.</p></div></header>
     ${readyRow("seedling", "Hiragana", kanaDone, 46, "")}
     ${readyRow("sakura", "N5 kanji stamped", n5have, n5.length, "From Jonathan Waller's N5 list, the usual community guide: there's no official one.")}
-    ${readyRow("lantern", "N5 grammar points cleared", gPointsDone(), gPointsAll(), `Chapter 1 of the grammar road. More N5 points are on the way.`)}
+    ${readyRow("lantern", "N5 grammar points cleared", gPointsDone(), gPointsAll(), `${GRAMMAR.chapters.length} chapters of the grammar road so far, Nihonbashi to ${G_STOPS[G_STOPS.length - 1].ro}. More N5 points are on the way.`)}
     ${readyRow("paper", "Reading sets done", gReadDone(), G_STOPS.length, "")}
     ${n5have >= n5.length ? readyRow("tulip", "N4 kanji stamped", n4have, n4.length, "") : ""}
     <details class="examfacts"><summary>${IMG("question")}About the N5 exam</summary>

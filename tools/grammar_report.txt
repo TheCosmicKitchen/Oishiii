@@ -1,10 +1,10 @@
 native ja+en: 106638
 native English translation: 90418
 human furigana, short: 61437
-grammar all taught: 4580
-words all N5/N4: 1619
-readings agree: 2586
-words N3 at most: 1093
+grammar all taught: 13950
+words all N5/N4: 4578
+readings agree: 7666
+words N3 at most: 3484
 verbs N5 verbs: 99
 verbs kept: 95
 verbs dropped: parser disagrees: 4
@@ -120,7 +120,7 @@ verbs dropped: parser disagrees: 4
     223370  このバス、駅に行きますか？  |  Does this bus go to the train station?  |  ka_q kono masu ni_dest
     8576154  トムは来週そこへ行きます。  |  Tom is going there next week.  |  kore masu ni_dest wa_desu
     9041979  来年の夏はどこに行きますか？  |  Where will you go next summer?  |  ka_q kore masu ni_dest no_pos wa_desu
-  mo_also: 9
+  mo_also: 8
     152190  私も先生です。  |  I am a teacher, too.  |  mo_also wa_desu
     152214  私もそうです。  |  Me, too.  |  mo_also wa_desu
     9530179  私も学生です。  |  I'm a student, too.  |  mo_also wa_desu
@@ -128,7 +128,6 @@ verbs dropped: parser disagrees: 4
     11467631  魚も動物ですか？  |  Are fish also animals?  |  ka_q mo_also wa_desu
     11508268  今は、私も医者です。  |  Now I'm a doctor, too.  |  mo_also wa_desu
     152218  私もこの辺は初めてです。  |  I'm a stranger here myself.  |  kono mo_also wa_desu
-    11858043  こちらの方も、彼女の先生です。  |  This is one of her teachers.  |  mo_also no_pos wa_desu
     2744682  トムはフランス語も英語も話します。  |  Tom speaks both French and English.  |  masu mo_also wa_desu
 
 == 4 Hodogaya (12 reading sentences)
@@ -299,3 +298,240 @@ verbs dropped: parser disagrees: 4
     220057  この部屋で騒いではいけません。  |  Don't be noisy in this room.  |  de_place kono masen te_wa_ikenai
     10990151  そこの戸を開けてはいけません。  |  Don't open that door.  |  kore masen no_pos te_wa_ikenai wo_obj
     988065  ここでタバコを吸ってはいけません。  |  You shouldn't smoke here.  |  de_place kore masen te_wa_ikenai wo_obj
+
+== 11 Mishima (12 reading sentences)
+  tai: 10
+    173407  行きたいですね。  |  I'd like to go.  |  ne_yo tai wa_desu
+    182711  休みたいですか。  |  Do you feel like resting?  |  ka_q tai wa_desu
+    232225  何をしたいですか？  |  What would you like to do?  |  ka_q tai wa_desu wo_obj
+    176804  一緒に来たいですか？  |  Would you like to come along?  |  ka_q tai to_with wa_desu
+    1202186  ハワイに行きたいです。  |  I wish to go to Hawaii.  |  ni_dest tai wa_desu
+    11310722  もっと知りたいですか？  |  Would you like to know more?  |  ka_q tai wa_desu
+    232046  今日は何をしたいですか。  |  What would you like to do today?  |  ka_q tai wa_desu wo_obj
+    10369216  お礼を言いたかったです。  |  I wanted to say thank you.  |  tai wa_desu wo_obj
+    10901775  ええ、私も知りたいです。  |  Yes, I want to know, too.  |  mo_also tai wa_desu
+    11563431  名前、教えたくないです。  |  I don't want to tell you my name.  |  tai wa_desu
+  hoshii: 8
+    10701484  水が欲しいです。  |  I would like some water.  |  hoshii wa_desu
+    187880  何が欲しいですか。  |  What do you want?  |  hoshii ka_q wa_desu
+    226063  ギターが欲しいです。  |  I want a guitar.  |  hoshii wa_desu
+    11013712  どれが欲しいですか？  |  Which one do you want?  |  hoshii ka_q kore wa_desu
+    10951064  飲み物が欲しいですか？  |  Do you want a drink?  |  hoshii ka_q wa_desu
+    10979966  私は軽い靴が欲しいです。  |  I want some lightweight shoes.  |  hoshii i_adj wa_desu
+    5348443  私はメアリーが欲しいです。  |  I want Mary.  |  hoshii wa_desu
+    11052393  もう少し、水が欲しいです。  |  I'd like a little more water.  |  hoshii wa_desu
+
+== 12 Numazu (12 reading sentences)
+  ga_subj: 10
+    79989  目が痛いです。  |  My eyes are sore.  |  ga_subj i_adj wa_desu
+    82393  僕がやります。  |  I will.  |  ga_subj masu
+    184712  咳が出ますか。  |  Do you have a cough?  |  ga_subj ka_q masu
+    433478  私がやります。  |  I'll do it.  |  ga_subj masu
+    1507527  私が行きます。  |  I'll go.  |  ga_subj masu
+    9444137  目が悪いです。  |  I have poor eyesight.  |  ga_subj i_adj wa_desu
+    10930413  空が青いです。  |  The sky is blue.  |  ga_subj i_adj wa_desu
+    79987  目が疲れました。  |  My eyes are tired.  |  ga_subj mashita
+    84056  風がやみました。  |  The wind has died down.  |  ga_subj mashita
+    169172  それが仕事です。  |  It's business.  |  ga_subj kore wa_desu
+  te_iru: 10
+    123257  曇っています。  |  It's cloudy.  |  masu te_iru
+    143013  晴れています。  |  It's a nice day.  |  masu te_iru
+    550250  覚えていません。  |  I can't remember.  |  masen te_iru
+    79988  目が疲れています。  |  My eyes are tired.  |  ga_subj masu te_iru
+    184145  楽しんでいますか。  |  Are you enjoying it?  |  ka_q masu te_iru
+    4975839  雪が降っています。  |  It's snowing.  |  ga_subj masu te_iru
+    6537567  結婚していますか。  |  Are you married?  |  ka_q masu te_iru
+    10565443  妻を捜しています。  |  I'm looking for my wife.  |  masu te_iru wo_obj
+    11630865  何をしていますか？  |  What are you doing?  |  ka_q masu te_iru wo_obj
+    127292  暖房が壊れています。  |  The heater is broken.  |  ga_subj masu te_iru
+
+== 13 Hara (12 reading sentences)
+  ni_time: 10
+    234982  ７時に起きました。  |  I got up at seven.  |  mashita ni_time
+    10982398  七時に家を出ます。  |  I leave home at seven o'clock.  |  masu ni_time wo_obj
+    12164673  2時半に戻ります。  |  We'll be back at 2:30.  |  masu ni_time
+    235487  ２時間後に戻ります。  |  I'll be back in two hours.  |  masu ni_time
+    235793  １時に会いましょう。  |  Let's meet at one o'clock.  |  mashou ni_time
+    762113  彼は６時に戻ります。  |  He'll return at six.  |  masu ni_time wa_desu
+    1545518  何時に閉まりますか。  |  What time does it close?  |  ka_q masu ni_time
+    7486227  2時半に来て下さい。  |  Please come at 2:30.  |  ni_time te_kudasai
+    10953992  毎朝六時に起きます。  |  I get up every morning at six.  |  masu ni_time
+    81297  毎日何時に起きますか。  |  What time do you get up every day?  |  ka_q masu ni_time
+  kara_made: 10
+    11156780  昼からです。  |  I'm starting at noon.  |  kara_made wa_desu
+    11031385  六時半からです。  |  It starts at 6.30.  |  kara_made wa_desu
+    2672966  中国から来ました。  |  I came from China.  |  kara_made mashita
+    5323  どこから来ましたか？  |  Where are you from?  |  ka_q kara_made kore mashita
+    2217839  外まで送りましょう。  |  I'll walk you out.  |  kara_made mashou
+    10651811  ミラノから来ました。  |  I'm from Milan.  |  kara_made mashita
+    10967392  二時半まで待ちます。  |  I'll wait until 2:30.  |  kara_made masu
+    10983109  駅まで歩きましょう。  |  Let's walk to the station.  |  kara_made mashou
+    11505785  朝まで待ちましょう。  |  Let's wait until morning.  |  kara_made mashou
+    189309  映画は何時からですか。  |  When does the movie start?  |  ka_q kara_made wa_desu
+
+== 14 Yoshiwara (12 reading sentences)
+  plain_dict: 10
+    5183  寒い。  |  It's cold.  |  i_adj plain_dict
+    81008  眠い！  |  I'm sleepy!  |  i_adj plain_dict
+    175405  嫌だ！  |  I don't want to!  |  da na_adj plain_dict
+    2925502  いる？  |  Are you in?  |  aru_iru plain_dict
+    3219284  要る？  |  Want it?  |  plain_dict
+    3662445  眠い？  |  Are you sleepy?  |  i_adj plain_dict
+    5067275  違う。  |  That's wrong.  |  plain_dict
+    7551811  痛い。  |  It hurts.  |  i_adj plain_dict
+    8688655  辛い？  |  Is it spicy?  |  i_adj plain_dict
+    11367248  本だ。  |  It's a book.  |  da plain_dict
+  da: 10
+    175405  嫌だ！  |  I don't want to!  |  da na_adj plain_dict
+    11367248  本だ。  |  It's a book.  |  da plain_dict
+    169274  残念だ！  |  What a pity!  |  da na_adj plain_dict
+    10801959  夏だね。  |  It's summer.  |  da ne_yo plain_dict
+    81730  僕もだよ。  |  Me, too.  |  da mo_also ne_yo plain_dict
+    158004  私は暇だ。  |  I'm free.  |  da plain_dict wa_desu
+    184589  確かだよ。  |  I'm certain.  |  da na_adj ne_yo plain_dict
+    187711  何の用だ。  |  What do you want?  |  da no_pos plain_dict
+    764118  私は女だ。  |  I am a girl.  |  da plain_dict wa_desu
+    9107200  無理だよ！  |  This is impossible.  |  da ne_yo plain_dict
+
+== 15 Kanbara (12 reading sentences)
+  plain_nai: 10
+    4710  知らない。  |  I do not know.  |  plain_dict plain_nai
+    8823050  教えないよ。  |  I'm not going to tell you.  |  ne_yo plain_dict plain_nai
+    9432274  姉はいない。  |  I don't have an older sister.  |  plain_dict plain_nai wa_desu
+    9971974  結婚しない？  |  Why don't we get married?  |  plain_dict plain_nai
+    83722  分からないよ。  |  Who knows?  |  ne_yo plain_dict plain_nai
+    152204  私もできない。  |  I can't do it either.  |  mo_also plain_dict plain_nai
+    155138  私は知らない。  |  You can search me!  |  plain_dict plain_nai wa_desu
+    187113  家にはいない。  |  He is away from home.  |  ni_exist plain_dict plain_nai wa_desu
+    213771  そう思わない？  |  Don't you think so?  |  plain_dict plain_nai
+    550249  覚えていない。  |  I can't remember.  |  plain_dict plain_nai te_iru
+  plain_ta: 10
+    1037367  疲れた？  |  Are you tired?  |  plain_dict plain_ta
+    2375037  勝った！  |  We've won!  |  plain_dict plain_ta
+    3488089  動いた！  |  It worked.  |  plain_dict plain_ta
+    3496683  驚いた。  |  I'm surprised.  |  plain_dict plain_ta
+    5067366  見たよ。  |  I did see it.  |  ne_yo plain_dict plain_ta
+    5253033  忘れた。  |  We forgot.  |  plain_dict plain_ta
+    5254848  食べた。  |  I've eaten.  |  plain_dict plain_ta
+    7432603  謝った。  |  I apologized.  |  plain_dict plain_ta
+    8688963  驚いた？  |  Were you surprised?  |  plain_dict plain_ta
+    10340048  怒った？  |  Are you mad?  |  plain_dict plain_ta
+
+== 16 Yui (12 reading sentences)
+  deshita: 10
+    79755  夜だった。  |  It was night.  |  deshita plain_dict
+    3507431  簡単だった。  |  It was easy.  |  deshita na_adj plain_dict
+    8706037  地震だった？  |  Was it an earthquake?  |  deshita plain_dict
+    11864856  黒だったよ。  |  It was black.  |  deshita ne_yo plain_dict
+    169267  残念だったね。  |  It was unfortunate.  |  deshita na_adj ne_yo plain_dict
+    9974608  いい話だった。  |  It was a nice story.  |  deshita i_adj plain_dict
+    12461920  いい日だった？  |  Have you had a nice day?  |  deshita i_adj plain_dict
+    123931  答は簡単でした。  |  It was easy to answer.  |  deshita na_adj wa_desu
+    127305  暖かい日でした。  |  It was a warm day.  |  deshita i_adj
+    4751190  旅行どうだった？  |  How was your trip?  |  deshita plain_dict
+  i_adj_past: 10
+    191449  悪かった。  |  I'm sorry.  |  i_adj_past plain_dict
+    3507428  寒かった。  |  It was cold.  |  i_adj_past plain_dict
+    3507430  暗かった。  |  It was dark.  |  i_adj_past plain_dict
+    8692044  寒かった？  |  Was it cold?  |  i_adj_past plain_dict
+    12296500  怖かった。  |  I felt afraid.  |  i_adj_past plain_dict
+    140581  早かったね。  |  You are early.  |  i_adj_past ne_yo plain_dict
+    5207944  楽しかった。  |  I enjoyed myself.  |  i_adj_past plain_dict
+    8533507  危なかった！  |  That was dangerous!  |  i_adj_past plain_dict
+    8689603  忙しかった？  |  Were you busy?  |  i_adj_past plain_dict
+    8699991  楽しかった？  |  Was it fun?  |  i_adj_past plain_dict
+
+== 17 Okitsu (12 reading sentences)
+  kara_because: 10
+    9199895  眠いから、寝るね。  |  I'm sleepy, so I'm going to bed.  |  i_adj kara_because ne_yo plain_dict
+    4457110  眠いからもう寝るね。  |  I'm tired, so I'm gonna go to sleep.  |  i_adj kara_because ne_yo plain_dict
+    12735924  もう遅いから寝るね。  |  It's already late, so I'll go to bed.  |  i_adj kara_because ne_yo plain_dict
+    3589617  明日朝早いから寝るね。  |  I have to be up early tomorrow morning, so I'm going to bed.  |  i_adj kara_because ne_yo plain_dict
+    10619357  もう遅いから、帰るよ。  |  Since it's already late, I'll go home.  |  i_adj kara_because ne_yo plain_dict
+    9755700  寒いから、窓閉めてもいい？  |  I'm cold. May I close the window?  |  i_adj kara_because plain_dict te_mo_ii
+    189800  雨が降ったから行かなかった。  |  Since it rained, I did not go.  |  ga_subj kara_because plain_dict plain_nai plain_ta
+    3635320  暑いから冷たいもの食べたい。  |  It's hot, so I want to eat something cold.  |  i_adj kara_because plain_dict tai
+    10930381  薬を飲みましたから、もう大丈夫です。  |  I've taken medicine, so I'm fine now.  |  kara_because mashita na_adj wa_desu wo_obj
+    11993932  昨日は頭が痛かったから、しなかったよ。  |  I didn't do that yesterday because I had a bad headache.  |  ga_subj i_adj_past kara_because ne_yo plain_dict plain_nai plain_ta wa_desu
+  ga_but: 10
+    10911445  残念だが無理だ。  |  I'm sorry, but it's impossible.  |  da ga_but na_adj plain_dict
+    169256  残念ですがありません。  |  I'm afraid not.  |  aru_iru ga_but masen na_adj wa_desu
+    169264  残念ですが、できません。  |  I'm afraid I can't.  |  ga_but masen na_adj wa_desu
+    10901849  車は高いですが、便利です。  |  Cars are expensive but useful.  |  ga_but i_adj wa_desu
+    229432  いいえ、残念ですが違います。  |  No, I'm afraid not.  |  ga_but masu na_adj wa_desu
+    10657669  すみませんが、今はできません。  |  I'm sorry, I can't do that now.  |  ga_but masen wa_desu
+    10984944  朝は雨でしたが、今は晴れています。  |  It was raining this morning, but now it's sunny.  |  deshita ga_but masu te_iru wa_desu
+    10472598  ギターは弾きますが、歌は歌いません。  |  I play the guitar, but I don't sing.  |  ga_but masen masu wa_desu
+    2204548  トムは質問をしたかったが、しなかった。  |  Tom wanted to ask questions, but he didn't.  |  ga_but plain_dict plain_nai plain_ta tai wa_desu wo_obj
+    8575876  トムはお金持ちだが友達はあまりいない。  |  Tom has a lot of money, but not very many friends.  |  da ga_but plain_dict plain_nai wa_desu
+
+== 18 Ejiri (12 reading sentences)
+  naide_kudasai: 10
+    2006378  行かないでください。  |  Please don't go.  |  naide_kudasai
+    11041709  辞めないでください。  |  Please don't quit.  |  naide_kudasai
+    168184  枝を折らないでください。  |  Don't break the branches.  |  naide_kudasai wo_obj
+    4819329  こっち見ないでください。  |  Don't look at me.  |  naide_kudasai
+    5845217  音を立てないでください。  |  Don't make noise.  |  naide_kudasai wo_obj
+    10901613  そう思わないでください。  |  Please don't think in that way.  |  naide_kudasai
+    10921756  窓は開けないでください。  |  Please don't open the window.  |  naide_kudasai wa_desu
+    1046258  教室で走らないでください。  |  Please don't run in the classroom.  |  de_place naide_kudasai
+    1866548  それを買わないでください。  |  Please don't buy it.  |  kore naide_kudasai wo_obj
+    2040869  それは飲まないでください。  |  Don't drink that.  |  kore naide_kudasai wa_desu
+  nakereba: 9
+    6001  薬を飲まなければなりません。  |  I have to take medicine.  |  nakereba wo_obj
+    194208  もう行かなければなりません。  |  I have got to go now.  |  nakereba
+    1116423  もう行かなくてはいけません。  |  I have to leave now.  |  nakereba
+    121503  買い物に行かなければならない。  |  I have to go shopping.  |  nakereba ni_dest plain_dict
+    188838  駅まで走らなければならなかった。  |  I had to run to the station.  |  kara_made nakereba plain_dict
+    8218410  私は窓を開けなければなりません。  |  I have to open the window.  |  nakereba wa_desu wo_obj
+    194627  メグは勉強を続けなければならない。  |  Meg must carry on her studies.  |  nakereba plain_dict wa_desu wo_obj
+    198067  バスを少し待たなければならなかった。  |  We had to wait a little while for a bus.  |  nakereba plain_dict wo_obj
+    7422864  １日中フランス語を使わなければならない。  |  I have to use French all day.  |  nakereba plain_dict wo_obj
+
+== 19 Fuchū (12 reading sentences)
+  tekara: 10
+    10617667  食べてから寝たよ。  |  After we ate, we went to sleep.  |  ne_yo plain_dict plain_ta tekara
+    11017844  帰ってから勉強するよ。  |  I'll study after I come home.  |  ne_yo plain_dict tekara
+    235273  ３日たってから返事が来た。  |  The reply came after three days.  |  ga_subj plain_dict plain_ta tekara
+    10809869  テレビ見てから宿題するね。  |  I'll do my homework after I watch television.  |  ne_yo plain_dict tekara
+    11017846  勉強は、帰ってからするよ。  |  I'll study after I come home.  |  ne_yo plain_dict tekara wa_desu
+    11017849  宿題は、帰ってからするよ。  |  When I get home I will do my homework.  |  ne_yo plain_dict tekara wa_desu
+    11906844  お昼ご飯食べてからやるよ。  |  I'll do that after eating lunch.  |  ne_yo plain_dict tekara
+    111012  彼はベルが鳴ってから着いた。  |  He arrived after the bell rang.  |  ga_subj plain_dict plain_ta tekara wa_desu
+    124665  電話をしてから来てください。  |  Please phone me before you come.  |  te_kudasai tekara wo_obj
+    95396  彼女が死んでから１０年になる。  |  She has been dead for ten years.  |  ga_subj ni_time plain_dict tekara
+  mae_ni: 10
+    11065768  行く前に電話します。  |  I'll call him before I go.  |  mae_ni masu
+    9231680  来る前に電話してください。  |  Please call me before you come.  |  mae_ni te_kudasai
+    11056551  毎晩寝る前に本を読みます。  |  I read a book every night before bed.  |  mae_ni masu wo_obj
+    11099309  トムは食べる前に手を洗った。  |  Tom washed his hands before eating.  |  mae_ni plain_dict plain_ta wa_desu wo_obj
+    13201627  来る前に電話をしてください。  |  Please phone me before you come.  |  mae_ni te_kudasai wo_obj
+    145648  寝る前に電気を消してください。  |  Turn off the light before you go to bed.  |  mae_ni te_kudasai wo_obj
+    11643179  ご飯を食べる前に手を洗います。  |  I wash my hands before a meal.  |  mae_ni masu wo_obj
+    9073686  寝る前には電気を消してくださいね。  |  Please turn off the light before you go to bed.  |  mae_ni ne_yo te_kudasai wa_desu wo_obj
+    147789  出かける前に必ず電気を消して下さい。  |  Please be sure to turn off the light before you leave.  |  mae_ni te_kudasai wo_obj
+    1864542  出かける前には必ず窓を閉めてください。  |  Please be sure to close the windows before leaving.  |  mae_ni te_kudasai wa_desu wo_obj
+
+== 20 Mariko (12 reading sentences)
+  hou_ga: 10
+    235158  ５は８より少ない。  |  5 is less than 8.  |  hou_ga i_adj plain_dict wa_desu
+    11062069  新聞は本より安い。  |  The newspaper costs less than the book.  |  hou_ga i_adj plain_dict wa_desu
+    11700177  昨日よりも暑いね。  |  Today is hotter than yesterday.  |  hou_ga i_adj ne_yo plain_dict
+    125430  弟は私より背が高い。  |  My younger brother is taller than me.  |  ga_subj hou_ga i_adj plain_dict wa_desu
+    153734  私は彼より2歳若い。  |  I'm two years younger than he is.  |  hou_ga i_adj plain_dict wa_desu
+    2239664  彼は僕より足が速い。  |  He can run faster than I can.  |  ga_subj hou_ga i_adj plain_dict wa_desu
+    7577123  妻は私より３歳若い。  |  My wife is three years younger than I am.  |  hou_ga i_adj plain_dict wa_desu
+    9343990  大勢の方が楽しいよ。  |  The more the merrier.  |  hou_ga i_adj ne_yo plain_dict
+    11156700  東京より狭いですね。  |  It's smaller than in Tokyo.  |  hou_ga i_adj ne_yo wa_desu
+    11566710  ここの方が安全だよ。  |  It'll be safer here.  |  da hou_ga kore ne_yo plain_dict
+  ichiban: 10
+    8623849  これが一番いい。  |  I like this one best.  |  ga_subj i_adj ichiban kore plain_dict
+    10155831  ボストンが一番！  |  There's no place like Boston.  |  ga_subj ichiban plain_dict
+    10655749  私が一番上です。  |  I'm the first-born.  |  ga_subj ichiban wa_desu
+    10625858  私が一番若いです。  |  I'm the youngest.  |  ga_subj i_adj ichiban wa_desu
+    143582  数学が一番好きです。  |  I like math best.  |  ga_suki ichiban wa_desu
+    162238  私は春が一番好きだ。  |  I like spring the best.  |  da ga_suki ichiban plain_dict wa_desu
+    189243  英語が一番好きです。  |  I like English best.  |  ga_suki ichiban wa_desu
+    219673  この本が一番面白い。  |  This book is the most interesting.  |  ga_subj i_adj ichiban kono plain_dict
+    11851962  この本が一番小さい。  |  This book is the smallest of all.  |  ga_subj i_adj ichiban kono plain_dict
+    156043  私は秋が一番好きです。  |  I like autumn best.  |  ga_suki ichiban wa_desu

@@ -45,10 +45,15 @@ function gCardHTML(pid) {
 }
 
 // ---- questions in the JLPT's grammar styles
-const G_PART = { wa_desu: ["は"], no_pos: ["の"], wo_obj: ["を"], ni_dest: ["に", "へ"], mo_also: ["も"], de_place: ["で"], to_with: ["と"], aru_iru: ["が"], ni_exist: ["に"], ga_suki: ["が"] };
+const G_PART = { wa_desu: ["は"], no_pos: ["の"], wo_obj: ["を"], ni_dest: ["に", "へ"], mo_also: ["も"], de_place: ["で"], to_with: ["と"], aru_iru: ["が"], ni_exist: ["に"], ga_suki: ["が"],
+  hoshii: ["が"], ga_subj: ["が"], ni_time: ["に"] };
 const G_FORM = { masu: "ます", masen: "ません", mashita: "ました", masendeshita: "ませんでした", mashou: "ましょう", masenka: "ません" };
 const FORM_SET = ["ませんでした", "ましょう", "ません", "ました", "ます"]; // longest first, for matching endings
-const FORM_EN = { ます: "polite (do, will do)", ません: "polite negative (don't)", ました: "polite past (did)", ませんでした: "polite past negative (didn't)", ましょう: "let's", て: "て-form" };
+const FORM_EN = { ます: "polite (do, will do)", ません: "polite negative (don't)", ました: "polite past (did)", ませんでした: "polite past negative (didn't)", ましょう: "let's", て: "て-form",
+  ない: "plain negative (don't)", た: "plain past (did)", たい: "want to", ている: "is doing (ている)" };
+// verb-form drills: which form each point asks for, and which other forms make the wrong answers
+const CONJ = { masu: "ます", masen: "ません", mashita: "ました", masendeshita: "ませんでした", mashou: "ましょう", plain_nai: "ない", plain_ta: "た", tai: "たい", te_iru: "ている" };
+const POLITE_F = ["ます", "ません", "ました", "ませんでした", "ましょう"], PLAIN_F = ["ない", "た", "たい", "ている"];
 const exOf = pid => (GRAMMAR.ex[pid] || []).map(id => G_SENT[id]).filter(Boolean);
 function qParticle(pid, rng) {
   const p = G_PTS[pid], parts = G_PART[pid]; if (!p.wrong || !parts) return null;
@@ -75,9 +80,11 @@ function wrongTe(v) {
   out.delete(v.f["て"][0]); return [...out].filter(x => x !== d);
 }
 function qConj(pid, rng) {
-  const te = ["te_kudasai", "te_mo_ii", "te_wa_ikenai"].includes(pid); const form = te ? "て" : G_FORM[pid] && pid !== "masenka" ? G_FORM[pid] : null; if (!form) return null;
-  const v = rng.pick(GRAMMAR.verbs); const show = x => canRead(v.v) ? x[0] : x[1];
-  const wrong = te ? rng.shuffle(wrongTe(v)).slice(0, 3) : rng.shuffle(["ます", "ません", "ました", "ませんでした", "ましょう"].filter(f => f !== form)).slice(0, 3).map(f => show(v.f[f]));
+  const te = ["te_kudasai", "te_mo_ii", "te_wa_ikenai", "tekara"].includes(pid); const form = te ? "て" : CONJ[pid]; if (!form) return null;
+  const v = rng.pick(GRAMMAR.verbs.filter(x => x.f[form])); if (!v) return null; const show = x => canRead(v.v) ? x[0] : x[1];
+  const others = (POLITE_F.includes(form) ? POLITE_F : PLAIN_F).filter(f => f !== form && v.f[f]).map(f => show(v.f[f]));
+  if (!POLITE_F.includes(form)) others.push(canRead(v.v) ? v.v : v.r); // the dictionary form is a wrong answer too
+  const wrong = te ? rng.shuffle(wrongTe(v)).slice(0, 3) : rng.shuffle(others).slice(0, 3);
   if (wrong.length < 2) return null;
   const ans = show(v.f[form]);
   const opts = [...new Set([ans, ...wrong.map(w => te && !canRead(v.v) ? toReading(v, w) : w)])];
@@ -130,13 +137,14 @@ function viewGrammar(v) {
   v.innerHTML = `
   ${pageHead("lantern", "Grammar", "ぶんぽう", "Walk the old Tōkaidō road from Edo, one post town at a time. Each stop teaches JLPT N5 grammar with real sentences by native speakers.")}
   <section class="card stack">
-    <div class="row"><span class="eyebrow">Chapter 1 · Nihonbashi to Hakone</span><span class="spacer"></span><span class="pill pink">${gPointsDone()}/${gPointsAll()} points</span></div>
+    <div class="row"><span class="eyebrow">JLPT N5 grammar · ${GRAMMAR.chapters.length} chapters</span><span class="spacer"></span><span class="pill pink">${gPointsDone()}/${gPointsAll()} points</span></div>
     <div class="bar"><i style="width:${gPointsDone() / gPointsAll() * 100}%"></i></div>
     <div class="row"><button class="btn pink" id="gcont">${IMG("sparkles")}${gStars(nx) ? "Revisit" : gCleared() ? "Continue" : "Start"} at ${gPlace(G_STOPS[nx])}</button>
       <button class="btn ghost" id="grev" ${gCleared() ? "" : "disabled"}>${IMG("droplet")}Grammar review</button></div>
   </section>
-  <section class="road">${G_STOPS.map((st, i) => { const open = gOpen(i), stars = gStars(i);
-    return `<button class="rstop ${stars ? "cleared" : open ? "open" : "locked"} ${i === nx ? "next" : ""}" ${open ? `data-gs="${i}"` : "disabled"}>
+  <section class="road">${G_STOPS.map((st, i) => { const open = gOpen(i), stars = gStars(i), ch = GRAMMAR.chapters.find(c => c.n === st.ch);
+    const head = (!i || G_STOPS[i - 1].ch !== st.ch) && ch ? `<div class="rchap"><span class="eyebrow">Chapter ${ch.n}</span><b>${esc(ch.name)}</b><small class="muted">${esc(ch.note)}</small></div>` : "";
+    return `${head}<button class="rstop ${stars ? "cleared" : open ? "open" : "locked"} ${i === nx ? "next" : ""}" ${open ? `data-gs="${i}"` : "disabled"}>
       <span class="rnum">${i === 0 ? "起" : i}</span>
       <span class="rbody"><b>${open ? gPlace(st) : `<span class="latin">${esc(st.ro)}</span>`}</b>${open && canRead(st.place) ? ` <small class="ro">${esc(st.ro)}</small>` : ""}
         <span class="rpts glyph">${st.points.map(p => `<span>${furiText(G_PTS[p].pattern)}</span>`).join("")}</span></span>

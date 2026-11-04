@@ -36,5 +36,5 @@ Each sub-level is a real station (tools/route.tsv, 228 stops in order): Tokyo ne
 1. **Rail trip across Japan:** the game becomes a train line; each station unlocks its own games, kanji, and a stamp page. A hidden "unlock up to a stop" picker (tap the train five times) opens every station up to the chosen one; stamps are still earned.
 2. **Scenes:** konbini (orders, prices, 温めますか), ramen ticket machine (食券機), pet store sorting, station exits, shrine fortunes.
 3. **More dailies:** Vine Trace (Strands-style), Bee Sort (Connections-style), Shiritori Chain, Trellis mini-crossword, Seed Storm speed round, kanji sudoku, sign fixer.
-4. **Grammar:** chapter 1 (Nihonbashi to Hakone, 27 N5 points) is built; next, the rest of the Tōkaidō to Kyoto for the remaining N5 points, then N4 on the Nakasendō.
+4. **Grammar:** chapters 1 and 2 (Nihonbashi to Mariko, 47 N5 points) are built; next, the rest of the Tōkaidō to Kyoto for the remaining N5 points, then N4 on the Nakasendō.
 5. Progress stays per device (decided).

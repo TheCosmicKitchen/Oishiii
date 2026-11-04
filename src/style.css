@@ -777,3 +777,28 @@ main#view{gap:16px}
 .rneed{display:flex;gap:4px;font-size:.75rem;color:var(--ink-soft)}.rneed span{display:inline-flex;align-items:center;opacity:.5}.rneed span.have{opacity:1;color:var(--ink)}.rneed .em{width:18px;height:18px}
 button.friendc{border:0;font:inherit}
 @media (prefers-reduced-motion: reduce){.gcloud,.gfall,.gstars{animation:none}.gfall{display:none}}
+
+/* ---------- restaurant ---------- */
+.gswitch{align-self:stretch;display:grid;grid-template-columns:1fr 1fr}.gswitch button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px}.gswitch .em{width:22px;height:22px}
+.shopfront{position:relative;display:flex;flex-direction:column;gap:10px;padding:46px 16px 16px;border-radius:var(--r-xl);box-shadow:var(--lift);background:linear-gradient(180deg,#F6E7CF,#FFF8EC);border:1.5px solid var(--line);overflow:hidden;color:#3A2E22}
+.noren{position:absolute;left:12%;right:12%;top:0;height:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.noren span{background:#2F4E7A;border-radius:0 0 8px 8px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
+.sign{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.rname{font-family:var(--f-display);font-size:1.3rem;border:0;background:none;text-align:center;color:#3A2E22;width:100%}.rname::placeholder{color:#8A7A66}
+.sign small{color:#7A6A58}
+.decor{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:40px;align-items:center}.decor .em{width:36px;height:36px;animation:bob 3s ease-in-out infinite}
+.decor .em:nth-child(2n){animation-delay:-1.5s}
+.shopfront .money{justify-content:center}.shopfront .chip{background:#FFFDF8;color:#3A2E22}
+.shopfront small.muted{color:#7A6A58;text-align:center}
+.stockrow{display:flex;flex-wrap:wrap;gap:6px}
+.upgrades{display:flex;flex-direction:column;gap:8px}
+.upg{display:flex;align-items:center;gap:10px;text-align:left;border:0;background:var(--surface-2);border-radius:var(--r-md);padding:8px 10px}
+.upg > div{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px}.upg small{display:block;width:100%;color:var(--ink-soft);font-size:.75rem}
+.upg.got{background:color-mix(in srgb,var(--leaf) 14%,var(--surface))}
+.service .guest{display:flex;align-items:center;gap:12px}
+.order{background:var(--surface-2);border-radius:var(--r-md);padding:12px 14px;position:relative}
+.order::before{content:"";position:absolute;left:28px;top:-8px;border:8px solid transparent;border-bottom-color:var(--surface-2);border-top:0}
+.order p.glyph{font-size:1.4rem;margin:0}.order .ro{margin:2px 0 0}
+.serve{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.sdish{display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid var(--line);border-radius:var(--r-md);padding:8px 4px;background:var(--surface);box-shadow:0 3px 0 var(--line)}
+.sdish small{font-size:.75rem;text-align:center}.sdish.wrong{animation:shake .4s;border-color:var(--bad)}

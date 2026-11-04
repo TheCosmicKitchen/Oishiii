@@ -153,14 +153,21 @@ const stageEmoji = p => { const it = SHOP_BY[p.id]; return it.grow && p.g === 0 
 const stageScale = p => { const it = SHOP_BY[p.id]; return !it.grow || isGrown(p) ? 1 : .5 + .4 * p.g / it.grow; };
 
 // ---------- GARDEN TAB ----------
-let GARDEN_CAT = "flower", GARDEN_ACT = null;
+let GARDEN_CAT = "flower", GARDEN_ACT = null, GARDEN_VIEW = "garden";
+try { GARDEN_VIEW = sessionStorage.getItem("kg.gview") || "garden"; } catch (e) { }
 function viewGarden(v) {
+  const sw = `<div class="seg gswitch" role="tablist"><button data-gv="garden" aria-pressed="${GARDEN_VIEW === "garden"}" role="tab">${IMG("watering")}Garden</button><button data-gv="rest" aria-pressed="${GARDEN_VIEW === "rest"}" role="tab">${IMG("plate")}Restaurant${stockCount() ? ` <span class="pill pink">${stockCount()}</span>` : ""}</button></div>`;
+  const bindSw = () => $$("[data-gv]", v).forEach(b => b.onclick = () => { GARDEN_VIEW = b.dataset.gv; try { sessionStorage.setItem("kg.gview", GARDEN_VIEW); } catch (e) { } viewGarden(v); window.scrollTo(0, 0); });
+  if (GARDEN_VIEW === "rest") {
+    v.innerHTML = `${pageHead("plate", "Restaurant", "レストラン", "Your own little restaurant. Cook what the garden grows and serve customers who order in Japanese.")}${sw}<div id="restv" class="stack"></div>`;
+    viewRestaurant($("#restv", v)); bindSw(); return;
+  }
   const g = G(); checkFriends();
   const pend = seedsPending(), cells = g.rows * GARDEN_COLS;
   const used = new Set(); const spots = FRIENDS.filter(f => g.friends[f.id]).map(f => { let c = hashStr(f.id + todayKey()) % cells; while (used.has(c) && used.size < cells) c = (c + 1) % cells; used.add(c); return { f, c }; });
   const nextLock = SHOP.filter(it => it.at > g.cashed).sort((a, b) => a.at - b.at)[0];
   const b = bloom(), r = rankOf(b), nx = RANKS[r + 1], sky = skyNow();
-  v.innerHTML = `${pageHead("watering", "Garden", "にわ", "Trade in stamps for seeds, grow plants, cook what you harvest, and meet the friends who move in.")}
+  v.innerHTML = `${pageHead("watering", "Garden", "にわ", "Trade in stamps for seeds, grow plants, harvest for your restaurant, and meet the friends who move in.")}${sw}
   <section class="card stack grank">
     <div class="row" style="flex-wrap:nowrap">${IMGW(RANKS[r][2], 44)}<div style="flex:1;min-width:0"><input id="gname" class="gname" value="${esc(g.name)}" placeholder="Name your garden" maxlength="24" aria-label="Garden name"><small class="muted">${RANKS[r][1]}${nx ? ` · ${nx[0] - b} bloom to ${nx[1]}` : " · the finest garden of all"}</small></div></div>
     <div class="bar"><i style="width:${nx ? Math.min(100, (b - RANKS[r][0]) / (nx[0] - RANKS[r][0]) * 100) : 100}%"></i></div>
@@ -179,7 +186,9 @@ function viewGarden(v) {
   </section>
   <section class="card stack"><header class="row">${IMGW("basket", 30)}<h3>Your shed</h3><span class="spacer"></span><span class="pill">${g.shed.length}</span></header>
     ${g.shed.length ? `<div class="shed">${g.shed.map((p, i) => `<button class="shedi" data-pick="shed:${i}" aria-label="${esc(SHOP_BY[p.id].en)}">${IMG(SHOP_BY[p.id].e)}${SHOP_BY[p.id].grow && !isGrown(p) ? `<i class="shedseed">${IMG("seedling")}</i>` : ""}</button>`).join("")}</div>` : `<p class="muted" style="font-size:.82rem">Things you buy wait here until you plant them.</p>`}</section>
-  ${kitchenHTML()}
+  <section class="card stack"><header class="row">${IMGW("basket", 32)}<div style="flex:1;min-width:0"><h3>Pantry</h3><p class="muted" style="font-size:.8rem">Harvested veggies wait here for the restaurant kitchen.</p></div></header>
+    <div class="pantry">${Object.entries(g.pantry).filter(([, n]) => n > 0).map(([id, n]) => `<span class="pchip">${IMG(SHOP_BY[id].e)}<b>×${n}</b></span>`).join("") || `<span class="muted" style="font-size:.82rem">Empty. Tap a fully grown veggie to harvest it.</span>`}</div>
+    <button class="btn ghost small" data-gv="rest">${IMG("cooking")}To the kitchen</button></section>
   ${wordsHTML()}
   <section class="card stack"><header class="row">${IMGW("store", 34)}<div style="flex:1;min-width:0"><h2>Garden shop</h2><p class="muted" style="font-size:.8rem">${nextLock ? `Trade in ${nextLock.at - g.cashed} more seeds to stock the next thing.` : "Everything is in stock."}</p></div></header>
     <div class="seg" role="tablist">${SHOP_CATS.map(c => `<button data-gcat="${c.id}" aria-pressed="${GARDEN_CAT === c.id}" role="tab">${c.name}</button>`).join("")}</div>
@@ -188,7 +197,7 @@ function viewGarden(v) {
     <p class="muted" style="font-size:.82rem">Friends move in by themselves when the garden suits them, and they stay.</p>
     <div class="friendgrid">${FRIENDS.map(f => g.friends[f.id] ? `<button class="friendc got" data-friend="${f.id}">${IMG(f.e)}<small>${jpLine(f)}</small></button>` : `<div class="friendc">${IMG(f.e)}<small>${esc(f.hint)}</small></div>`).join("")}</div>
     <p class="help">Tap a friend to hear their name.</p></section>`;
-  bindGarden(v);
+  bindGarden(v); bindSw();
 }
 function plotHTML(i) {
   const p = G().plots[i];
@@ -211,7 +220,7 @@ function shopItemHTML(it) {
 }
 function kitchenHTML() {
   const g = G(), pantry = Object.entries(g.pantry).filter(([, n]) => n > 0);
-  return `<section class="card stack kitchen"><header class="row">${IMGW("cooking", 36)}<div style="flex:1;min-width:0"><h2>Oishii kitchen</h2><p class="muted" style="font-size:.8rem">Harvest what you grow, then cook it. Each new dish goes in your recipe book and gives ${DISH_SEEDS} seeds.</p></div><span class="pill pink">${cookedCount()}/${RECIPES.length}</span></header>
+  return `<section class="card stack kitchen"><header class="row">${IMGW("cooking", 36)}<div style="flex:1;min-width:0"><h2>Oishii kitchen</h2><p class="muted" style="font-size:.8rem">Cook what you harvest; dishes go to the counter for your customers. Each new dish also goes in your recipe book and gives ${DISH_SEEDS} seeds.</p></div><span class="pill pink">${cookedCount()}/${RECIPES.length}</span></header>
     <div class="pantry">${pantry.length ? pantry.map(([id, n]) => `<span class="pchip">${IMG(SHOP_BY[id].e)}<b>×${n}</b></span>`).join("") : `<span class="muted" style="font-size:.82rem">Your pantry is empty. Grow veggies, then tap one to harvest it.</span>`}</div>
     <div class="recipes">${RECIPES.map(r => { const done = g.cooked[r.id], ok = canCook(r);
       return `<div class="recipe ${done ? "done" : ""}"><span class="rdish">${IMG(r.e)}</span><div class="rinfo"><b class="glyph">${nameHTML(r)}</b><small>${esc(r.en)}</small>
@@ -248,6 +257,18 @@ function gardenWords() {
     draw();
   });
 }
+// cooking uses the pantry and puts the dish in the restaurant's stock (two with the helper chef)
+function bindKitchen(v, redraw) {
+  const g = G();
+  $$("[data-cook]", v).forEach(bt => bt.onclick = () => {
+    const r = RECIPES.find(x => x.id === bt.dataset.cook); if (!canCook(r)) return;
+    Object.entries(r.need).forEach(([id, n]) => g.pantry[id] -= n);
+    const made = has("chef") ? 2 : 1; RS().stock[r.id] = (RS().stock[r.id] || 0) + made;
+    const first = !g.cooked[r.id]; if (first) { g.cooked[r.id] = todayKey(); g.bonus += DISH_SEEDS; }
+    save(); SFX.win(); confetti(first ? 30 : 12);
+    toast(first ? `${r.en}! +${DISH_SEEDS} seeds, a new page in your recipe book, and ${made} ready to serve.` : `${made} ${r.en.toLowerCase()} ready to serve. おいしい!`); redraw();
+  });
+}
 function bindGarden(v) {
   const g = G(), redraw = () => viewGarden(v);
   const spend = n => { if (seeds() < n) { toast(`You need ${n - seeds()} more seeds. Trade in stamps to get more.`); SFX.bad(); return false; } g.spent += n; return true; };
@@ -263,13 +284,7 @@ function bindGarden(v) {
     const p = g.plots[GARDEN_ACT]; if (!p || !isGrown(p)) return; const it = SHOP_BY[p.id];
     g.pantry[p.id] = (g.pantry[p.id] || 0) + 1; p.g = it.grow - 1; save(); SFX.pop(); toast(`+1 ${it.en.toLowerCase()} for the kitchen`); redraw();
   };
-  $$("[data-cook]", v).forEach(bt => bt.onclick = () => {
-    const r = RECIPES.find(x => x.id === bt.dataset.cook); if (!canCook(r)) return;
-    Object.entries(r.need).forEach(([id, n]) => g.pantry[id] -= n);
-    const first = !g.cooked[r.id]; if (first) { g.cooked[r.id] = todayKey(); g.bonus += DISH_SEEDS; }
-    save(); SFX.win(); confetti(first ? 30 : 12);
-    toast(first ? `${r.en}! いただきます! +${DISH_SEEDS} seeds and a new page in your recipe book.` : `${r.en} again. おいしい!`); redraw();
-  });
+  bindKitchen(v, redraw);
   const gw = $("#gwords", v); if (gw) gw.onclick = gardenWords;
   $$("[data-friend]", v).forEach(bt => bt.onclick = () => { const f = FRIENDS.find(x => x.id === bt.dataset.friend); say(f.jp); toast(`${f.jp} · ${f.ro}`); });
   $$("[data-buy]", v).forEach(b => b.onclick = () => {

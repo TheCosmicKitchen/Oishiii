@@ -31,6 +31,8 @@ NAMES = {
  "rose":"Rose","cactus":"Cactus","frog":"Frog","duck":"Duck","hedgehog":"Hedgehog","hut":"Hut","fountain":"Fountain","strawberry":"Strawberry","corn":"Ear of corn","bouquet":"Bouquet","rainbow":"Rainbow","owl":"Owl","wood":"Wood","palm":"Palm tree","pepper":"Bell pepper","melon":"Watermelon","lotus":"Lotus","sunrise":"Sunrise over mountains",
  # garden kitchen and sky
  "curry":"Curry rice","shortcake":"Shortcake","shavedice":"Shaved ice","salad":"Green salad","nabe":"Pot of food","cooking":"Cooking","cloud":"Cloud","fallenleaf":"Fallen leaf","yakiimo":"Roasted sweet potato","stars":"Glowing star",
+ # restaurant
+ "windchime":"Wind chime","carp":"Carp streamer","cook":"Cook","chair":"Chair","bellhop":"Bellhop bell","scroll":"Scroll","pinedeco":"Pine decoration","catface":"Cat face","teahot":"Hot beverage",
 }
 
 def snake(n): return n.lower().replace(" ","_")

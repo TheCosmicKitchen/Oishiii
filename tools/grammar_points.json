@@ -236,6 +236,116 @@
     "hou_ga",
     "ichiban"
    ]
+  },
+  {
+   "ch": 3,
+   "id": "okabe",
+   "place": "岡部",
+   "ro": "Okabe",
+   "note": "The 21st post town, just past the steep Utsunoya Pass.",
+   "points": [
+    "to_and",
+    "ya",
+    "ka_or"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "fujieda",
+   "place": "藤枝",
+   "ro": "Fujieda",
+   "note": "The 22nd post town, where Hiroshige painted porters and horses being changed for the next stage.",
+   "points": [
+    "dake",
+    "gurai_goro"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "shimada",
+   "place": "島田",
+   "ro": "Shimada",
+   "note": "The 23rd post town, on the east bank of the Ōi River. There was no bridge, so travellers were carried across on porters' shoulders.",
+   "points": [
+    "naru",
+    "ni_suru"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "kanaya",
+   "place": "金谷",
+   "ro": "Kanaya",
+   "note": "The 24th post town, on the far bank of the Ōi River.",
+   "points": [
+    "mou_mada",
+    "amari_zenzen"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "nissaka",
+   "place": "日坂",
+   "ro": "Nissaka",
+   "note": "The 25th post town, on the Sayo no Nakayama pass, home of the legendary \"night-crying stone\".",
+   "points": [
+    "nanika",
+    "nanimo"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "kakegawa",
+   "place": "掛川",
+   "ro": "Kakegawa",
+   "note": "The 26th post town, a castle town.",
+   "points": [
+    "ni_iku"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "fukuroi",
+   "place": "袋井",
+   "ro": "Fukuroi",
+   "note": "The 27th post town, right in the middle of the 53.",
+   "points": [
+    "ta_koto",
+    "tari"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "mitsuke",
+   "place": "見附",
+   "ro": "Mitsuke",
+   "note": "The 28th post town, near the wide Tenryū River.",
+   "points": [
+    "nagara",
+    "atode"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "hamamatsu",
+   "place": "浜松",
+   "ro": "Hamamatsu",
+   "note": "The 29th post town, the castle town where the young Tokugawa Ieyasu ruled.",
+   "points": [
+    "deshou",
+    "toki"
+   ]
+  },
+  {
+   "ch": 3,
+   "id": "maisaka",
+   "place": "舞坂",
+   "ro": "Maisaka",
+   "note": "The 30th post town, on Lake Hamana, where travellers took a boat across to Arai.",
+   "points": [
+    "rel_clause",
+    "nakute_ii"
+   ]
   }
  ],
  "points": {
@@ -732,6 +842,204 @@
     "を",
     "で"
    ]
+  },
+  "to_and": {
+   "pattern": "A と B",
+   "en": "A and B (the whole list)",
+   "make": "noun + と + noun",
+   "notes": [
+    "と between nouns means \"and\", and it names everything: パンと{牛乳|ぎゅうにゅう}を{買|か}いました \"I bought bread and milk\" (just those two). It joins nouns only, never sentences."
+   ],
+   "check": "Tae Kim: Particles (と)",
+   "wrong": [
+    "を",
+    "で"
+   ],
+   "also": [
+    "や"
+   ]
+  },
+  "ya": {
+   "pattern": "A や B",
+   "en": "A and B (among others)",
+   "make": "noun + や + noun",
+   "notes": [
+    "や is \"and\" for a list that isn't complete: {本|ほん}や{ノート|のーと}を{買|か}いました \"I bought books, notebooks and so on\"."
+   ],
+   "check": "Tae Kim: Particles (や)",
+   "wrong": [
+    "を",
+    "で"
+   ],
+   "also": [
+    "と"
+   ]
+  },
+  "ka_or": {
+   "pattern": "A か B",
+   "en": "A or B",
+   "make": "noun + か + noun",
+   "notes": [
+    "か between nouns means \"or\": {電車|でんしゃ}かバスで{行|い}きます \"I'll go by train or bus\"."
+   ],
+   "check": "Tae Kim: Particles (か)"
+  },
+  "dake": {
+   "pattern": "A だけ",
+   "en": "only A, just A",
+   "make": "noun or amount + だけ",
+   "notes": [
+    "だけ means \"only\": {一つ|ひとつ}だけ \"just one\", {私|わたし}だけ \"only me\"."
+   ],
+   "check": "Tae Kim: Particles (だけ)"
+  },
+  "gurai_goro": {
+   "pattern": "…ぐらい / …ごろ",
+   "en": "about (an amount) / about (a time)",
+   "make": "amount + ぐらい (or くらい); clock time + ごろ",
+   "notes": [
+    "ぐらい is \"about\" for amounts and lengths: {一時間|いちじかん}ぐらい \"about an hour\". ごろ is \"about\" for a point in time: {三時|さんじ}ごろ \"around three\"."
+   ],
+   "check": "Tae Kim: Particles (ぐらい, ごろ)"
+  },
+  "naru": {
+   "pattern": "…く なる / …に なる",
+   "en": "become",
+   "make": "い-adjective: {高|たか}い → {高|たか}くなる; noun or な-adjective + に + なる",
+   "notes": [
+    "なる means \"become\": {寒|さむ}くなりました \"It got cold\", {先生|せんせい}になりたいです \"I want to become a teacher\", {静|しず}かになりました \"It got quiet\"."
+   ],
+   "check": "Tae Kim: Using なる and する"
+  },
+  "ni_suru": {
+   "pattern": "A に します",
+   "en": "decide on A, make it A",
+   "make": "noun + に + する",
+   "notes": [
+    "にする says what you choose: コーヒーにします \"I'll have coffee\". With an adjective, くする means \"make it…\": {部屋|へや}を{暖|あたた}かくする."
+   ],
+   "check": "Tae Kim: Using なる and する"
+  },
+  "mou_mada": {
+   "pattern": "もう… / まだ…",
+   "en": "already, anymore / still, not yet",
+   "make": "もう + verb; まだ + verb",
+   "notes": [
+    "もう means \"already\" (もう{食|た}べました) or, with a negative, \"not anymore\". まだ means \"still\" (まだ{寝|ね}ています) or, with a negative, \"not yet\": まだ{来|き}ていません."
+   ],
+   "check": "Tae Kim: Adverbs (もう, まだ)"
+  },
+  "amari_zenzen": {
+   "pattern": "あまり / ぜんぜん + negative",
+   "en": "not very / not at all",
+   "make": "あまり or {全然|ぜんぜん} + a negative verb or adjective",
+   "notes": [
+    "あまり with a negative means \"not very\": あまり{高|たか}くないです \"It's not very expensive\". {全然|ぜんぜん} with a negative means \"not at all\": {全然|ぜんぜん}わかりません."
+   ],
+   "check": "Tae Kim: Adverbs"
+  },
+  "nanika": {
+   "pattern": "{何|なに}か・{誰|だれ}か・どこか",
+   "en": "something, someone, somewhere",
+   "make": "question word + か",
+   "notes": [
+    "Add か to a question word for \"some\": {何|なに}か{飲|の}みますか \"Will you drink something?\", {誰|だれ}か{来|き}ました \"Someone came\"."
+   ],
+   "check": "Tae Kim: Question words (か)"
+  },
+  "nanimo": {
+   "pattern": "{何|なに}も・{誰|だれ}も + negative",
+   "en": "nothing, nobody, nowhere",
+   "make": "question word + も + a negative verb",
+   "notes": [
+    "Add も to a question word, with a negative verb, for \"no-\": {何|なに}も{食|た}べません \"I don't eat anything\", {誰|だれ}も{来|き}ませんでした \"Nobody came\". For places: どこにも{行|い}きません."
+   ],
+   "check": "Tae Kim: Question words (も)"
+  },
+  "ni_iku": {
+   "pattern": "verb stem に {行|い}く",
+   "en": "go to do something",
+   "make": "verb stem + に + {行|い}く / {来|く}る / {帰|かえ}る",
+   "notes": [
+    "The stem (the ます form without ます) + に + {行|い}く says why you're going: {食|た}べに{行|い}きます \"I'm going to eat\", {遊|あそ}びに{来|き}てください \"Come and visit\"."
+   ],
+   "check": "Tae Kim: Particles (に for purpose)",
+   "wrong": [
+    "を",
+    "で"
+   ]
+  },
+  "ta_koto": {
+   "pattern": "verb た ことが あります",
+   "en": "have done (ever)",
+   "make": "た form + ことがあります",
+   "notes": [
+    "た form + ことがある talks about experience: {日本|にほん}に{行|い}ったことがあります \"I've been to Japan\". ことがありません: \"I've never…\"."
+   ],
+   "check": "Tae Kim: Experience (たことがある)"
+  },
+  "tari": {
+   "pattern": "…たり …たり します",
+   "en": "do things like A and B",
+   "make": "た form + り, twice, then する",
+   "notes": [
+    "たり lists some of the things you do, not all: {本|ほん}を{読|よ}んだり、{音楽|おんがく}を{聞|き}いたりします \"I read books, listen to music and so on\"."
+   ],
+   "check": "Tae Kim: Listing actions (たり)"
+  },
+  "nagara": {
+   "pattern": "verb stem ながら",
+   "en": "while doing",
+   "make": "verb stem + ながら",
+   "notes": [
+    "ながら joins two things done at the same time by the same person: {音楽|おんがく}を{聞|き}きながら{勉強|べんきょう}します \"I study while listening to music\". The main action comes last."
+   ],
+   "check": "Tae Kim: Doing two things at once (ながら)"
+  },
+  "atode": {
+   "pattern": "verb た {後|あと}で / noun の{後|あと}で",
+   "en": "after…, later",
+   "make": "た form + {後|あと}で; noun + の + {後|あと}で; {後|あと}で on its own means \"later\"",
+   "notes": [
+    "{後|あと}で means \"after\": {食|た}べた{後|あと}で \"after eating\", {授業|じゅぎょう}の{後|あと}で \"after class\". The verb is in the た form, the opposite of {前|まえ}に."
+   ],
+   "check": "Tae Kim: Time expressions (後で)"
+  },
+  "deshou": {
+   "pattern": "…でしょう",
+   "en": "probably, I suppose; …right?",
+   "make": "plain form or noun + でしょう (casual: だろう)",
+   "notes": [
+    "でしょう guesses: {明日|あした}は{雨|あめ}でしょう \"It will probably rain tomorrow\". Said with a rising tone it checks with the listener: \"…right?\"."
+   ],
+   "check": "Tae Kim: Expressing probability (でしょう)"
+  },
+  "toki": {
+   "pattern": "…とき",
+   "en": "when…",
+   "make": "plain form + とき; noun + の + とき; な-adjective + な + とき",
+   "notes": [
+    "とき means \"when\": {子供|こども}のとき \"when I was a child\", {暇|ひま}なとき \"when I'm free\", {寝|ね}るとき \"when I go to bed\"."
+   ],
+   "check": "Tae Kim: Time expressions (時)"
+  },
+  "rel_clause": {
+   "pattern": "verb + noun",
+   "en": "a noun described by a verb",
+   "make": "plain form + noun: {私|わたし}が{読|よ}んだ{本|ほん}",
+   "notes": [
+    "In Japanese, a description always comes before the noun. A whole plain sentence can describe a noun: {昨日|きのう}{買|か}った{本|ほん} \"the book I bought yesterday\", {眼鏡|めがね}をかけている{人|ひと} \"the person wearing glasses\"."
+   ],
+   "check": "Tae Kim: Relative clauses and sentence order"
+  },
+  "nakute_ii": {
+   "pattern": "verb なくても いいです",
+   "en": "don't have to",
+   "make": "ない form, ない → なくてもいいです",
+   "notes": [
+    "なくてもいい means \"it's fine not to\": {急|いそ}がなくてもいいです \"You don't have to hurry\". Compare なければなりません, \"have to\"."
+   ],
+   "check": "Tae Kim: Expressing permission (なくてもいい)"
   }
  },
  "chapters": [
@@ -744,6 +1052,11 @@
    "n": 2,
    "name": "Mishima to Mariko",
    "note": "Wants, ongoing actions, time, and the plain forms friends use with each other."
+  },
+  {
+   "n": 3,
+   "name": "Okabe to Maisaka",
+   "note": "Lists, amounts, change, experience, and describing things with whole sentences."
   }
  ]
 }

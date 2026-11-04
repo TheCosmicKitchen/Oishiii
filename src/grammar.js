@@ -14,7 +14,7 @@ const gNext = () => { const i = G_STOPS.findIndex((_, j) => !gStars(j)); return 
 const gPlace = st => canRead(st.place) ? esc(st.place) : `<span class="latin">${esc(st.ro)}</span>`;
 // {漢字|かな} in card text: the kanji once stamped, else the kana
 const furiText = s => esc(s).replace(/\{([^|}]+)\|([^}]+)\}/g, (m, k, r) => canRead(k) ? `<b class="kj">${k}</b>` : `<span class="kn">${r}</span>`);
-const sentRo = s => romajiSentence(s.w.filter(c => c.k !== "x").flatMap(c => c.k === "p" ? [c.t] : c.r.split(/(?=です$|でした$)/))); // ねこです → neko desu
+const sentRo = s => romajiSentence(s.w.filter(c => c.k !== "x").flatMap(c => c.k === "p" ? [c.t] : c.r.split(/(?=です$|でした$|でしょう?$|だろう?$|だった$|だ$)/))); // ねこです → neko desu
 
 // ---- a sentence you can tap: each word shows its reading and meaning; the line below shows the English
 function sentHTML(s, { en = true, blank = -1, blankText = "（　）" } = {}) {
@@ -46,13 +46,14 @@ function gCardHTML(pid) {
 
 // ---- questions in the JLPT's grammar styles
 const G_PART = { wa_desu: ["は"], no_pos: ["の"], wo_obj: ["を"], ni_dest: ["に", "へ"], mo_also: ["も"], de_place: ["で"], to_with: ["と"], aru_iru: ["が"], ni_exist: ["に"], ga_suki: ["が"],
-  hoshii: ["が"], ga_subj: ["が"], ni_time: ["に"] };
+  hoshii: ["が"], ga_subj: ["が"], ni_time: ["に"], to_and: ["と"], ya: ["や"], ni_iku: ["に"] };
 const G_FORM = { masu: "ます", masen: "ません", mashita: "ました", masendeshita: "ませんでした", mashou: "ましょう", masenka: "ません" };
 const FORM_SET = ["ませんでした", "ましょう", "ません", "ました", "ます"]; // longest first, for matching endings
 const FORM_EN = { ます: "polite (do, will do)", ません: "polite negative (don't)", ました: "polite past (did)", ませんでした: "polite past negative (didn't)", ましょう: "let's", て: "て-form",
   ない: "plain negative (don't)", た: "plain past (did)", たい: "want to", ている: "is doing (ている)" };
 // verb-form drills: which form each point asks for, and which other forms make the wrong answers
-const CONJ = { masu: "ます", masen: "ません", mashita: "ました", masendeshita: "ませんでした", mashou: "ましょう", plain_nai: "ない", plain_ta: "た", tai: "たい", te_iru: "ている" };
+const CONJ = { masu: "ます", masen: "ません", mashita: "ました", masendeshita: "ませんでした", mashou: "ましょう", plain_nai: "ない", plain_ta: "た", tai: "たい", te_iru: "ている",
+  ta_koto: "た", tari: "た", nakute_ii: "ない", naide_kudasai: "ない", nakereba: "ない" };
 const POLITE_F = ["ます", "ません", "ました", "ませんでした", "ましょう"], PLAIN_F = ["ない", "た", "たい", "ている"];
 const exOf = pid => (GRAMMAR.ex[pid] || []).map(id => G_SENT[id]).filter(Boolean);
 function qParticle(pid, rng) {

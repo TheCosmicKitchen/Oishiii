@@ -25,6 +25,16 @@ Progress is saved per device in the browser (localStorage).
 - **Collection:** a station stamp for every stop, a kanji stamp for every kanji (one page per JLPT level), trophies, route and puzzle stars, and a completion meter. No streaks, nothing expires.
 - **Two roles:** Kana speller (reading choices with romaji) and Kanji reader (typed readings, WaniKani style, bare kanji). Typing converts romaji to kana like WaniKani.
 
+## Mochi's Great Journey (hajimete/)
+
+A separate, shareable page for friends on a first trip to Japan: https://thecosmickitchen.github.io/Oishiii/hajimete/ . A tiny hamster's epic 140-metre quest from the arrivals gate to a hotel bed, with stops for the kana (tap-to-hear charts and a quiz), the 47 signs you'll actually see (exits, toilets, trains, shops), everyday katakana on menus and shelves, 28 phrases, and "know before you go" cards (IC cards, cash, the November 2026 tax-free refund system, bins, tipping, shoes, onsen, emergency numbers, the departure tax). Every travel fact links its source and the date it was checked.
+
+Its Japanese is built by `tools/hajimete_build.py` from the same open sources, never hand-written: phrases are Tatoeba sentences picked by id (Japanese by a native speaker or with human-checked furigana, English by a native speaker, readings checked two ways) or JMdict set expressions; sign words and katakana words must be JMdict words, with JMdict's meanings. `tools/hajimete_report.txt` lists what was kept and dropped. `python3 build.py` writes the page's emoji and stamps its files so browsers fetch new versions.
+
+```
+python3 tools/hajimete_build.py tatoeba/ jmdict-eng-*.json JmdictFurigana.txt   # the full JMdict, not just common words
+```
+
 ## Develop
 
 Edit files in `src/`, then rebuild:

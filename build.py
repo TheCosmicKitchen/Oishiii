@@ -6,7 +6,7 @@ Writes:
   dist/oishii.html  - page body for publishing as a Claude artifact
   index.html        - full standalone page (open locally or serve with GitHub Pages)
 """
-import os
+import json, os, re
 ROOT = os.path.dirname(os.path.abspath(__file__))
 rd = lambda *p: open(os.path.join(ROOT, *p), encoding="utf-8").read()
 JS_ORDER = ["data.js", "kanji-data.js", "compound-data.js", "ground-data.js", "route-data.js", "photo-data.js", "deck-data.js", "grammar-data.js", "kanji.js", "core.js", "learn.js", "rail.js", "scenes.js", "sushi.js", "garden.js", "restaurant.js", "grammar.js", "home.js", "puzzles.js"]
@@ -29,3 +29,19 @@ full = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         + body + '\n</body>\n</html>\n')
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(full)
 print(f"built dist/oishii.html and index.html ({len(full) // 1024} KB)")
+
+# Mochi's Great Journey (hajimete/): only the emoji it uses
+HAJIMETE_EMOJI = "hamster plane warning train store ramen hotel book star speaker map paws party".split()
+emo = json.loads(rd("assets", "emoji.json"))
+open(os.path.join(ROOT, "hajimete", "emoji.js"), "w", encoding="utf-8").write(
+    "// Microsoft Fluent Emoji (MIT), the ones hajimete/ uses. Written by build.py.\nconst EMO = " + json.dumps({k: emo[k] for k in HAJIMETE_EMOJI}) + ";\n")
+print("built hajimete/emoji.js")
+# stamp hajimete's files with a content hash, so browsers fetch new versions instead of cached ones
+import hashlib
+hpage = os.path.join(ROOT, "hajimete", "index.html")
+html = open(hpage, encoding="utf-8").read()
+for f in ("style.css", "emoji.js", "data.js", "app.js"):
+    h = hashlib.sha1(open(os.path.join(ROOT, "hajimete", f), "rb").read()).hexdigest()[:8]
+    html = re.sub(re.escape(f) + r'(\?v=[0-9a-f]+)?"', f'{f}?v={h}"', html)
+open(hpage, "w", encoding="utf-8", newline="\n").write(html)
+print("stamped hajimete/index.html")

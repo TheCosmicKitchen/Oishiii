@@ -43,6 +43,7 @@ function viewHome(v) {
       <li>To pass: 80 of 180 points overall, with at least 38 of 120 in vocabulary, grammar and reading, and 19 of 60 in listening.</li></ul>
       <p class="muted" style="font-size:.75rem">From the official JLPT site, jlpt.jp.</p></details>
   </section>
+  <a class="tripcard" href="hajimete/" target="_blank" rel="noopener">${IMGW("hamster", 48)}<div><b>Mochi's Great Journey</b><small>A first-trip page to share with friends: kana, signs, phrases and travel know-how, as one hamster's epic 140-metre quest.</small></div><span>→</span></a>
   <section class="mini2">
     <button class="minicard" id="hgd">${IMGW("watering", 36)}<b>Garden</b><small>${pend ? `+${pend} seeds to trade in` : `${seeds()} seeds to spend`}</small></button>
     <button class="minicard" id="hpz">${IMGW("puzzle", 36)}<b>Today's puzzles</b><small>${pzDone}/${PUZZLES.length} done</small></button>

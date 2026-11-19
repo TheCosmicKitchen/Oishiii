@@ -33,6 +33,8 @@ NAMES = {
  "curry":"Curry rice","shortcake":"Shortcake","shavedice":"Shaved ice","salad":"Green salad","nabe":"Pot of food","cooking":"Cooking","cloud":"Cloud","fallenleaf":"Fallen leaf","yakiimo":"Roasted sweet potato","stars":"Glowing star",
  # restaurant
  "windchime":"Wind chime","carp":"Carp streamer","cook":"Cook","chair":"Chair","bellhop":"Bellhop bell","scroll":"Scroll","pinedeco":"Pine decoration","catface":"Cat face","teahot":"Hot beverage",
+ # hajimete
+ "plane":"Airplane arrival","backpack":"Backpack","paws":"Paw prints","ramen":"Steaming bowl","hotel":"Hotel","warning":"Warning","ambulance":"Ambulance","phone":"Telephone receiver","flag":"Triangular flag",
 }
 
 def snake(n): return n.lower().replace(" ","_")

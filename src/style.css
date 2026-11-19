@@ -813,3 +813,8 @@ button.friendc{border:0;font:inherit}
 .gsent.shown .gw[class*=" a"] .kn{color:var(--ac)}
 .ga{color:var(--ac);font-weight:800;border-bottom:2.5px solid var(--ac)}
 p.gen.shown{margin:0;color:var(--ink);font-weight:600;font-size:.92rem;line-height:1.6}
+
+/* link to Mochi's Great Journey */
+.tripcard{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-xl);background:linear-gradient(135deg,var(--sakura-soft),var(--sky));color:var(--ink);text-decoration:none;box-shadow:var(--lift)}
+.tripcard div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.tripcard small{color:var(--ink-soft);font-size:.8rem}.tripcard > span{font-weight:800;color:var(--sakura)}
+.examfacts summary .em{width:22px;height:22px}

@@ -1,0 +1,76 @@
+phrase kept   すみません。 | Excuse me. (Tatoeba #408301; Japanese by a native speaker: True)
+phrase kept   どうもありがとうございます。 | Thank you very much. (Tatoeba #11831589; Japanese by a native speaker: True)
+phrase kept   お願いします。 = Please. (JMdict set expression)
+phrase kept   大丈夫です。 | I'll be fine. (Tatoeba #2304911; Japanese by a native speaker: True)
+phrase kept   わかりません。 | I don't understand it. (Tatoeba #2270779; Japanese by a native speaker: False)
+phrase kept   英語を話せますか。 | Can you speak English? (Tatoeba #189023; Japanese by a native speaker: True)
+phrase kept   もう一度お願いします。 | I beg your pardon? (Tatoeba #214165; Japanese by a native speaker: True)
+phrase kept   もう少しゆっくり話して下さい。 | Please speak a little more slowly. (Tatoeba #194120; Japanese by a native speaker: True)
+phrase kept   いただきます。 = Thank you. (JMdict set expression)
+phrase kept   ごちそうさまでした。 | Thank you for the lovely dinner. (Tatoeba #10100070; Japanese by a native speaker: True)
+phrase kept   メニューをください。 | The menu, please. (Tatoeba #12890046; Japanese by a native speaker: True)
+phrase kept   水をください。 | Please give me some water. (Tatoeba #143718; Japanese by a native speaker: True)
+phrase kept   これください。 | Please give me this. (Tatoeba #8583430; Japanese by a native speaker: True)
+phrase kept   美味しいです。 | It's delicious. (Tatoeba #12890061; Japanese by a native speaker: True)
+phrase kept   お会計をお願いします。 | Check, please. (Tatoeba #12890072; Japanese by a native speaker: True)
+phrase kept   乾杯！ | Bottoms up! (Tatoeba #184053; Japanese by a native speaker: True)
+phrase kept   いくらですか？ | How much is that? (Tatoeba #5332; Japanese by a native speaker: True)
+phrase kept   これは何ですか。 | What's this? (Tatoeba #344924; Japanese by a native speaker: False)
+phrase kept   カードで支払えますか。 | Can I pay by credit card? (Tatoeba #226473; Japanese by a native speaker: True)
+phrase kept   見ているだけです。 | I'm simply looking. (Tatoeba #2413217; Japanese by a native speaker: True)
+phrase kept   駅はどこですか。 | Where is the railroad station? (Tatoeba #188894; Japanese by a native speaker: True)
+phrase kept   トイレはどこですか。 | Where is the toilet? (Tatoeba #201726; Japanese by a native speaker: True)
+phrase kept   写真を撮ってもいいですか？ | Is it OK if I take pictures? (Tatoeba #8727059; Japanese by a native speaker: True)
+phrase kept   道に迷ってしまいました。 | I got lost. (Tatoeba #123603; Japanese by a native speaker: True)
+phrase kept   助けてください。 | Help me, please. (Tatoeba #1039551; Japanese by a native speaker: True)
+phrase kept   警察を呼んで下さい。 | Please call the police. (Tatoeba #176088; Japanese by a native speaker: True)
+phrase kept   救急車を呼んでください。 | Call an ambulance. (Tatoeba #182412; Japanese by a native speaker: True)
+phrase kept   一番近い病院はどこですか？ | Where is the nearest hospital? (Tatoeba #10647294; Japanese by a native speaker: True)
+sign kept   出口 でぐち = exit
+sign kept   入口 いりぐち = entrance
+sign kept   男 おとこ = man
+sign kept   女 おんな = woman
+sign kept   駅 えき = railway station
+sign kept   改札 かいさつ = ticket gate
+sign kept   切符 きっぷ = ticket
+sign kept   乗り換え のりかえ = transfer
+sign kept   番線 ばんせん = track number
+sign kept   各駅停車 かくえきていしゃ = train that stops at every station
+sign NOTE 快速: JMdict has no gloss 'rapid', using 'high speed'
+sign kept   快速 かいそく = high speed
+sign kept   急行 きゅうこう = express
+sign kept   特急 とっきゅう = limited express
+sign kept   優先席 ゆうせんせき = priority seat
+sign kept   女性専用車 じょせいせんようしゃ = women-only carriage
+sign kept   地下鉄 ちかてつ = subway
+sign kept   空港 くうこう = airport
+sign kept   北口 きたぐち = north exit
+sign kept   東口 ひがしぐち = east exit
+sign kept   南口 みなみぐち = south exit
+sign kept   西口 にしぐち = west exit
+sign kept   お手洗い おてあらい = toilet
+sign kept   化粧室 けしょうしつ = toilet
+sign kept   非常口 ひじょうぐち = emergency exit
+sign kept   禁煙 きんえん = No Smoking
+sign kept   喫煙所 きつえんじょ = smoking area
+sign kept   立入禁止 たちいりきんし = No Entry
+sign kept   危険 きけん = danger
+sign kept   注意 ちゅうい = caution
+sign kept   営業中 えいぎょうちゅう = open
+sign kept   準備中 じゅんびちゅう = in preparation
+sign kept   定休日 ていきゅうび = regular holiday
+sign kept   本日 ほんじつ = today
+sign kept   売り切れ うりきれ = sold-out
+sign NOTE 無料: JMdict has no gloss 'free of charge', using 'free'
+sign kept   無料 むりょう = free
+sign kept   税込 ぜいこみ = including tax
+sign kept   現金 げんきん = cash
+sign kept   円 えん = yen
+sign kept   大人 おとな = adult
+sign kept   子供 こども = child
+sign kept   食券 しょっけん = meal ticket
+sign kept   温泉 おんせん = hot spring
+sign kept   交番 こうばん = police box
+sign kept   病院 びょういん = hospital
+sign kept   薬局 やっきょく = pharmacy
+katakana words: 55

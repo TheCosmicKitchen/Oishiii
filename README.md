@@ -25,7 +25,7 @@ Progress is saved per device in the browser (localStorage).
 - **Collection:** a station stamp for every stop, a kanji stamp for every kanji (one page per JLPT level), trophies, route and puzzle stars, and a completion meter. No streaks, nothing expires.
 - **Two roles:** Kana speller (reading choices with romaji) and Kanji reader (typed readings, WaniKani style, bare kanji). Typing converts romaji to kana like WaniKani.
 
-## Kero's Great Journey (hajimete/)
+## Tsukemono's Great Journey (hajimete/)
 
 A separate, shareable page for friends on a first trip to Japan: https://thecosmickitchen.github.io/Oishiii/hajimete/ . A tiny frog's epic 140-metre quest from the arrivals gate to a hotel bed, with stops for the kana (tap-to-hear charts with voiced sounds and combos, small ッ and ャュョ tips, look-alikes, and a quiz), the 53 signs you'll actually see (exits, toilets, trains, baths, shops), with public-domain photos of real signs from Wikimedia Commons, 61 everyday katakana words (with where the non-English ones came from, per JMdict), 33 phrases, and "know before you go" cards (pronunciation, camera translation offline, IC cards, cash, the November 2026 tax-free refund system, bins, tipping, shoes, onsen and which bath is which, emergency numbers, the departure tax). It folds in the japlanning survival guide (thecosmickitchen.github.io/japlanning/guide.html), rebuilt to these rules. Every travel fact links its source and the date it was checked.
 

@@ -30,7 +30,7 @@ full = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(full)
 print(f"built dist/oishii.html and index.html ({len(full) // 1024} KB)")
 
-# Kero's Great Journey (hajimete/): only the emoji it uses
+# Tsukemono's Great Journey (hajimete/): only the emoji it uses
 HAJIMETE_EMOJI = "frog plane warning train store ramen hotel book star speaker map party sun moon".split()
 emo = json.loads(rd("assets", "emoji.json"))
 open(os.path.join(ROOT, "hajimete", "emoji.js"), "w", encoding="utf-8").write(

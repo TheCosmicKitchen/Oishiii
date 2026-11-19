@@ -1,4 +1,4 @@
-// ===== Hajimete: Kero's Great Journey, a first-trip-to-Japan page =====
+// ===== Hajimete: Tsukemono's Great Journey, a first-trip-to-Japan page =====
 // All Japanese comes from hajimete/data.js (tools/hajimete_build.py): native Tatoeba phrases, JMdict sign words and
 // katakana words. Travel facts below carry their source and the date they were checked.
 const $ = (s, r = document) => r.querySelector(s);
@@ -91,7 +91,7 @@ const SCENE_STOP = { basics: 0, "getting around": 2, shopping: 3, food: 4, help:
 const phrasesAt = i => HAJIMETE.phrases.filter(p => SCENE_STOP[p.scene] === i);
 const CHECKED = "checked 18 November 2026";
 const STOPS = [
-  { m: 0, e: "plane", title: "The Arrivals Gate", story: "Kero steps off the plane, small backpack on, webbed toes trembling. Ahead lies a vast and unknown land. Somewhere out there, 140 whole metres away, is a hotel bed. But first: the ancient scripts.",
+  { m: 0, e: "plane", title: "The Arrivals Gate", story: "Tsukemono steps off the plane, small backpack on, webbed toes trembling. Ahead lies a vast and unknown land. Somewhere out there, 140 whole metres away, is a hotel bed. But first: the ancient scripts.",
     facts: [{ t: "Three scripts, one sentence", b: "Japanese mixes three scripts. Hiragana (あいう) is for grammar and native words. Katakana (アイウ) is for foreign words, so menus are full of it: コーヒー is \"coffee\". Kanji (日本) carry meaning, and signs use them a lot. You don't need all three: katakana alone unlocks half a menu." },
       { t: "Sounding it out", b: "Give every syllable the same length and don't lean hard on any of them: Japanese rises and falls in pitch rather than stressing a syllable. A u at the end of a sentence often fades almost to nothing, so desu sounds like \"dess\" and masu like \"mass\".",
         src: [["Wikipedia: Japanese phonology (pitch accent, devoicing)", "https://en.wikipedia.org/wiki/Japanese_phonology"]] },
@@ -99,16 +99,16 @@ const STOPS = [
         src: [["Google Translate Help: translate with your camera", "https://support.google.com/translate/answer/6142483"], ["Google Translate Help: translate offline", "https://support.google.com/translate/answer/6142473"]] },
       { t: "Want to go further?", b: "Tofugu's free kana guides give every character a picture to remember it by, with practice to match.",
         src: [["Tofugu: Learn Katakana", "https://www.tofugu.com/japanese/learn-katakana/"], ["Tofugu: Learn Hiragana", "https://www.tofugu.com/japanese/learn-hiragana/"]] }] },
-  { m: 12, e: "warning", title: "The Corridor of a Thousand Signs", story: "Twelve metres in, Kero faces a wall of signs. Some point to exits, some to toilets, some to certain doom (a closed staff door). Kero studies them bravely.",
+  { m: 12, e: "warning", title: "The Corridor of a Thousand Signs", story: "Twelve metres in, Tsukemono faces a wall of signs. Some point to exits, some to toilets, some to certain doom (a closed staff door). Tsukemono studies them bravely.",
     facts: [] },
-  { m: 35, e: "train", title: "The Ticket Gate of Destiny", story: "A row of gates beeps at everyone who passes. Kero has heard tales of a magic card that makes them open. Thirty-five metres from home… home? This is the adventure now.",
+  { m: 35, e: "train", title: "The Ticket Gate of Destiny", story: "A row of gates beeps at everyone who passes. Tsukemono has heard tales of a magic card that makes them open. Thirty-five metres from home… home? This is the adventure now.",
     facts: [
       { t: "The tap card", b: "Rechargeable IC cards (Suica, PASMO, ICOCA and others) work on trains and buses all over Japan, and in many shops. Tap in at the gate, tap out where you get off. Regular Suica and PASMO cards went back on sale at station machines in March 2025; visitors can also get a Welcome Suica at Haneda or Narita airport (no deposit, valid for 28 days) or add Suica to an iPhone.",
         src: [["Tokyo Cheapo: The return of Suica cards", "https://tokyocheapo.com/travel/the-return-of-suica-cards/"], ["Time Out Tokyo: Unregistered Suica and PASMO back on sale", "https://www.timeout.com/tokyo/news/unregistered-suica-and-pasmo-transport-cards-to-resume-sales-from-march-022125"]] },
       { t: "Quiet carriages", b: "Talking softly on trains is fine, but phone calls are frowned upon. Queue to the side of the doors and let people off first.",
         src: [["JNTO: Japanese manners and etiquette", "https://www.japan.travel/en/guide/understanding-and-mastering-japanese-manners-and-etiquette/"]] },
     ] },
-  { m: 58, e: "store", title: "The Glowing Konbini", story: "A light in the distance! The konbini, open all night, stocked with every snack known to frog-kind. Fifty-eight metres. Kero's legs ache. Kero presses on.",
+  { m: 58, e: "store", title: "The Glowing Konbini", story: "A light in the distance! The konbini, open all night, stocked with every snack known to frog-kind. Fifty-eight metres. Tsukemono's legs ache. Tsukemono presses on.",
     facts: [
       { t: "Carry some cash", b: "Cards work in hotels, chains and konbini, but small restaurants and shops are often cash only. ATMs in 7-Eleven stores take most foreign cards, with an English menu.",
         src: [["Japan Experience: Paying and withdrawing money in Japan", "https://www.japan-experience.com/plan-your-trip/to-know/traveling-japan/withdrawing-money"], ["JW Web Magazine: Guide to ATMs in Japan", "https://jw-webmagazine.com/tips/guide-to-atms-in-japan/"]] },
@@ -117,13 +117,13 @@ const STOPS = [
       { t: "Where are all the bins?", b: "Public bins are rare: visitors call it their biggest inconvenience. Carry a small bag for rubbish and use the bins at your hotel, or at a konbini for things you bought there.",
         src: [["Japan Today: visitors most frustrated with lack of bins (government survey)", "https://japantoday.com/category/national/visitors-to-japan-most-frustrated-with-lack-of-trash-bins-survey"], ["CTV News: where are all the trash cans?", "https://www.ctvnews.ca/world/article/japan-is-a-model-of-cleanliness-so-where-are-all-the-trash-cans/"]] },
     ] },
-  { m: 96, e: "ramen", title: "The Ramen Shop at the Edge of the World", story: "Ninety-six metres. A steaming shop with a machine at the door that sells… tickets? Kero learns that here, you buy your noodles from a machine and hand the ticket over the counter.",
+  { m: 96, e: "ramen", title: "The Ramen Shop at the Edge of the World", story: "Ninety-six metres. A steaming shop with a machine at the door that sells… tickets? Tsukemono learns that here, you buy your noodles from a machine and hand the ticket over the counter.",
     facts: [
       { t: "The ticket machine", b: "Many ramen and set-meal shops have a 食券 (shokken, meal ticket) machine by the door. Pay at the machine, press the button for your dish, and give the ticket to the staff. 準備中 on the door means they're closed until the next service; 営業中 means open." },
       { t: "No tips", b: "Tipping isn't customary in Japan and is often met with confusion. A thank-you (and ごちそうさまでした on the way out) is the way to show appreciation.",
         src: [["JNTO: Japanese customs and etiquette", "https://www.japan.travel/en/responsible-travel-guide/japanese-customs-and-etiquette/"]] },
     ] },
-  { m: 140, e: "hotel", title: "The Hotel, Home at Last", story: "One hundred and forty metres. The doors slide open by themselves. Kero has crossed signs, gates and a konbini, and eaten a bowl of ramen bigger than Kero. Truly, a legend. Now: shoes off, and to bed.",
+  { m: 140, e: "hotel", title: "The Hotel, Home at Last", story: "One hundred and forty metres. The doors slide open by themselves. Tsukemono has crossed signs, gates and a konbini, and eaten a bowl of ramen bigger than Tsukemono. Truly, a legend. Now: shoes off, and to bed.",
     facts: [
       { t: "Emergencies", b: "Police: 110. Fire or ambulance: 119. For help in English any time, the Japan Visitor Hotline is 050-3816-2787 (from abroad +81-50-3816-2787), 24 hours a day, every day.",
         src: [["JNTO: Japan Visitor Hotline", "https://www.japan.travel/en/plan/hotline/"]] },
@@ -193,7 +193,7 @@ function runQuiz(id, stop) {
     const q = qs[i];
     if (!q) {
       ST.best[id] = Math.max(ST.best[id] || 0, right); save();
-      box.innerHTML = `<div class="sheet"><div class="done">${IMG(right >= qs.length - 1 ? "party" : "frog", 90)}<h2>${right} of ${qs.length}</h2><p>${right >= qs.length - 1 ? "Kero does a tiny victory dance." : "Kero believes in you. Again?"}</p>
+      box.innerHTML = `<div class="sheet"><div class="done">${IMG(right >= qs.length - 1 ? "party" : "frog", 90)}<h2>${right} of ${qs.length}</h2><p>${right >= qs.length - 1 ? "Tsukemono does a tiny victory dance." : "Tsukemono believes in you. Again?"}</p>
         <div class="row"><button class="btn ghost" id="qagain">Again</button><button class="btn" id="qclose">Back to the journey</button></div></div></div>`;
       $("#qagain").onclick = () => runQuiz(id, stop); $("#qclose").onclick = close; return;
     }
@@ -246,8 +246,8 @@ function factHTML(f) {
 function render() {
   const i = VIEW, s = STOPS[i], ph = phrasesAt(i), sg = signsAt(i);
   $("#app").innerHTML = `
-  <header class="hero">${IMG("frog", 64)}<div><h1>Kero's Great Journey</h1><p class="jp">はじめての日本 <small>hajimete no Nihon · Japan, for the first time</small></p>
-    <p>Kero (named for けろけろ, a frog's ribbit in Japanese) sets off on an epic 140-metre quest, from the airport to a hotel bed. Learn just enough Japanese to feel at home on a first trip.</p></div></header>
+  <header class="hero">${IMG("frog", 64)}<div><h1>Tsukemono's Great Journey</h1><p class="jp">はじめての日本 <small>hajimete no Nihon · Japan, for the first time</small></p>
+    <p>Tsukemono (つけもの, Japanese pickles) sets off on an epic 140-metre quest, from the airport to a hotel bed. Learn just enough Japanese to feel at home on a first trip.</p></div></header>
   ${trailHTML()}
   <div class="toggles"><label><input type="checkbox" id="tfuri" ${ST.furi ? "checked" : ""}> readings over kanji</label><label><input type="checkbox" id="tro" ${ST.ro ? "checked" : ""}> romaji</label>
     <button class="themebtn" id="ttheme" aria-label="${themeNow() === "dark" ? "Switch to light mode" : "Switch to dark mode"}">${IMG(themeNow() === "dark" ? "sun" : "moon", 18)}${themeNow() === "dark" ? "light" : "dark"}</button></div>

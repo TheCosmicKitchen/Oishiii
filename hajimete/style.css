@@ -1,4 +1,4 @@
-/* Mochi's Great Journey: Oishii's spring palette, one phone-width column */
+/* Kero's Great Journey: Oishii's spring palette, one phone-width column */
 :root{
   --bg:#F1F6EA; --surface:#FFFFFF; --surface-2:#E5EFDC; --ink:#22362A; --ink-soft:#5C7264; --line:#D2E1C9;
   --leaf:#4E9F69; --leaf-deep:#2E7647; --sakura:#EE7299; --sakura-soft:#FCE2EB; --sky:#D3ECF6; --sun:#F5C24F; --soil:#9C6B4A;
@@ -47,7 +47,7 @@ p{margin:0}
 .tstop{position:absolute;left:var(--x);top:36px;transform:translateX(-50%);border:0;background:var(--surface);border-radius:50%;width:44px;height:44px;display:grid;place-items:center;box-shadow:0 2px 0 var(--line);opacity:.55;padding:0}
 .tstop small{position:absolute;top:46px;font-size:.62rem;font-weight:800;white-space:nowrap;color:var(--ink-soft)}
 .tstop.reached{opacity:1}.tstop.here{box-shadow:0 0 0 3px var(--sakura)}
-.mochi{position:absolute;left:var(--x);top:0;transform:translateX(-50%);transition:left .8s cubic-bezier(.3,1.4,.5,1);animation:hop 1.6s ease-in-out infinite}
+.kero{position:absolute;left:var(--x);top:0;transform:translateX(-50%);transition:left .8s cubic-bezier(.3,1.4,.5,1);animation:hop 1.6s ease-in-out infinite}
 .stop .story{margin-top:10px;font-size:.95rem;font-style:italic}
 /* kana chart */
 .chart{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
@@ -93,4 +93,4 @@ footer{font-size:.72rem;color:var(--ink-soft);text-align:center;padding-top:6px}
 .done{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding-top:40px}
 @keyframes bob{50%{transform:translateY(-4px)}}
 @keyframes hop{0%,70%,100%{translate:0 0}80%{translate:0 -8px}90%{translate:0 0}}
-@media (prefers-reduced-motion: reduce){.mochi,.hero .em{animation:none}}
+@media (prefers-reduced-motion: reduce){.kero,.hero .em{animation:none}}

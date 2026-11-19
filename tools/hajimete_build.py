@@ -157,6 +157,7 @@ SIGNS = [
     ("東口", "ひがしぐち", "Station exits"), ("南口", "みなみぐち", "Station exits"), ("西口", "にしぐち", "Station exits"),
     ("男湯", "おとこゆ", "Bath curtains: the men's side"), ("女湯", "おんなゆ", "Bath curtains: the women's side"),
     ("撮影禁止", "さつえいきんし", "Temples, museums and some shops"), ("休業", "きゅうぎょう", "Notices on shop doors, with the dates"),
+    ("休日", "きゅうじつ", "Opening hours: the days off"),
     ("お手洗い", "おてあらい", "Toilet signs"), ("化粧室", "けしょうしつ", "Toilet signs in shops and stations"), ("非常口", "ひじょうぐち", "Green signs over doors"),
     ("禁煙", "きんえん", "Most indoor places"), ("喫煙所", "きつえんじょ", "Where smoking is allowed"), ("立入禁止", "たちいりきんし", "Keep out"),
     ("危険", "きけん", "Danger signs"), ("注意", "ちゅうい", "Caution signs"), ("営業中", "えいぎょうちゅう", "On shop and restaurant doors"),
@@ -221,7 +222,58 @@ for w in KATA_PICK:
     if kata[-1]["o"]: report.append(f"katakana origin {w}: {kata[-1]['o']}")
 report.append(f"katakana words: {len(kata)}")
 
-data = dict(phrases=phrases, signs=signs, door=[dict(k=k, r=r, m=m, where=w) for k, r, m, w in DOOR], kata=kata)
+# ---- single kanji, a few per stop, for someone who has never read Japanese: meaning only (KANJIDIC2, via Oishii's
+# src/kanji-data.js), a plain-English note on where you'll see it, and an emoji to hang it on. No single-kanji readings:
+# a lone kanji has several, so readings come only with whole words (the combos, which are checked JMdict sign words).
+# (stop, kanji, the KANJIDIC sense to show (must be one of its meanings; None = its first), where, emoji)
+KANJI_PICK = [
+    (1, "出", "exit", "On every exit sign. Follow it to get out.", "door"),
+    (1, "入", "enter", "On entrances and gates.", "door"),
+    (1, "口", "mouth", "On signs it means an opening: a way in or out.", "mouth"),
+    (1, "男", "male", "On toilet and bath doors: the men's side.", "boy"),
+    (1, "女", "woman", "On toilet and bath doors: the women's side.", "girl"),
+    (2, "駅", "station", "Station names end with it.", "station"),
+    (2, "東", "east", "Big stations name their exits after directions.", "sunrise"),
+    (2, "西", "west", "Exits again: the west side.", None),
+    (2, "南", "south", "Exits again: the south side.", None),
+    (2, "北", "north", "Exits again: the north side.", None),
+    (3, "円", "yen", "On every price: 500円 is 500 yen.", "yen"),
+    (3, "大", "big", "Big, and the large size of a drink or bowl.", None),
+    (3, "中", "middle", "Middle, and the medium size. It can also mean inside.", None),
+    (3, "小", "small", "Small, and the small size.", None),
+    (3, "人", "person", "A person. Ticket prices use it.", "person"),
+    (4, "押", "push", "On doors and buttons.", "hand"),
+    (4, "引", "pull", "On doors, often next to 押.", None),
+    (4, "休", "rest", "Rest, or a day off: shops use it when they're closed.", "bed"),
+    (4, "日", "day", "A day, and also the sun.", "sun"),
+    (4, "水", "water", "Water, on menus and drinks.", "droplet"),
+    (5, "温", "warm", "Warm.", None),
+    (5, "泉", "spring", "A spring, where water comes up out of the ground.", None),
+    (5, "湯", "hot water", "Hot water, and the bath. A big ゆ curtain means a bathhouse.", "onsen"),
+]
+# sign words built only from kanji met at or before that stop: (stop, word); each must be a kept JMdict sign word
+COMBO_PICK = [(1, "出口"), (1, "入口"), (2, "東口"), (2, "西口"), (2, "南口"), (2, "北口"), (3, "大人"), (4, "休日"), (5, "温泉"), (5, "男湯"), (5, "女湯")]
+KD = {}
+for line in json.loads(re.search(r'const KANJI_TSV = (".*?");', open(os.path.join(ROOT, "src", "kanji-data.js"), encoding="utf-8").read(), re.S).group(1)).split("\n"):
+    c = line.split("\t")
+    if len(c) > 3: KD.setdefault(c[0], c[3].split(";"))
+kanji = []
+for stop, k, sense, where, emo in KANJI_PICK:
+    ms = KD.get(k)
+    if not ms: report.append(f"kanji DROPPED {k} (not in KANJIDIC data)"); continue
+    m = sense if sense in ms else None
+    if m is None: report.append(f"kanji DROPPED {k} (KANJIDIC has no meaning '{sense}': {ms})"); continue
+    kanji.append(dict(k=k, m=m, stop=stop, where=where, e=emo or ""))
+    report.append(f"kanji kept   {k} = {m} (stop {stop}; KANJIDIC: {'; '.join(ms)})")
+met = lambda stop: {x["k"] for x in kanji if x["stop"] <= stop}
+combos = []
+sign_by = {s["k"]: s for s in signs}
+for stop, w in COMBO_PICK:
+    if w not in sign_by: report.append(f"combo DROPPED {w} (not a kept sign word)"); continue
+    if not set(w) <= met(stop): report.append(f"combo DROPPED {w} (uses kanji not met by stop {stop})"); continue
+    combos.append(dict(k=w, stop=stop)); report.append(f"combo kept   {w} at stop {stop}")
+
+data = dict(phrases=phrases, signs=signs, door=[dict(k=k, r=r, m=m, where=w) for k, r, m, w in DOOR], kata=kata, kanji=kanji, combos=combos)
 os.makedirs(os.path.join(ROOT, "hajimete"), exist_ok=True)
 open(os.path.join(ROOT, "hajimete", "data.js"), "w", encoding="utf-8", newline="\n").write(
     "// Built by tools/hajimete_build.py. Phrases: Tatoeba (CC BY 2.0 FR), native speakers, with sentence ids; meanings:\n"

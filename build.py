@@ -31,7 +31,7 @@ open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(full)
 print(f"built dist/oishii.html and index.html ({len(full) // 1024} KB)")
 
 # Tsukemono's Great Journey (hajimete/): only the emoji it uses
-HAJIMETE_EMOJI = "frog plane warning train store ramen hotel book star speaker map party sun moon".split()
+HAJIMETE_EMOJI = "frog plane warning train store ramen hotel book star speaker map party sun moon door mouth boy girl station sunrise yen person hand bed droplet onsen sparkles".split()
 emo = json.loads(rd("assets", "emoji.json"))
 open(os.path.join(ROOT, "hajimete", "emoji.js"), "w", encoding="utf-8").write(
     "// Microsoft Fluent Emoji (MIT), the ones hajimete/ uses. Written by build.py.\nconst EMO = " + json.dumps({k: emo[k] for k in HAJIMETE_EMOJI}) + ";\n")

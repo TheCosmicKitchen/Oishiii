@@ -59,6 +59,7 @@ sign kept   男湯 おとこゆ = men's bath
 sign kept   女湯 おんなゆ = women's bath
 sign kept   撮影禁止 さつえいきんし = no photography
 sign kept   休業 きゅうぎょう = temporary closure
+sign kept   休日 きゅうじつ = holiday
 sign kept   お手洗い おてあらい = toilet
 sign kept   化粧室 けしょうしつ = toilet
 sign kept   非常口 ひじょうぐち = emergency exit
@@ -94,3 +95,37 @@ katakana origin ガソリンスタンド: made-in-Japan English (gasoline stand)
 katakana origin オートバイ: made-in-Japan English (auto-bi(cycle))
 katakana origin アルコール: from Dutch
 katakana words: 61
+kanji kept   出 = exit (stop 1; KANJIDIC: exit; leave; go out; come out)
+kanji kept   入 = enter (stop 1; KANJIDIC: enter; insert)
+kanji kept   口 = mouth (stop 1; KANJIDIC: mouth)
+kanji kept   男 = male (stop 1; KANJIDIC: male)
+kanji kept   女 = woman (stop 1; KANJIDIC: woman; female)
+kanji kept   駅 = station (stop 2; KANJIDIC: station)
+kanji kept   東 = east (stop 2; KANJIDIC: east)
+kanji kept   西 = west (stop 2; KANJIDIC: west; spain)
+kanji kept   南 = south (stop 2; KANJIDIC: south)
+kanji kept   北 = north (stop 2; KANJIDIC: north)
+kanji kept   円 = yen (stop 3; KANJIDIC: circle; yen; round)
+kanji kept   大 = big (stop 3; KANJIDIC: large; big)
+kanji kept   中 = middle (stop 3; KANJIDIC: in; inside; middle; mean)
+kanji kept   小 = small (stop 3; KANJIDIC: little; small)
+kanji kept   人 = person (stop 3; KANJIDIC: person)
+kanji kept   押 = push (stop 4; KANJIDIC: push; stop; check; subdue)
+kanji kept   引 = pull (stop 4; KANJIDIC: pull; tug; jerk; admit)
+kanji kept   休 = rest (stop 4; KANJIDIC: rest; day off; retire; sleep)
+kanji kept   日 = day (stop 4; KANJIDIC: day; sun; Japan; counter for days)
+kanji kept   水 = water (stop 4; KANJIDIC: water)
+kanji kept   温 = warm (stop 5; KANJIDIC: warm)
+kanji kept   泉 = spring (stop 5; KANJIDIC: spring; fountain)
+kanji kept   湯 = hot water (stop 5; KANJIDIC: hot water; bath; hot spring)
+combo kept   出口 at stop 1
+combo kept   入口 at stop 1
+combo kept   東口 at stop 2
+combo kept   西口 at stop 2
+combo kept   南口 at stop 2
+combo kept   北口 at stop 2
+combo kept   大人 at stop 3
+combo kept   休日 at stop 4
+combo kept   温泉 at stop 5
+combo kept   男湯 at stop 5
+combo kept   女湯 at stop 5

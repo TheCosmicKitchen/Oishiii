@@ -85,8 +85,13 @@ const PHOTOS = {
   "休業": ["kyu", "A handwritten notice: closed on the March dates shown", "Nils R. Barth", "CC0", CW + "%E4%BC%91%E6%A5%AD%E3%81%95%E3%81%9B%E3%81%A6%E9%A0%82%E3%81%8D%E3%81%BE%E3%81%99.jpg"],
   "男湯": ["yu", "A Tokyo bathhouse curtain with a big ゆ (hot water); the small tag marks the men's bath", "Taufik", "CC0", CW + "Oshiage_Onsen_Daikokuyu_20250831_081545.jpg"],
 };
-const signsAt = i => i === 1 ? [...HAJIMETE.signs.filter(s => !Object.values(SIGN_STOP).flat().includes(s.k)), ...HAJIMETE.door]
-  : HAJIMETE.signs.filter(s => (SIGN_STOP[i] || []).includes(s.k));
+// single kanji are the main thing; whole sign words are an optional extra, minus the ones the combos already teach
+const COMBO_WORDS = new Set(HAJIMETE.combos.map(c => c.k));
+const signsAt = i => (i === 1 ? HAJIMETE.signs.filter(s => !Object.values(SIGN_STOP).flat().includes(s.k))
+  : HAJIMETE.signs.filter(s => (SIGN_STOP[i] || []).includes(s.k))).filter(s => !COMBO_WORDS.has(s.k));
+const kanjiAt = i => HAJIMETE.kanji.filter(k => k.stop === i);
+const kanjiUpTo = i => HAJIMETE.kanji.filter(k => k.stop <= i);
+const combosAt = i => HAJIMETE.combos.filter(c => c.stop === i).map(c => HAJIMETE.signs.find(s => s.k === c.k));
 const SCENE_STOP = { basics: 0, "getting around": 2, shopping: 3, food: 4, help: 5 };
 const phrasesAt = i => HAJIMETE.phrases.filter(p => SCENE_STOP[p.scene] === i);
 const CHECKED = "checked 18 November 2026";
@@ -181,6 +186,13 @@ function makeQuiz(id, stop) {
     const pool = HAJIMETE.kata;
     return shuffle(pool).slice(0, 8).map(w => ({ q: `<div class="qbig kata">${w.k}</div><p class="muted">${ST.ro ? romaji(w.k) : "&nbsp;"}</p>`, say: w.k, ans: w.m, opts: shuffle([w.m, ...shuffle(pool.filter(x => x.m !== w.m)).slice(0, 3).map(x => x.m)]) }));
   }
+  if (id.startsWith("kanji")) { // this stop's kanji first, then a few from earlier stops for a gentle review
+    const here = shuffle(kanjiAt(stop)), before = shuffle(kanjiUpTo(stop - 1));
+    const qs = [...here, ...before].slice(0, Math.max(here.length, Math.min(8, here.length + before.length)));
+    const all = HAJIMETE.kanji;
+    return shuffle(qs).map(k => ({ q: `<div class="qbig kj">${k.k}</div><p class="muted">What does it mean?</p>`, ans: k.m,
+      opts: shuffle([k.m, ...shuffle(all.filter(x => x.m !== k.m)).slice(0, 3).map(x => x.m)]) }));
+  }
   const pool = signsAt(stop);
   return shuffle(pool).slice(0, Math.min(8, pool.length)).map(s => ({ q: `<div class="sign big">${s.k}</div><p class="muted">${esc(s.r)}${ST.ro ? ` · ${macron(romaji(s.r))}` : ""}</p>`, say: s.r, ans: s.m,
     opts: shuffle([s.m, ...shuffle([...HAJIMETE.signs, ...HAJIMETE.door].filter(x => x.m !== s.m)).slice(0, 3).map(x => x.m)]) }));
@@ -198,9 +210,9 @@ function runQuiz(id, stop) {
       $("#qagain").onclick = () => runQuiz(id, stop); $("#qclose").onclick = close; return;
     }
     box.innerHTML = `<div class="sheet"><div class="row top"><button class="iconbtn" id="qx" aria-label="Close">←</button><span class="pill">${i + 1}/${qs.length}</span></div>
-      <div class="qcard">${q.q}<button class="iconbtn" data-say="${esc(q.say)}" aria-label="Hear it">${IMG("speaker", 22)}</button></div>
+      <div class="qcard">${q.q}${q.say ? `<button class="iconbtn" data-say="${esc(q.say)}" aria-label="Hear it">${IMG("speaker", 22)}</button>` : ""}</div>
       <div class="opts">${q.opts.map((o, k) => `<button class="opt" data-o="${k}">${esc(o)}</button>`).join("")}</div><div id="qfb"></div></div>`;
-    $("#qx").onclick = close; say(q.say);
+    $("#qx").onclick = close; if (q.say) say(q.say);
     $$("[data-o]", box).forEach(b => b.onclick = () => {
       const ok = q.opts[+b.dataset.o] === q.ans; if (ok) right++;
       $$("[data-o]", box).forEach(x => { x.disabled = true; if (q.opts[+x.dataset.o] === q.ans) x.classList.add("right"); });
@@ -225,6 +237,29 @@ function phraseHTML(p) {
     <small class="src">${p.src === "JMdict" ? "JMdict set expression" : `<a href="https://tatoeba.org/en/sentences/show/${p.id}" target="_blank" rel="noopener">Tatoeba #${p.id}</a>, by native speakers`}</small></div></div>`;
 }
 function signHTML(s) { return `<button class="signcard" data-say="${esc(s.r)}"><span class="sign">${esc(s.k)}</span><span><b>${esc(s.m)}</b><small>${esc(s.r)}${ST.ro ? ` · ${macron(romaji(s.r))}` : ""}</small><small class="where">${esc(s.where)}</small></span></button>`; }
+// ---- single kanji, gently: a few big shapes with their meaning, then the pairs you can now read from their parts
+const KANJI_INTRO = "Kanji are little pictures of ideas: each one means something on its own. You don't need to say them, only to spot them.";
+function kanjiTileHTML(k) {
+  return `<div class="ktile"><span class="kglyph">${k.k}</span><span class="kmean">${k.e ? IMG(k.e, 20) : ""}${esc(k.m)}</span><small>${esc(k.where)}</small></div>`;
+}
+function comboHTML(s) {
+  return `<button class="combo" data-say="${esc(s.r)}"><span class="parts">${[...s.k].map(c => `<b>${c}</b>`).join("<i>+</i>")}</span><span class="arrow">→</span>
+    <span class="cword"><b class="sign">${esc(s.k)}</b><span><b>${esc(s.m)}</b><small>${ST.ro ? esc(macron(romaji(s.r))) : esc(s.r)}</small></span></span></button>`;
+}
+function kanjiCardHTML(i) {
+  const ks = kanjiAt(i), cs = combosAt(i), extra = signsAt(i);
+  if (!ks.length) return "";
+  const n = ["", "One", "Two", "Three", "Four", "Five", "Six"][ks.length] || ks.length;
+  return `<section class="card">
+    <h3>${IMG("sparkles", 26)}Kanji to spot here</h3>
+    <p class="help">${i === 1 ? KANJI_INTRO + " " : ""}${n} new shapes. Take your time.</p>
+    <div class="kgrid">${ks.map(kanjiTileHTML).join("")}</div>
+    ${cs.length ? `<h4 class="wildh">${IMG("star", 20)}Put them together</h4><p class="help">Signs often pair two kanji you now know. Tap one to hear it.</p><div class="combos">${cs.map(comboHTML).join("")}</div>` : ""}
+    ${photosHTML([...ks, ...cs])}
+    <div class="row">${quizHTML("kanji" + i, "Spot the kanji")}</div>
+    ${extra.length ? `<details class="more bonus"><summary>Longer signs, for the curious (totally optional)</summary><p class="help">Whole words you'll also see around here. Skip these on a first trip.</p><div class="signs">${extra.map(signHTML).join("")}</div>${photosHTML(extra)}</details>` : ""}
+  </section>`;
+}
 function photosHTML(sg) {
   const ps = sg.filter(s => PHOTOS[s.k]);
   if (!ps.length) return "";
@@ -256,7 +291,7 @@ function render() {
     <p class="story">${esc(s.story)}</p>
   </section>
   ${i === 0 ? `<section class="card"><h3>${IMG("book", 26)}The scripts</h3>${chartHTML()}<div class="row">${quizHTML("kana", `Quiz me on ${SCRIPT === "kata" ? "katakana" : "hiragana"}`)}</div></section>${lookalikeHTML()}` : ""}
-  ${sg.length ? `<section class="card"><h3>${IMG("warning", 26)}Signs you'll see here</h3><p class="help">Tap a sign to hear it.</p><div class="signs">${sg.map(signHTML).join("")}</div>${photosHTML(sg)}<div class="row">${quizHTML("signs" + i, "Read the signs")}</div></section>` : ""}
+  ${kanjiCardHTML(i)}
   ${i === 3 ? `<section class="card"><h3>${IMG("store", 26)}Katakana on shelves and menus</h3><p class="help">Foreign words are written in katakana, so you can often sound them out: タクシー is takushī, "taxi". Not all of them come from English.</p>
     <div class="katas">${HAJIMETE.kata.slice(0, 22).map(kwHTML).join("")}</div>
     <details class="more"><summary>${HAJIMETE.kata.length - 22} more words</summary><div class="katas">${HAJIMETE.kata.slice(22).map(kwHTML).join("")}</div></details>

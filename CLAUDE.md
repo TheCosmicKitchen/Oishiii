@@ -24,7 +24,7 @@ A cute Japanese learning game for two adult beginners (a couple). One plays the 
 - Hidden "secret ticket": tap the train on the map 5× to unlock up to any stop (stamps still earned).
 
 ## Kero's Great Journey (hajimete/)
-- A separate first-trip page for friends, linked from the Today tab: a frog's 140-metre quest, airport to hotel. Same rules: Japanese only from `tools/hajimete_build.py` (Tatoeba picks by id, JMdict), never hand-written. Travel facts in `hajimete/app.js` must each cite a current source and say when they were checked; recheck them before trips (tax-free rules, IC cards and the departure tax all changed in 2025–2026).
+- A separate first-trip page for friends, linked from the Today tab: a frog's 140-metre quest, airport to hotel. Same rules: Japanese only from `tools/hajimete_build.py` (Tatoeba picks by id, JMdict), never hand-written. Travel facts in `hajimete/app.js` must each cite a current source and say when they were checked; recheck them before trips (tax-free rules, IC cards and the departure tax all changed in 2025–2026). Sign photos (`hajimete/img/`, `PHOTOS` in app.js) must be CC0 or public domain on their Commons file page, captioned in English and credited. An all-kana phrase skips the reading check, so read its romaji: the parser can split it wrongly (レシートはいりません came out as 入りません).
 
 ## Working on it
 - Edit `src/`, then `python3 build.py`. It writes `index.html` (served by GitHub Pages at https://thecosmickitchen.github.io/Oishiii/) and `dist/oishii.html` (the Claude artifact version).

@@ -14,14 +14,19 @@ phrase kept   これください。 | Please give me this. (Tatoeba #8583430; Ja
 phrase kept   美味しいです。 | It's delicious. (Tatoeba #12890061; Japanese by a native speaker: True)
 phrase kept   お会計をお願いします。 | Check, please. (Tatoeba #12890072; Japanese by a native speaker: True)
 phrase kept   乾杯！ | Bottoms up! (Tatoeba #184053; Japanese by a native speaker: True)
+phrase kept   英語のメニューはありますか？ | Do you have an English menu? (Tatoeba #3549484; Japanese by a native speaker: True)
+phrase kept   おすすめは何ですか。 | What do you recommend? (Tatoeba #227687; Japanese by a native speaker: True)
 phrase kept   いくらですか？ | How much is that? (Tatoeba #5332; Japanese by a native speaker: True)
 phrase kept   これは何ですか。 | What's this? (Tatoeba #344924; Japanese by a native speaker: False)
 phrase kept   カードで支払えますか。 | Can I pay by credit card? (Tatoeba #226473; Japanese by a native speaker: True)
 phrase kept   見ているだけです。 | I'm simply looking. (Tatoeba #2413217; Japanese by a native speaker: True)
+phrase kept   現金でも大丈夫ですか？ | Can I pay in cash? (Tatoeba #11890833; Japanese by a native speaker: True)
+phrase kept   領収書は必要ないです。 | I don't need a receipt. (Tatoeba #12024148; Japanese by a native speaker: True)
 phrase kept   駅はどこですか。 | Where is the railroad station? (Tatoeba #188894; Japanese by a native speaker: True)
 phrase kept   トイレはどこですか。 | Where is the toilet? (Tatoeba #201726; Japanese by a native speaker: True)
 phrase kept   写真を撮ってもいいですか？ | Is it OK if I take pictures? (Tatoeba #8727059; Japanese by a native speaker: True)
 phrase kept   道に迷ってしまいました。 | I got lost. (Tatoeba #123603; Japanese by a native speaker: True)
+phrase kept   この電車は東京行きですか？ | Is this the right train for Tokyo? (Tatoeba #11265000; Japanese by a native speaker: True)
 phrase kept   助けてください。 | Help me, please. (Tatoeba #1039551; Japanese by a native speaker: True)
 phrase kept   警察を呼んで下さい。 | Please call the police. (Tatoeba #176088; Japanese by a native speaker: True)
 phrase kept   救急車を呼んでください。 | Call an ambulance. (Tatoeba #182412; Japanese by a native speaker: True)
@@ -42,12 +47,18 @@ sign kept   急行 きゅうこう = express
 sign kept   特急 とっきゅう = limited express
 sign kept   優先席 ゆうせんせき = priority seat
 sign kept   女性専用車 じょせいせんようしゃ = women-only carriage
+sign kept   指定席 していせき = reserved seat
+sign kept   自由席 じゆうせき = unreserved seat
 sign kept   地下鉄 ちかてつ = subway
 sign kept   空港 くうこう = airport
 sign kept   北口 きたぐち = north exit
 sign kept   東口 ひがしぐち = east exit
 sign kept   南口 みなみぐち = south exit
 sign kept   西口 にしぐち = west exit
+sign kept   男湯 おとこゆ = men's bath
+sign kept   女湯 おんなゆ = women's bath
+sign kept   撮影禁止 さつえいきんし = no photography
+sign kept   休業 きゅうぎょう = temporary closure
 sign kept   お手洗い おてあらい = toilet
 sign kept   化粧室 けしょうしつ = toilet
 sign kept   非常口 ひじょうぐち = emergency exit
@@ -73,4 +84,13 @@ sign kept   温泉 おんせん = hot spring
 sign kept   交番 こうばん = police box
 sign kept   病院 びょういん = hospital
 sign kept   薬局 やっきょく = pharmacy
-katakana words: 55
+katakana origin ビール: from Dutch bier
+katakana origin パン: from Portuguese pão
+katakana origin サラダ: from Portuguese salada
+katakana origin ラーメン: from Chinese lāmiàn
+katakana origin レストラン: from French
+katakana origin コップ: from Portuguese copo
+katakana origin ガソリンスタンド: made-in-Japan English (gasoline stand)
+katakana origin オートバイ: made-in-Japan English (auto-bi(cycle))
+katakana origin アルコール: from Dutch
+katakana words: 61

@@ -63,8 +63,11 @@ PICKS = [
     ("basics", 194120, "Please speak a little more slowly."),
     ("food", "頂きます", "いただきます"), ("food", 10100070, None), ("food", 12890046, None), ("food", 143718, None), ("food", 8583430, "Please give me this."),
     ("food", 12890061, "It's delicious."), ("food", 12890072, None), ("food", 184053, None),
+    ("food", 3549484, "Do you have an English menu?"), ("food", 227687, "What do you recommend?"),
     ("shopping", 5332, None), ("shopping", 344924, "What's this?"), ("shopping", 226473, "Can I pay by credit card?"), ("shopping", 2413217, None),
+    ("shopping", 11890833, "Can I pay in cash?"), ("shopping", 12024148, "I don't need a receipt."),  # not 12024147 レシートはいりません: the parser reads 入りません
     ("getting around", 188894, None), ("getting around", 201726, None), ("getting around", 8727059, None), ("getting around", 123603, "I got lost."),
+    ("getting around", 11265000, "Is this the right train for Tokyo?"),
     ("help", 1039551, "Help me, please."), ("help", 176088, "Please call the police."), ("help", 182412, None), ("help", 10647294, "Where is the nearest hospital?"),
 ]
 native = collections.defaultdict(set)
@@ -149,8 +152,11 @@ SIGNS = [
     ("各駅停車", "かくえきていしゃ", "Trains that stop everywhere"), ("快速", "かいそく", "Trains that skip some stops"),
     ("急行", "きゅうこう", "Trains that skip more stops"), ("特急", "とっきゅう", "The fastest trains, often an extra fee"),
     ("優先席", "ゆうせんせき", "Seats for elderly, pregnant or disabled riders"), ("女性専用車", "じょせいせんようしゃ", "Women-only carriage, at busy times"),
-    ("地下鉄", "ちかてつ", "Subway entrances"), ("空港", "くうこう", "Airport trains and buses"), ("北口", "きたぐち", "Station exits"),
+    ("指定席", "していせき", "Shinkansen and express trains: cars with booked seats"), ("自由席", "じゆうせき", "Unreserved cars: no booking, sit in any free seat"),
+    ("地下鉄", "ちかてつ", "Subway entrances"), ("空港", "くうこう", "Airport trains and buses"), ("北口", "きたぐち", "Station exits. Meet friends at a named exit, not just 'the station'"),
     ("東口", "ひがしぐち", "Station exits"), ("南口", "みなみぐち", "Station exits"), ("西口", "にしぐち", "Station exits"),
+    ("男湯", "おとこゆ", "Bath curtains: the men's side"), ("女湯", "おんなゆ", "Bath curtains: the women's side"),
+    ("撮影禁止", "さつえいきんし", "Temples, museums and some shops"), ("休業", "きゅうぎょう", "Notices on shop doors, with the dates"),
     ("お手洗い", "おてあらい", "Toilet signs"), ("化粧室", "けしょうしつ", "Toilet signs in shops and stations"), ("非常口", "ひじょうぐち", "Green signs over doors"),
     ("禁煙", "きんえん", "Most indoor places"), ("喫煙所", "きつえんじょ", "Where smoking is allowed"), ("立入禁止", "たちいりきんし", "Keep out"),
     ("危険", "きけん", "Danger signs"), ("注意", "ちゅうい", "Caution signs"), ("営業中", "えいぎょうちゅう", "On shop and restaurant doors"),
@@ -163,7 +169,8 @@ SIGNS = [
 # the sense a sign means, where JMdict lists another sense first (急行 "hurrying" before "express")
 SIGN_SENSE = {"改札": "ticket gate", "急行": "express", "快速": "rapid", "禁煙": "No Smoking", "注意": "caution", "北口": "north exit",
               "東口": "east exit", "南口": "south exit", "西口": "west exit", "男": "man", "女": "woman", "営業中": "open", "準備中": "in preparation",
-              "本日": "today", "大人": "adult", "子供": "child", "円": "yen", "無料": "free of charge", "立入禁止": "No Entry"}
+              "本日": "today", "大人": "adult", "子供": "child", "円": "yen", "無料": "free of charge", "立入禁止": "No Entry",
+              "休業": "temporary closure", "撮影禁止": "no photography", "男湯": "men's bath", "女湯": "women's bath"}
 signs = []
 for k, r, where in SIGNS:
     e = PAIRS.get((k, r))
@@ -180,6 +187,7 @@ DOOR = [("押", "おす", "push", "On doors"), ("引", "ひく", "pull", "On doo
 KATA = re.compile(r"^[ァ-ヶー・]+$")
 # ---- katakana words: the ones a traveller meets, in this order; each must be a common JMdict word (Waller's level if it has one)
 KATA_PICK = """コーヒー ビール ジュース ミルク お茶 パン バター ジャム ケーキ サラダ サンドイッチ ステーキ カレー ラーメン アイス チーズ
+コンビニ カード レシート チケット ロッカー ゲーム
 タクシー バス ホテル トイレ レストラン デパート レジ エレベーター エスカレーター ドア スーツケース シャワー スリッパ ベッド テーブル
 スプーン フォーク ナイフ カップ コップ ナプキン メニュー カメラ プール ポスト ビル ハンカチ プレゼント コンサート テレビ ニュース
 ガソリンスタンド オートバイ アルコール ペン ノート シャツ セーター コート スカート""".split()
@@ -189,12 +197,28 @@ for line in open(os.path.join(ROOT, "tools", "waller_vocab.tsv"), encoding="utf-
     lv, words, kana, en = line.rstrip("\n").split("\t")
     if lv in ("N5", "N4"):
         for w in re.split(r"[\s/、]+", kana): waller_kana.setdefault(w, lv)
+# the sense a traveller meets, added after the first, where JMdict lists it later (アイス "ice", then "ice cream")
+KATA_SENSE = {"アイス": "ice cream", "ジュース": "soft drink", "カード": "credit card"}
+# where a word came from, from JMdict's source-language notes: only when not plain English
+LANG = {"chi": "Chinese", "por": "Portuguese", "dut": "Dutch", "ger": "German", "fre": "French", "ita": "Italian", "spa": "Spanish", "rus": "Russian"}
+def origin(e):
+    ls = [x for s in e["sense"][:1] for x in s.get("languageSource", [])]
+    if not ls or any(x["lang"] == "eng" and not x["wasei"] for x in ls): return ""
+    x = ls[0]
+    if x["wasei"]: return f"made-in-Japan English ({x['text']})" if x.get("text") else "made-in-Japan English"
+    return f"from {LANG.get(x['lang'], x['lang'])}" + (f" {x['text']}" if x.get("text") else "")
 kata = []
 for w in KATA_PICK:
     if not KATA.match(w): continue  # only katakana words here
     e = KANA_ENT.get(w)
     if not e or w not in KANA_COMMON: report.append(f"katakana DROPPED {w} (not a common JMdict word)"); continue
-    kata.append(dict(k=w, m=tidy(e["sense"][0]["gloss"][0]["text"]), n=waller_kana.get(w, "")))
+    m = tidy(e["sense"][0]["gloss"][0]["text"])
+    if w in KATA_SENSE:
+        g = next((tidy(gl["text"]) for sn in e["sense"][1:] for gl in sn["gloss"] if tidy(gl["text"]).lower() == KATA_SENSE[w]), None)
+        if g: m += "; " + g
+        else: report.append(f"katakana NOTE {w}: JMdict has no later gloss '{KATA_SENSE[w]}'")
+    kata.append(dict(k=w, m=m, n=waller_kana.get(w, ""), o=origin(e)))
+    if kata[-1]["o"]: report.append(f"katakana origin {w}: {kata[-1]['o']}")
 report.append(f"katakana words: {len(kata)}")
 
 data = dict(phrases=phrases, signs=signs, door=[dict(k=k, r=r, m=m, where=w) for k, r, m, w in DOOR], kata=kata)

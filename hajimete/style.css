@@ -94,3 +94,27 @@ footer{font-size:.72rem;color:var(--ink-soft);text-align:center;padding-top:6px}
 @keyframes bob{50%{transform:translateY(-4px)}}
 @keyframes hop{0%,70%,100%{translate:0 0}80%{translate:0 -8px}90%{translate:0 0}}
 @media (prefers-reduced-motion: reduce){.kero,.hero .em{animation:none}}
+/* from the survival guide: chart sets, tips, look-alikes, photos, word origins */
+.seg + .seg{margin-left:6px}
+.chart.three{grid-template-columns:repeat(3,1fr)}
+.tips{display:flex;flex-direction:column;gap:6px;margin:4px 0 12px;font-size:.88rem}
+.tips p{background:var(--surface-2);border-radius:14px;padding:8px 12px}
+.kx{font-family:var(--f-glyph);font-size:1.05rem;font-weight:600}
+.looks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.look{display:flex;gap:10px;align-items:center;border:0;background:var(--surface-2);border-radius:14px;padding:8px;text-align:left}
+.look > b{font-family:var(--f-glyph);font-size:2.2rem;font-weight:600;line-height:1;flex:none;width:40px;text-align:center}
+.look span{display:flex;flex-direction:column;min-width:0}.look small{font-size:.74rem;color:var(--ink-soft);line-height:1.35}
+.wildh{display:flex;align-items:center;gap:6px;margin:4px 0 8px}
+.wild{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-bottom:12px}
+.wild figure{margin:0;flex:0 0 min(70%,240px);scroll-snap-align:start}
+.wildimg{position:relative;display:block;width:100%;border:0;padding:0;border-radius:16px;overflow:hidden;background:var(--surface-2)}
+.wildimg img{display:block;width:100%;height:170px;object-fit:contain}
+.wildimg .sign{position:absolute;left:8px;top:8px;font-size:.95rem;min-width:0;padding:4px 8px}
+.wild figcaption{font-size:.72rem;color:var(--ink-soft);margin-top:4px;line-height:1.35}.wild figcaption a{white-space:nowrap}
+.bigphoto{width:100%;border-radius:18px;box-shadow:var(--lift)}
+.kw .orig{font-style:italic;color:var(--leaf-deep);font-size:.68rem}
+.more{margin-bottom:12px}.more summary{cursor:pointer;font-weight:800;color:var(--leaf-deep);margin-bottom:8px;font-size:.88rem}
+.nw{white-space:nowrap}
+/* theme switch: dark by default (index.html) */
+.toggles{align-items:center;flex-wrap:wrap}
+.themebtn{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px 3px 6px;display:inline-flex;align-items:center;gap:5px;font-size:.85rem;color:var(--ink-soft);font-weight:700}

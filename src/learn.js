@@ -12,9 +12,11 @@ const TABS = [
 function render() {
   const app = $("#app");
   app.innerHTML = `<header class="top"><button class="logo" id="tohome" aria-label="Today">${IMGW("blossom", 34)}<span><b class="brand">${APP_NAME}</b><small class="glyph">おいしい</small></span></button>
+    <button class="themebtn" id="theme" aria-label="${themeNow() === "dark" ? "Switch to light mode" : "Switch to dark mode"}" title="${themeNow() === "dark" ? "Light mode" : "Dark mode"}">${IMG(themeNow() === "dark" ? "sun" : "moon")}</button>
     <button class="chip ${TAB === "book" ? "on" : ""}" id="tobook" title="Your collection and settings">${IMG("book")}${foundCount()}<span class="chip-sep"></span>${IMG("trophy")}${trophyCount()}</button></header>
     <main id="view" class="stack"></main>`;
   $("#tobook").onclick = () => { TAB = TAB === "book" ? "home" : "book"; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); };
+  $("#theme").onclick = () => { setTheme(themeNow() === "dark" ? "light" : "dark"); render(); };
   $("#tohome").onclick = () => { TAB = "home"; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); };
   const tb = $("#tabs"); tb.innerHTML = `<nav>${TABS.map(t => `<button class="tab" data-tab="${t.id}" aria-current="${TAB === t.id}">${IMG(t.icon)}<span>${t.label}</span>${t.badge && t.badge() ? `<i class="tbadge" aria-label="${t.badge()} seeds to trade in">+${t.badge()}</i>` : ""}</button>`).join("")}</nav>`;
   $$("[data-tab]", tb).forEach(b => b.onclick = () => { TAB = b.dataset.tab; try { sessionStorage.setItem("kg.tab", TAB); } catch (e) { } render(); window.scrollTo(0, 0); });
@@ -319,6 +321,7 @@ function viewBook(v) {
     <div class="stack" style="gap:6px"><span class="lab">Your role</span><div class="seg" role="group"><button data-role="kana" aria-pressed="${S.role === "kana"}">かな Kana speller</button><button data-role="kanji" aria-pressed="${S.role === "kanji"}">漢字 Kanji reader</button></div>
     <p class="muted" style="font-size:.8rem">Kana spellers pick readings from choices. Kanji readers type readings, WaniKani style, and see bare kanji on plates and puzzles.</p></div>
     <div class="row"><span class="lab">Romaji helper</span><span class="spacer"></span><div class="seg"><button data-ro="1" aria-pressed="${S.romaji}">On</button><button data-ro="0" aria-pressed="${!S.romaji}">Off</button></div></div>
+    <div class="row"><span class="lab">Theme</span><span class="spacer"></span><div class="seg"><button data-theme-pick="dark" aria-pressed="${themeNow() === "dark"}">Dark</button><button data-theme-pick="light" aria-pressed="${themeNow() === "light"}">Light</button></div></div>
     <div class="row"><span class="lab">Sound effects</span><span class="spacer"></span><div class="seg"><button data-snd="1" aria-pressed="${S.sound}">On</button><button data-snd="0" aria-pressed="${!S.sound}">Off</button></div></div>
     <div class="row"><button class="btn ghost small" id="knowall">I already know hiragana: skip to N5</button></div>
     <div class="row"><button class="btn ghost small" id="reset">Start over</button><span id="resetconfirm"></span></div>
@@ -332,6 +335,7 @@ function viewBook(v) {
   $$("[data-role]").forEach(b => b.onclick = () => { S.role = b.dataset.role; save(); render(); });
   $$("[data-ro]").forEach(b => b.onclick = () => { S.romaji = b.dataset.ro === "1"; save(); render(); });
   $$("[data-snd]").forEach(b => b.onclick = () => { S.sound = b.dataset.snd === "1"; save(); render(); });
+  $$("[data-theme-pick]").forEach(b => b.onclick = () => { setTheme(b.dataset.themePick); render(); });
   $("#knowall").onclick = skipKana;
   $("#reset").onclick = () => { $("#resetconfirm").innerHTML = `<button class="btn small" style="background:var(--bad);box-shadow:none" id="reset2">Yes, erase everything</button>`; $("#reset2").onclick = () => { S = DEFAULT(); save(); TAB = "learn"; render(); toast("A fresh start!"); }; };
 }

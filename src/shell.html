@@ -6,6 +6,9 @@
 <style>
 /*CSS*/
 </style>
+<script>/* dark unless the player picked light (shared with hajimete/); runs before anything draws */
+(function () { var t = "dark"; try { t = localStorage.getItem("oishii.theme") || "dark"; } catch (e) { } document.documentElement.dataset.theme = t;
+  var m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === "dark" ? "#12201A" : "#F1F6EA"; })();</script>
 <div id="app" class="app"></div>
 <div class="tabs" id="tabs"></div>
 <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>

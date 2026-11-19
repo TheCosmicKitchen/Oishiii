@@ -66,6 +66,13 @@ try { const raw = localStorage.getItem(SAVE_KEY); if (raw) S = Object.assign(DEF
 // v1 saves keyed stamps as "kanji|reading"; keep any single-kanji stamps under the kanji alone
 for (const key of Object.keys(S.words)) if (key.includes("|")) { const k = key.split("|")[0]; const old = S.words[key]; delete S.words[key]; if (KJ_BY[k] && !S.words[k]) S.words[k] = old; }
 function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { } if (typeof checkTrophies === "function") checkTrophies(); }
+// light or dark: dark by default; kept apart from S so the page themes itself before the save loads (see src/shell.html)
+const themeNow = () => document.documentElement.dataset.theme === "light" ? "light" : "dark";
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem("oishii.theme", t); } catch (e) { }
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === "dark" ? "#12201A" : "#F1F6EA";
+}
 const now = () => Date.now();
 const DAY = 864e5;
 function kanaStage(k) { const s = S.kana[k]; if (!s) return -1; return s.pts >= 7 ? 2 : s.pts >= 3 ? 1 : 0; }

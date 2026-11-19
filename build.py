@@ -21,7 +21,7 @@ open(os.path.join(ROOT, "dist", "oishii.html"), "w", encoding="utf-8").write(bod
 
 full = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-        '<meta name="theme-color" content="#F1F6EA">\n<meta name="apple-mobile-web-app-capable" content="yes">\n'
+        '<meta name="theme-color" content="#12201A">\n<meta name="apple-mobile-web-app-capable" content="yes">\n'
         '<meta name="apple-mobile-web-app-title" content="Oishii">\n<link rel="manifest" href="manifest.webmanifest">\n'
         '<link rel="icon" type="image/png" href="assets/icon-192.png">\n<link rel="apple-touch-icon" href="assets/icon-180.png">\n'
         '<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}'
@@ -31,7 +31,7 @@ open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(full)
 print(f"built dist/oishii.html and index.html ({len(full) // 1024} KB)")
 
 # Kero's Great Journey (hajimete/): only the emoji it uses
-HAJIMETE_EMOJI = "frog plane warning train store ramen hotel book star speaker map party".split()
+HAJIMETE_EMOJI = "frog plane warning train store ramen hotel book star speaker map party sun moon".split()
 emo = json.loads(rd("assets", "emoji.json"))
 open(os.path.join(ROOT, "hajimete", "emoji.js"), "w", encoding="utf-8").write(
     "// Microsoft Fluent Emoji (MIT), the ones hajimete/ uses. Written by build.py.\nconst EMO = " + json.dumps({k: emo[k] for k in HAJIMETE_EMOJI}) + ";\n")

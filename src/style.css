@@ -818,3 +818,6 @@ p.gen.shown{margin:0;color:var(--ink);font-weight:600;font-size:.92rem;line-heig
 .tripcard{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-xl);background:linear-gradient(135deg,var(--sakura-soft),var(--sky));color:var(--ink);text-decoration:none;box-shadow:var(--lift)}
 .tripcard div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.tripcard small{color:var(--ink-soft);font-size:.8rem}.tripcard > span{font-weight:800;color:var(--sakura)}
 .examfacts summary .em{width:22px;height:22px}
+/* theme switch in the header: dark by default (src/shell.html) */
+.themebtn{flex:none;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);display:inline-grid;place-items:center;padding:0;box-shadow:0 2px 0 var(--line)}
+.themebtn .em{width:22px;height:22px}
